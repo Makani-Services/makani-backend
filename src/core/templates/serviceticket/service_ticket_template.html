@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="http://localhost:5000/rscs/serviceticket/template/styles.css"
+    />
+
+    <!-- <style>
+      
+    </style> -->
+  </head>
+  <body>
+    <div style="width: 800px">
+      <div class="generalInfoContainer">
+        <div class="companyLogoContainer">
+          <p class="companyTitle">RSCS</p>
+        </div>
+
+        <div class="infoContainer">
+          <div class="serviceTicketTitleContainer">
+            <p class="serviceTicketTitle">Service Ticket</p>
+          </div>
+          <div class="ticketInformationContainer">
+            <div class="ticketInformationContainerRow">
+              <div class="ticketInformationItemContainer">
+                <p class="ticketInformationItemLabel">Work Order $</p>
+                <p class="ticketInformationItemText"><%= woNumber %></p>
+              </div>
+              <div class="ticketInformationItemContainer">
+                <p class="ticketInformationItemLabel">Customer PO #</p>
+                <p class="ticketInformationItemText">------------</p>
+              </div>
+              <div class="ticketInformationItemContainer">
+                <p class="ticketInformationItemLabel">Date Added</p>
+                <p class="ticketInformationItemText"><%= woRequestedDate %></p>
+              </div>
+            </div>
+            <div class="ticketInformationContainerRow">
+              <div class="ticketInformationItemContainer" style="width: 200px">
+                <p class="ticketInformationItemLabel">Issued By</p>
+                <div class="personContainer">
+                  <img
+                    class="generalInfoAvatar"
+                    src="<%= woRequestedUserAvatar %>"
+                    alt="avatar"
+                  />
+                  <p class="ticketInformationItemText">
+                    <%= woRequestedUserName %>
+                  </p>
+                </div>
+              </div>
+              <div class="ticketInformationItemContainer" style="width: 200px">
+                <p class="ticketInformationItemLabel">Requested By</p>
+                <div class="personContainer">
+                  <img
+                    class="generalInfoAvatar"
+                    src="<%= woRequestedUserAvatar %>"
+                    alt="avatar"
+                  />
+                  <p class="ticketInformationItemText">
+                    <%= woRequestedUserName %>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="blockContainer">
+        <div class="blockTitleContainer">
+          <p class="blockTitle">Customer Information</p>
+        </div>
+        <div class="blockTitleContent">
+          <div class="customerInfoContainer">
+            <div class="ticketInformationItemContainer">
+              <p class="ticketInformationItemLabel">Email</p>
+              <p class="ticketInformationItemText"><%= customerEmail %></p>
+            </div>
+            <div class="ticketInformationItemContainer">
+              <p class="ticketInformationItemLabel">Contact</p>
+              <p class="ticketInformationItemText"><%= customerContact %></p>
+            </div>
+            <div class="ticketInformationItemContainer">
+              <p class="ticketInformationItemLabel">Phone Number</p>
+              <p class="ticketInformationItemText"><%= customerPhone %></p>
+            </div>
+            <div class="ticketInformationItemContainer" style="width: 350px">
+              <p class="ticketInformationItemLabel">Address</p>
+              <p class="ticketInformationItemText"><%= customerAddress %></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="blockContainer">
+        <div class="blockTitleContainer">
+          <p class="blockTitle">Service Call</p>
+        </div>
+        <div class="blockTitleContent">
+          <div class="customerInfoContainer">
+            <div class="ticketInformationItemContainer">
+              <p class="ticketInformationItemLabel">Opened On:</p>
+              <p class="ticketInformationItemText"><%= woOpenDate %></p>
+            </div>
+            <div class="ticketInformationItemContainer">
+              <p class="ticketInformationItemLabel">Billed On:</p>
+              <p class="ticketInformationItemText"><%= woClosedDate %></p>
+            </div>
+            <div class="ticketInformationItemContainer">
+              <p class="ticketInformationItemLabel">NTE:</p>
+              <p class="ticketInformationItemText"><%= NTE %></p>
+            </div>
+          </div>
+
+          <div class="customerInfoContainer">
+            <div class="ticketInformationItemContainer" style="width: 70%">
+              <p class="ticketInformationItemLabel">Description:</p>
+              <p class="ticketInformationItemText"><%= woDescription %></p>
+            </div>
+            <div
+              class="ticketInformationItemContainer"
+              style="width: 30%; height: auto"
+            >
+              <p class="ticketInformationItemLabel">Attachments:</p>
+              <div class="woAttachmentContainer">
+                <% for (let i = 0; i < woAttachment.length; i++) { %>
+                <a
+                  href="<%= woAttachment[i].url %>"
+                  class="ticketInformationItemText"
+                >
+                  <%= woAttachment[i].fileName %></a
+                >
+                <% } %>
+              </div>
+            </div>
+          </div>
+
+          <div class="customerInfoContainer">
+            <div class="ticketInformationItemContainer" style="width: 50%">
+              <p class="ticketInformationItemLabel">Services Provided:</p>
+              <p class="ticketInformationItemText"><%= woServicesProvided %></p>
+            </div>
+            <div class="ticketInformationItemContainer" style="width: 50%">
+              <p class="ticketInformationItemLabel">Recommendations:</p>
+              <p class="ticketInformationItemText"><%= woRecommendations %></p>
+            </div>
+          </div>
+
+          <div class="blockContainer">
+            <div class="blockTitleContainer" style="background-color: #fbfcff">
+              <p class="blockTitle" style="font-size: 16px">Timesheet</p>
+              <div class="timesheetTitleContainer">
+                <p class="timesheetTitle">Regular Time</p>
+                <p class="timesheetTitle">Over Time</p>
+              </div>
+            </div>
+            <div class="blockTitleContent">
+              <div style="width: 100%">
+                <% for (let i = 0; i < timesheetData.length; i++) { %>
+                <div class="timesheetRowContainer">
+                  <div class="personContainer">
+                    <img
+                      class="generalInfoAvatar"
+                      src="<%= timesheetData[i].avatar %>"
+                      alt="avatar"
+                    />
+                    <p class="ticketInformationItemText">
+                      <%= timesheetData[i].name %>
+                    </p>
+                  </div>
+                  <p
+                    class="ticketInformationItemText"
+                    style="margin-left: 230px"
+                  >
+                    <%= timesheetData[i].regularTime %>
+                  </p>
+                  <p
+                    class="ticketInformationItemText"
+                    style="margin-left: 200px"
+                  >
+                    <%= timesheetData[i].overTime %>
+                  </p>
+                </div>
+
+                <% } %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="blockContainer">
+        <div class="blockTitleContainer">
+          <p class="blockTitle">Purchase Orders</p>
+        </div>
+        <% for (let i = 0; i < pos.length; i++) { %>
+        <div class="blockTitleContent">
+          <div class="customerInfoContainer">
+            <div class="ticketInformationItemContainer">
+              <p class="ticketInformationItemLabel">PO#:</p>
+              <p class="ticketInformationItemText"><%= pos[i].number %></p>
+            </div>
+            <div class="ticketInformationItemContainer">
+              <p class="ticketInformationItemLabel">Date Added:</p>
+              <p class="ticketInformationItemText"><%= pos[i].createdAt %></p>
+            </div>
+            <div class="ticketInformationItemContainer">
+              <p class="ticketInformationItemLabel">Type:</p>
+              <p class="ticketInformationItemText"><%= pos[i].paymentType %></p>
+            </div>
+            <div class="ticketInformationItemContainer" style="width: 150px">
+              <p class="ticketInformationItemLabel">Issued By</p>
+              <div class="personContainer" style="margin-top: -8px">
+                <img
+                  class="generalInfoAvatar"
+                  src="<%= pos[i].issuedUser.avatar %>"
+                  alt="avatar"
+                />
+                <p class="ticketInformationItemText">
+                  <%= pos[i].issuedUser.name %>
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="customerInfoContainer">
+            <div class="ticketInformationItemContainer">
+              <p class="ticketInformationItemLabel">Description:</p>
+              <p class="ticketInformationItemText"><%= pos[i].description %></p>
+            </div>
+          </div>
+        </div>
+        <% } %>
+      </div>
+    </div>
+  </body>
+</html>

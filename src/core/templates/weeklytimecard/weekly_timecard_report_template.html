@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link
+      rel="stylesheet"
+      href="http://127.0.0.1:5000/rscs/weeklytimecardreport/template/styles.css"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  </head>
+  <body style="overflow-x: auto">
+    <div
+      style="
+        width: 880px;
+        padding-left: 15px;
+        padding-right: 15px;
+        padding-top: 40px;
+      "
+    >
+      <!-- header -->
+      <div class="headerContainer">
+        <div class="headerSubContainer">
+          <div class="headerLabel">NAME:</div>
+          <div class="headerText"><%= name %></div>
+        </div>
+
+        <div class="headerSubContainer">
+          <div class="headerLabel">WEEK ENDING DATE:</div>
+          <div class="headerText"><%= endingDate %></div>
+        </div>
+      </div>
+
+      <!-- table header -->
+
+      <div
+        style="
+          width: 100%;
+          height: 40px;
+          display: flex;
+          align-items: center;
+          border: 0.5px solid;
+        "
+      >
+        <div
+          style="width: 30.5%; border-right: 0.5px solid"
+          class="talbeHeaderItem"
+        >
+          CUSTOMER NAME
+        </div>
+
+        <div
+          style="width: 9%; border-right: 0.5px solid"
+          class="talbeHeaderItem"
+        >
+          <div style="display: flex; flex-direction: column">
+            <span style="text-align: center">WORK</span>
+            <span style="text-align: center">ORDER #</span>
+          </div>
+        </div>
+
+        <div
+          style="width: 8%; border-right: 0.5px solid"
+          class="talbeHeaderItem"
+        >
+          <div style="display: flex; flex-direction: column">
+            <span style="text-align: center">Travel</span>
+            <span style="text-align: center">Time</span>
+          </div>
+        </div>
+
+        <div
+          style="width: 7%; border-right: 0.5px solid"
+          class="talbeHeaderItem"
+        >
+          REG/OT
+        </div>
+
+        <div
+          style="width: 6.5%; border-right: 0.5px solid"
+          class="talbeHeaderItem"
+        >
+          SUN
+        </div>
+        <div
+          style="width: 6.5%; border-right: 0.5px solid"
+          class="talbeHeaderItem"
+        >
+          MON
+        </div>
+        <div
+          style="width: 6.5%; border-right: 0.5px solid"
+          class="talbeHeaderItem"
+        >
+          TUES
+        </div>
+        <div
+          style="width: 6.5%; border-right: 0.5px solid"
+          class="talbeHeaderItem"
+        >
+          WED
+        </div>
+        <div
+          style="width: 6.5%; border-right: 0.5px solid"
+          class="talbeHeaderItem"
+        >
+          THUR
+        </div>
+        <div
+          style="width: 6.5%; border-right: 0.5px solid"
+          class="talbeHeaderItem"
+        >
+          FRI
+        </div>
+        <div style="width: 6.5%" class="talbeHeaderItem">SAT</div>
+      </div>
+
+      <!-- table body -->
+      <% for (let i = 0; i < timeArray.length; i++) { %>
+      <div
+        style="
+          width: 100%;
+          height: 40px;
+          display: flex;
+          align-items: center;
+          border: 0.5px solid;
+          border-top: none;
+        "
+      >
+        <div
+          style="width: 30.5%; border-right: 0.5px solid"
+          class="talbeHeaderItem"
+        >
+          <%= timeArray[i].customer %>
+        </div>
+
+        <div
+          style="width: 9%; border-right: 0.5px solid"
+          class="talbeHeaderItem"
+        >
+          <%= timeArray[i].woNumber %>
+        </div>
+
+        <div
+          style="width: 8%; border-right: 0.5px solid"
+          class="talbeHeaderItem"
+        >
+          <%= timeArray[i].weekTotalTravelTimeForWo > 0 ?
+          timeArray[i].weekTotalTravelTimeForWo : '' %>
+        </div>
+
+        <div
+          style="width: 7%; border-right: 0.5px solid"
+          class="talbeHeaderItem"
+        >
+          <%= timeArray[i].weekRegularTimeForWo > 0 ?
+          timeArray[i].weekRegularTimeForWo : 0 %>/<%=
+          timeArray[i].weekOverTimeForWo > 0 ? timeArray[i].weekOverTimeForWo :
+          0 %>
+        </div>
+
+        <% for (let j = 0; j < 7; j++) { %> <% if
+        (timeArray[i].timeArray.some(item => item.offset === j)) { const entry =
+        timeArray[i].timeArray.find(item => item.offset === j); %>
+
+        <div
+          style="width: 6.5%; border-right: 0.5px solid"
+          class="talbeHeaderItem"
+        >
+          <div
+            style="
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+            "
+          >
+            <div style="text-align: center">
+              <%= entry.regularTime ? entry.regularTime : 0 %>/<%=
+              entry.overTime ? entry.overTime : 0 %>
+            </div>
+            <% if (entry.travelTime !== undefined && entry.travelTime !== null)
+            { %>
+            <div style="text-align: center">TT <%= entry.travelTime %></div>
+            <% } %>
+          </div>
+        </div>
+
+        <% } else { %>
+        <div
+          style="width: 6.5%; border-right: 0.5px solid"
+          class="talbeHeaderItem"
+        ></div>
+        <% } %> <% } %>
+      </div>
+      <% } %>
+
+      <!-- table footer -->
+
+      <div
+        style="
+          width: 100%;
+          height: 40px;
+          display: flex;
+          align-items: center;
+          border: 0.5px solid;
+          border-top: none;
+        "
+      >
+        <div
+          style="width: 30.5%; border-right: 0.5px solid"
+          class="talbeHeaderItem"
+        >
+          TOTAL TIME PER DAY
+        </div>
+
+        <div
+          style="width: 9%; border-right: 0.5px solid; font-size: 10px"
+          class="talbeHeaderItem"
+        >
+          <div style="display: flex; flex-direction: column">
+            <span style="text-align: center">TOTAL RT/OT</span>
+            <span style="text-align: center">FOR WEEK:</span>
+            <span style="text-align: center; font-size: 14px"
+              ><%= weekRegTime ? weekRegTime : 0 %>/<%= weekOverTime ?
+              weekOverTime : 0 %></span
+            >
+          </div>
+        </div>
+
+        <div
+          style="width: 8%; border-right: 0.5px solid; font-size: 10px"
+          class="talbeHeaderItem"
+        >
+          <div style="display: flex; flex-direction: column">
+            <span style="text-align: center">TOTAL TT</span>
+            <span style="text-align: center">FOR WEEK:</span>
+            <span style="text-align: center; font-size: 14px"
+              ><%= weekTravelTime ? weekTravelTime : 0 %></span
+            >
+          </div>
+        </div>
+
+        <div
+          style="width: 7%; border-right: 0.5px solid"
+          class="talbeHeaderItem"
+        >
+          REG/OT
+        </div>
+
+        <% for (let j = 0; j < 7; j++) { const item = dayTotalHours.find(item =>
+        item.offset === j); %> <% if (item) { %>
+        <div
+          style="width: 6.5%; border-right: 0.5px solid"
+          class="talbeHeaderItem"
+        >
+          <%= item.regularTime ? item.regularTime : 0 %>/<%= item.overTime ?
+          item.overTime : 0 %>
+        </div>
+        <% } else { %>
+        <div
+          style="width: 6.5%; border-right: 0.5px solid"
+          class="talbeHeaderItem"
+        ></div>
+        <% } %> <% } %>
+      </div>
+
+      <!-- footer -->
+      <div class="headerContainer">
+        <div class="headerSubContainer">
+          <div class="headerLabel">NOTES/MILEAGE:</div>
+          <div class="headerText">&nbsp;</div>
+        </div>
+        <div class="headerSubContainer"></div>
+      </div>
+
+      <div class="headerContainer">
+        <div class="headerSubContainer" style="width: 70%">
+          <div class="headerLabel">SIGNATURE:</div>
+          <div class="headerText">&nbsp;</div>
+        </div>
+
+        <div class="headerSubContainer" style="width: 30%">
+          <div class="headerLabel">DATE:</div>
+          <div class="headerText"><%= endingDate %></div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

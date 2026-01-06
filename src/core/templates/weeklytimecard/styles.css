@@ -1,0 +1,121 @@
+@font-face {
+  font-family: OpenSansBold;
+  src: url('OpenSans-Bold.ttf');
+}
+
+@font-face {
+  font-family: OpenSansRegular;
+  src: url('OpenSans-Regular.ttf');
+}
+
+div {
+  box-sizing: border-box;
+}
+
+.companyLogoContainer {
+  width: 300px;
+  height: 100%;
+  border-right: 1px solid;
+  border-bottom: 1px solid;
+}
+
+.companyLogo {
+  width: 290px;
+  height: 160px;
+  object-fit: contain;
+}
+
+.companyInfoContainer {
+  flex: 1;
+  /* display: flex;
+  flex-direction: column;
+  height: 50px;
+  justify-content: space-between; 
+  background-color: blue; */
+  margin-top: 0px;
+  width: 100%;
+}
+
+.infoItem {
+  width: 100%;
+  text-align: center;
+  font-family: 'OpenSansRegular';
+  color: #010d3d;
+  font-size: 12px;
+  margin-top: 0px;
+}
+
+.customerContainer {
+  width: 700px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.customerRow {
+  width: 100%;
+  height: 27px;
+  display: flex;
+  /* justify-content: space-between; */
+}
+
+.halfRow {
+  display: flex;
+  width: 50%;
+}
+
+.customerRowLabel {
+  min-width: 120px;
+  border-right: 1px solid;
+  border-bottom: 1px solid;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  font-family: 'OpenSansBold';
+  color: #010d3d;
+  font-weight: bold;
+  font-size: 16px;
+  padding-left: 1px;
+}
+
+.customerTextFirst {
+  /* width: 50%; */
+  width: 249px;
+  border-right: 1px solid;
+  border-bottom: 1px solid;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  font-family: 'OpenSansRegular';
+  color: #010d3d;
+  font-size: 16px;
+  padding-left: 2px;
+}
+
+.customerTextSecond {
+  /* width: 50%; */
+  width: 249px;
+  border-bottom: 1px solid;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  font-size: 16px;
+  padding-left: 2px;
+}
+
+.poItemRow {
+  width: 100%;
+  height: 30px;
+  border-top: 1px solid;
+  display: flex;
+  align-items: center;
+}
+
+.poItemColumn {
+  width: 50%;
+  height: 30px;
+  font-family: 'OpenSansBold';
+  color: #010d3d;
+  font-weight: bold;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  padding-left: 15px;
+}

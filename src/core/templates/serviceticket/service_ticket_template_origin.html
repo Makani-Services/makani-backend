@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="http://127.0.0.1:5000/rscs/serviceticket/template/styles_origin.css"
+    />
+  </head>
+  <body>
+    <div style="width: 1100px">
+      <div style="width: 100%; border-style: solid; border-width: 1px">
+        <div style="width: 100%; height: 250px; display: flex">
+          <div class="companyLogoContainer">
+            <img src="<%= companyLogo %>" class="companyLogo" alt="" />
+            <div class="companyInfoContainer">
+              <p class="infoItem">Address: <%= companyAddress %></p>
+              <p class="infoItem">Phone: <%= companyPhone %></p>
+              <p class="infoItem">Website: <%= companyWebsite %></p>
+            </div>
+          </div>
+          <div class="customerContainer">
+            <div style="width: 100%">
+              <div class="customerRow">
+                <div class="customerRowLabel">Customer Name</div>
+                <div class="customerTextFirst"><%= customerName %></div>
+                <div class="customerRowLabel" style="width: 100px">Date:</div>
+                <div class="customerTextSecond"><%= woStartDate %></div>
+              </div>
+              <div class="customerRow">
+                <div class="customerRowLabel">Customer Address</div>
+                <div class="customerTextFirst"><%= customerAddress %></div>
+              </div>
+              <div class="customerRow">
+                <div class="customerRowLabel">Customer PO#:</div>
+                <div class="customerTextFirst"><%= customerPONumber %></div>
+                <div class="customerRowLabel" style="width: 100px">
+                  Work Order:
+                </div>
+                <div class="customerTextSecond"><%= woNumber %></div>
+              </div>
+            </div>
+
+            <div style="width: 100%; margin-top: 30px">
+              <div class="woRow">
+                <div style="width: 150px" class="labelText">
+                  Asset/Equipment:
+                </div>
+                <div class="woText"><%= woAsset %></div>
+              </div>
+              <div class="woRow">
+                <div style="width: 150px" class="labelText">Requested By:</div>
+                <div class="woText" style="border-top: none">
+                  <%= woRequestedUser %>
+                </div>
+              </div>
+              <div class="woRow" style="height: 86px">
+                <div style="width: 150px" class="labelText">
+                  Service Request:
+                </div>
+                <div class="woText" style="border-top: none; height: 100%">
+                  <%= woDescription %>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="width: 100%; margin-top: 15px; border-top: solid 1px">
+          <div class="secondRowWrapper">
+            <div style="width: 200px" class="labelText">Services provided</div>
+            <div
+              class="secondTextWrapper"
+              style="
+                /* height: 50px; */
+                padding-left: 2px;
+                padding-right: 2px;
+                border-bottom-width: 2px;
+                overflow-wrap: break-word;
+                width: calc(100% - 200px);
+                min-height: 20px;
+              "
+            >
+              <span> <%= woServicesProvided %> </span>
+            </div>
+          </div>
+          <div class="secondRowWrapper">
+            <div style="width: 200px" class="labelText">Recommendations</div>
+            <div
+              class="secondTextWrapper"
+              style="
+                /* height: 50px; */
+                padding-left: 2px;
+                padding-right: 2px;
+                border-bottom-width: 3px;
+                overflow-wrap: break-word;
+                width: calc(100% - 200px);
+                min-height: 20px;
+              "
+            >
+              <span> <%= woRecommendations %> </span>
+            </div>
+          </div>
+          <div class="secondRowWrapper">
+            <div style="width: 200px" class="labelText">Technicians</div>
+
+            <div class="secondTextWrapper" style="height: auto">
+              <div class="techRow labelText">
+                <div class="techRowItem">Name</div>
+                <div class="techRowItem">Date</div>
+                <div class="techRowItem">Reg</div>
+                <div class="techRowItem" style="border-right: none">OT</div>
+                <!-- <div class="techRowItem">Date</div> -->
+              </div>
+
+              <% for (let i = 0; i < timesheetData.length; i++) { %>
+              <div class="techRow">
+                <div class="techRowItem"><%= timesheetData[i].name %></div>
+
+                <div class="techRowItem"><%= timesheetData[i].date %></div>
+                <div class="techRowItem">
+                  <%= timesheetData[i].regularTime %>
+                </div>
+                <div class="techRowItem" style="border-right: none">
+                  <%= timesheetData[i].overTime %>
+                </div>
+              </div>
+              <% } %>
+            </div>
+          </div>
+
+          <div class="secondRowWrapper">
+            <div style="width: 200px" class="labelText">Parts Supplied</div>
+
+            <div class="secondTextWrapper" style="height: auto">
+              <div class="techRow labelText">
+                <div class="techRowItem">PO #</div>
+                <div class="techRowItem" style="width: 75%; border-right: none">
+                  Description
+                </div>
+              </div>
+
+              <% for (let i = 0; i < pos.length; i++) { %>
+              <div class="techRow">
+                <div class="techRowItem"><%= pos[i].number %></div>
+                <div class="techRowItem" style="width: 75%; border-right: none">
+                  <%= pos[i].description %>
+                </div>
+              </div>
+              <% } %>
+            </div>
+          </div>
+
+          <div class="secondRowWrapper">
+            <div style="width: 200px" class="labelText">
+              Misc Materials Supplied
+            </div>
+
+            <div class="secondTextWrapper" style="height: auto">
+              <div class="techRow labelText">
+                <div class="techRowItem" style="width: 25%">Qty</div>
+                <div class="techRowItem" style="width: 75%">Description</div>
+                <!-- <div class="techRowItem" style="width: 30%">Attachment</div> -->
+              </div>
+
+              <% for (let i = 0; i < materialArray.length; i++) { %>
+              <div class="techRow">
+                <div class="techRowItem" style="width: 25%">
+                  <%= materialArray[i].quantity %>
+                </div>
+                <div
+                  class="techRowItem"
+                  style="
+                    width: 50%;
+                    border-right: none;
+                    justify-content: start;
+                    padding-left: 5px;
+                    padding-right: 5px;
+                  "
+                >
+                  <%= materialArray[i].description %>
+                </div>
+                <div
+                  class="techRowItem"
+                  style="border-left: 1px solid; width: 25%"
+                >
+                  <a href="<%= materialArray[i].link %>" target="_blank"
+                    ><p style="text-align: center">
+                      <%= materialArray[i].attachment %>
+                    </p></a
+                  >
+                </div>
+              </div>
+              <% } %>
+            </div>
+          </div>
+
+          <% for (let i = 0; i < woMaterialsData.length; i++) { %>
+          <div class="secondRowWrapper">
+            <div style="width: 200px" class="labelText">
+              <%= woMaterialsData[i].name %>
+            </div>
+            <div class="secondTextWrapper" style="height: auto">
+              <span><%= woMaterialsData[i].content %></span>
+            </div>
+          </div>
+          <% } %>
+
+          <div class="secondRowWrapper">
+            <div style="width: 200px" class="labelText">
+              Customer Signature: <br />I have examined the work performed, the
+              hours, and the materials supplied....
+            </div>
+
+            <div class="secondTextWrapper" style="height: 80px; display: flex">
+              <div style="width: 60%; height: 100%; border-right: solid 1px">
+                <img src="<%= woSignatureURL %>" style="height: 100%" alt="" />
+              </div>
+              <div style="width: 40%; height: 100%">
+                <div class="signatureLabelContainer">
+                  <div class="signatureLabel">Name:</div>
+                  <div class="signatureContent"><%= woSignerName %></div>
+                </div>
+                <div class="signatureLabelContainer">
+                  <div class="signatureLabel">Date:</div>
+                  <div class="signatureContent"><%= woStSignedDate %></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="page-break"></div>
+
+    <% if (woAttachment.length <= 9) { %>
+    <div class="attachmentContainer">
+      <% for (let i = 0; i < woAttachment.length; i++) { %>
+      <img src="<%= woAttachment[i].url %>" class="attachmentItem" alt="" />
+
+      <% } %>
+    </div>
+    <% } %> <% if (woAttachment.length > 9) { %>
+
+    <div class="attachmentContainer">
+      <% for (let i = 0; i < 9; i++) { %>
+      <img src="<%= woAttachment[i].url %>" class="attachmentItem" alt="" />
+
+      <% } %>
+    </div>
+    <div class="page-break"></div>
+    <div class="attachmentContainer">
+      <% for (let i = 9; i < woAttachment.length; i++) { %>
+      <img src="<%= woAttachment[i].url %>" class="attachmentItem" alt="" />
+
+      <% } %>
+    </div>
+    <% } %> <% if (woAttachment.length > 18) { %>
+
+    <div class="attachmentContainer">
+      <% for (let i = 0; i < 9; i++) { %>
+      <img src="<%= woAttachment[i].url %>" class="attachmentItem" alt="" />
+
+      <% } %>
+    </div>
+    <div class="page-break"></div>
+    <div class="attachmentContainer">
+      <% for (let i = 9; i < 18; i++) { %>
+      <img src="<%= woAttachment[i].url %>" class="attachmentItem" alt="" />
+
+      <% } %>
+    </div>
+    <div class="page-break"></div>
+    <div class="attachmentContainer">
+      <% for (let i = 18; i < woAttachment.length; i++) { %>
+      <img src="<%= woAttachment[i].url %>" class="attachmentItem" alt="" />
+
+      <% } %>
+    </div>
+    <% } %>
+  </body>
+</html>

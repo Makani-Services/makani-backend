@@ -1,0 +1,148 @@
+@font-face {
+  font-family: OpenSansBold;
+  src: url('OpenSans-Bold.ttf');
+}
+
+@font-face {
+  font-family: OpenSansRegular;
+  src: url('OpenSans-Regular.ttf');
+}
+
+div {
+  box-sizing: border-box;
+}
+
+.generalInfoContainer {
+  width: 100%;
+  height: 200px;
+  display: flex;
+  border-width: 1px;
+  border-color: lightgray;
+  border-style: solid;
+}
+.companyLogoContainer {
+  width: 250px;
+  height: 100%;
+}
+.companyTitle {
+  font-family: 'OpenSansBold';
+  font-size: 32px;
+  font-weight: bolder;
+  text-align: center;
+  color: #010d3d;
+}
+.infoContainer {
+  width: 100%;
+  height: 100%;
+  border-left: 1px solid;
+  border-color: lightgray;
+}
+.serviceTicketTitleContainer {
+  width: 100%;
+  height: 40px;
+  border-bottom: 1px solid;
+  border-color: lightgray;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.serviceTicketTitle {
+  font-family: 'OpenSansBold';
+  font-size: 32px;
+  font-weight: bolder;
+  text-align: center;
+  color: #010d3d;
+}
+.ticketInformationContainer {
+  width: 600px;
+  height: 100%;
+  padding: 10px;
+}
+.ticketInformationItemContainer {
+  width: 200px;
+  height: 70px;
+}
+.ticketInformationContainerRow {
+  display: flex;
+  width: 100%;
+  height: 70px;
+}
+.ticketInformationItemLabel {
+  font-family: 'OpenSansBold';
+  font-size: 14px;
+  font-weight: bolder;
+  color: #010d3d;
+}
+.ticketInformationItemText {
+  font-family: 'OpenSansRegular';
+  font-size: 12px;
+  color: #010d3d;
+}
+.personContainer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 7px;
+  height: 30px;
+}
+.generalInfoAvatar {
+  width: 20px;
+  height: 20px;
+  border-radius: 10px;
+}
+.blockContainer {
+  width: 100%;
+  border-style: solid;
+  border-color: lightgray;
+  border-width: 1px;
+  margin-top: 20px;
+  padding-bottom: 10px;
+}
+.blockTitle {
+  font-family: 'OpenSansBold';
+  font-size: 20px;
+  font-weight: bolder;
+  text-align: left;
+  color: #010d3d;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.blockTitleContainer {
+  width: 100%;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid;
+  border-color: lightgray;
+}
+.blockTitleContent {
+  width: 100%;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.customerInfoContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.woAttachmentContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.timesheetTitleContainer {
+  display: flex;
+  width: 300px;
+  margin-left: 220px;
+  gap: 160px;
+}
+.timesheetTitle {
+  color: #80869e;
+  font-family: 'OpenSansRegular';
+  font-size: 12px;
+}
+.timesheetRowContainer {
+  display: flex;
+  width: 100%;
+}

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link
+      rel="stylesheet"
+      href="http://127.0.0.1:5000/rscs/dailytimecardreport/template/styles.css"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  </head>
+  <body style="overflow-x: auto">
+    <div
+      style="
+        width: 880px;
+        padding-left: 15px;
+        padding-right: 15px;
+        padding-top: 40px;
+      "
+    >
+      <!-- table header -->
+
+      <div
+        style="
+          width: 100%;
+          height: 40px;
+          display: flex;
+          align-items: center;
+          border: 0.5px solid;
+        "
+      >
+        <div style="width: 20%" class="tableHeaderItem">
+          <span style="text-align: center; font-size: 14px"
+            ><%= branch %> EMPLOYEES</span
+          >
+        </div>
+
+        <div style="width: 7%" class="tableHeaderItem">HOURS</div>
+
+        <div style="width: 7%" class="tableHeaderItem">WO #</div>
+
+        <div style="width: 26%" class="tableHeaderItem">CUSTOMER</div>
+
+        <div style="width: 40%; border-right: none" class="tableHeaderItem">
+          JOB DESCRIPTION
+        </div>
+      </div>
+
+      <!-- table body -->
+      <% for (let i = 0; i < timeCard.length; i++) { %> <% for (let j = 0; j <
+      timeCard[i].length; j++) { %>
+      <div
+        style="
+          width: 100%;
+          display: flex;
+          align-items: stretch;
+          border: 0.5px solid;
+          border-top: none;
+        "
+      >
+        <div
+          style="
+            width: 20%;
+            border-right: 0.5px solid;
+            justify-content: end;
+            font-weight: bold;
+          "
+          class="tableBodyItem"
+        >
+          <%= timeCard[i][j].name %>
+        </div>
+
+        <div style="width: 7%; border-right: 0.5px solid" class="tableBodyItem">
+          <%= timeCard[i][j].hours %>
+        </div>
+
+        <div style="width: 7%; border-right: 0.5px solid" class="tableBodyItem">
+          <%= timeCard[i][j].woNumber %>
+        </div>
+
+        <div
+          style="width: 26%; border-right: 0.5px solid"
+          class="tableBodyItem"
+        >
+          <%= timeCard[i][j].customer %>
+        </div>
+
+        <div style="width: 40%" class="tableBodyItem">
+          <%= timeCard[i][j].woDescription %>
+        </div>
+      </div>
+      <% } %> <% if (i < (timeCard.length - 1)) { %>
+      <div
+        style="
+          width: 100%;
+          display: flex;
+          align-items: stretch;
+          border: 0.5px solid;
+          border-top: none;
+        "
+      >
+        <div
+          style="
+            width: 20%;
+            border-right: 0.5px solid;
+            justify-content: end;
+            font-weight: bold;
+            min-height: 15px;
+          "
+          class="tableBodyItem"
+        ></div>
+
+        <div
+          style="width: 7%; border-right: 0.5px solid"
+          class="tableBodyItem"
+        ></div>
+
+        <div
+          style="width: 7%; border-right: 0.5px solid"
+          class="tableBodyItem"
+        ></div>
+
+        <div
+          style="width: 26%; border-right: 0.5px solid"
+          class="tableBodyItem"
+        ></div>
+
+        <div
+          style="width: 40%; justify-content: start"
+          class="tableBodyItem"
+        ></div>
+      </div>
+      <% } %> <% } %>
+    </div>
+  </body>
+</html>

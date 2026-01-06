@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link
+      rel="stylesheet"
+      href="http://localhost:5000/rscs/poreceipt/template/styles.css"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  </head>
+  <body style="overflow-x: auto">
+    <div style="width: 1000px">
+      <div style="width: 100%; border-style: solid; border-width: 1px">
+        <div style="width: 100%; display: flex">
+          <div class="companyLogoContainer">
+            <img src="<%= companyLogo %>" class="companyLogo" alt="" />
+            <div class="companyInfoContainer">
+              <p class="infoItem">Address: <%= companyAddress %></p>
+              <p class="infoItem">Phone: <%= companyPhone %></p>
+              <p class="infoItem">Website: <%= companyWebsite %></p>
+            </div>
+          </div>
+          <div class="customerContainer">
+            <div style="width: 100%">
+              <div class="customerRow">
+                <div class="halfRow">
+                  <div class="customerRowLabel">PO number</div>
+                  <div class="customerTextFirst"><%= poNumber %></div>
+                </div>
+                <div class="halfRow">
+                  <div class="customerRowLabel">Date:</div>
+                  <div class="customerTextSecond"><%= date %></div>
+                </div>
+              </div>
+              <div class="customerRow">
+                <div class="halfRow">
+                  <div class="customerRowLabel">PO Type</div>
+                  <div class="customerTextFirst"><%= poType %></div>
+                </div>
+                <div class="halfRow">
+                  <div class="customerRowLabel">WO Number</div>
+                  <div class="customerTextSecond"><%= woNumber %></div>
+                </div>
+              </div>
+              <div class="customerRow">
+                <div class="customerRowLabel">Vendor</div>
+                <div
+                  class="customerTextFirst"
+                  style="width: 599px; border-right: none"
+                >
+                  <%= vendor %>
+                </div>
+              </div>
+              <div class="customerRow">
+                <div class="customerRowLabel">Customer</div>
+                <div
+                  class="customerTextFirst"
+                  style="width: 599px; border-right: none"
+                >
+                  <%= customerCompany %>
+                </div>
+              </div>
+              <div class="customerRow">
+                <div class="customerRowLabel">WO Technicians</div>
+                <div
+                  class="customerTextFirst"
+                  style="width: 599px; border-right: none"
+                >
+                  <%= technicians %>
+                </div>
+              </div>
+              <div class="customerRow">
+                <div class="customerRowLabel">Issued By</div>
+                <div
+                  class="customerTextFirst"
+                  style="width: 599px; border-right: none"
+                >
+                  <%= issuedBy %>
+                </div>
+              </div>
+              <div class="customerRow">
+                <div class="customerRowLabel">Issued For</div>
+                <div
+                  class="customerTextFirst"
+                  style="width: 599px; border-right: none"
+                >
+                  <%= issuedFor %>
+                </div>
+              </div>
+              <div class="customerRow">
+                <div class="customerRowLabel">Attachments</div>
+                <div
+                  class="customerTextFirst"
+                  style="width: 599px; border-right: none"
+                >
+                  <% for (let i = 0; i < attachments.length; i++) { %>
+                  <a
+                    href="<%= attachments[i].URL %>"
+                    target="_blank"
+                    style="margin-right: 20px"
+                    ><%= attachments[i].name %></a
+                  >
+                  <% } %>
+                </div>
+              </div>
+              <div class="customerRow">
+                <div class="customerRowLabel">Note</div>
+                <div
+                  class="customerTextFirst"
+                  style="width: 599px; border-right: none"
+                >
+                  <%= poNote %>
+                </div>
+              </div>
+              <div class="customerRow">
+                <div
+                  class="customerRowLabel"
+                  style="border-right: 1px solid; border-bottom: none"
+                >
+                  Description
+                </div>
+                <div
+                  class="customerTextFirst"
+                  style="border-bottom: none; width: 599px; border-right: none"
+                >
+                  <%= poDescription %>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- poItems -->
+        <div style="width: 100%; border-top: 1px solid">
+          <div
+            class="customerRowLabel"
+            style="border-right: none; border-bottom: none"
+          >
+            PO Items
+          </div>
+          <div class="poItemRow">
+            <div class="poItemColumn" style="border-right: 1px solid">
+              Description
+            </div>
+            <div class="poItemColumn">Attachment</div>
+          </div>
+          <% for (let i = 0; i < poItems.length; i++) { %>
+          <div class="poItemRow">
+            <div class="poItemColumn" style="border-right: 1px solid">
+              <%= poItems[i].description %>
+            </div>
+            <div class="poItemColumn">
+              <a
+                href="<%= poItems[i].URL %>"
+                target="_blank"
+                style="margin-right: 20px"
+                ><%= poItems[i].realFileName %></a
+              >
+            </div>
+          </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
