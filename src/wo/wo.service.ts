@@ -1175,7 +1175,7 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
     fileNames: string[],
     id: number,
     type: number,
-  ): Promise<WoEntity> {
+  ): Promise<string[]> {
     const wo = await this.repo.findOne({
       where: { id: id },
       // relations: [
@@ -1215,7 +1215,8 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
       }
     }
 
-    return await this.repo.save(wo);
+    await this.repo.save(wo);
+    return type === 1 ? wo.attachments : wo.proposals;
   }
 
   //attach materials
