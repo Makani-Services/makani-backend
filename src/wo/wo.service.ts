@@ -377,7 +377,7 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
       .orderBy('wo.createdAt', 'DESC');
 
     //branching
-    if (branchId > 0) {
+    if (branchId != 0) {
       query = query.andWhere('branch.id = :branchId', { branchId });
     }
 
