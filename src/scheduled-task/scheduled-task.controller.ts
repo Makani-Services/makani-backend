@@ -20,8 +20,8 @@ export class ScheduledTaskController {
   async getAndroidVersionInfo() {
     return {
       platform: 'android',
-      latest_version: '1.9.7',
-      force_update: false,
+      latest_version: '1.9.8',
+      force_update: true,
     };
   }
 
