@@ -10,7 +10,7 @@ export class ScheduledTaskController {
   async getiOSVersionInfo() {
     return {
       platform: 'ios',
-      latest_version: '1.9.7',
+      latest_version: '1.9.9',
       force_update: false,
     };
   }
@@ -20,8 +20,8 @@ export class ScheduledTaskController {
   async getAndroidVersionInfo() {
     return {
       platform: 'android',
-      latest_version: '1.9.8',
-      force_update: true,
+      latest_version: '1.9.9',
+      force_update: false,
     };
   }
 
