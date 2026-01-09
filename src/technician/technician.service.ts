@@ -116,32 +116,33 @@ export class TechnicianService extends TypeOrmCrudService<TechnicianEntity> {
             company,
           );
 
-        let recipientEmailArray = await this.userService.getRecipientEmailArray(
-          item,
-        );
-        const mailOptions = {
-          from: config.mail.supportEmail,
-          to: recipientEmailArray,
-          subject:
-            'New WO# ' + newWO.number + ', ' + newWO.customer.companyName,
-          text: 'New WO# ' + newWO.number + ', ' + newWO.customer.companyName,
-          html:
-            'WO#: ' +
-            newWO.number +
-            '<br/>' +
-            'Type of WO#: ' +
-            WO_TYPE_LIST[newWO.type] +
-            '<br/>' +
-            'Customer Name: ' +
-            newWO.customer.companyName +
-            '<br/>' +
-            'Description: ' +
-            newWO.description +
-            '<br/>' +
-            'Technician: ' +
-            getAssignedTechsNameArray(newWO.assignedTechs),
-        };
-        this.emailService.sendEmail(mailOptions);
+        if (item) {
+          let recipientEmailArray =
+            await this.userService.getRecipientEmailArray(item);
+          const mailOptions = {
+            from: config.mail.supportEmail,
+            to: recipientEmailArray,
+            subject:
+              'New WO# ' + newWO.number + ', ' + newWO.customer.companyName,
+            text: 'New WO# ' + newWO.number + ', ' + newWO.customer.companyName,
+            html:
+              'WO#: ' +
+              newWO.number +
+              '<br/>' +
+              'Type of WO#: ' +
+              WO_TYPE_LIST[newWO.type] +
+              '<br/>' +
+              'Customer Name: ' +
+              newWO.customer.companyName +
+              '<br/>' +
+              'Description: ' +
+              newWO.description +
+              '<br/>' +
+              'Technician: ' +
+              getAssignedTechsNameArray(newWO.assignedTechs),
+          };
+          this.emailService.sendEmail(mailOptions);
+        }
       } catch (e) {
         console.log(e);
       }
