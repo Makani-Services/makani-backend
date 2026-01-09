@@ -1012,35 +1012,37 @@ export class PoService extends TypeOrmCrudService<PoEntity> {
         po.wo.branch.id,
         company,
       );
-      let recipientEmailArray = await this.userService.getRecipientEmailArray(
-        item,
-      );
-      const mailOptions = {
-        from: config.mail.supportEmail,
-        to: recipientEmailArray,
-        subject: 'PO # ' + po.number + ' issued for WO# ' + po.wo.number,
-        text: 'PO # ' + po.number + ' issued for WO# ' + po.wo.number,
-        html:
-          `PO#: ${po.number}` +
-          '<br/>' +
-          `Payment Type: ${paymentItems[po.paymentType]}` +
-          '<br/>' +
-          `Issued For: ${po.issuedUser ? po.issuedUser.name : ''}` +
-          '<br/>' +
-          `Issued By: ${po.issuedBy ? po.issuedBy.name : ''}` +
-          '<br/>' +
-          `Vendor: ${po.vendor}` +
-          '<br/>' +
-          `Description: ${po.description}` +
-          '<br/>' +
-          `WO: ${po.wo.number}` +
-          '<br/>' +
-          `WO Description: ${po.wo.description}` +
-          '<br/>' +
-          `Customer: ${po.wo.customer.companyName}` +
-          '<br/>',
-      };
-      this.emailService.sendEmail(mailOptions);
+      if (item) {
+        let recipientEmailArray = await this.userService.getRecipientEmailArray(
+          item,
+        );
+        const mailOptions = {
+          from: config.mail.supportEmail,
+          to: recipientEmailArray,
+          subject: 'PO # ' + po.number + ' issued for WO# ' + po.wo.number,
+          text: 'PO # ' + po.number + ' issued for WO# ' + po.wo.number,
+          html:
+            `PO#: ${po.number}` +
+            '<br/>' +
+            `Payment Type: ${paymentItems[po.paymentType]}` +
+            '<br/>' +
+            `Issued For: ${po.issuedUser ? po.issuedUser.name : ''}` +
+            '<br/>' +
+            `Issued By: ${po.issuedBy ? po.issuedBy.name : ''}` +
+            '<br/>' +
+            `Vendor: ${po.vendor}` +
+            '<br/>' +
+            `Description: ${po.description}` +
+            '<br/>' +
+            `WO: ${po.wo.number}` +
+            '<br/>' +
+            `WO Description: ${po.wo.description}` +
+            '<br/>' +
+            `Customer: ${po.wo.customer.companyName}` +
+            '<br/>',
+        };
+        this.emailService.sendEmail(mailOptions);
+      }
     } catch (error) {
       console.log('Sending WO issue email error: ', error);
     }

@@ -61,10 +61,6 @@ export class PusherService {
     content: string,
     additionalData = null,
   ) {
-    console.log(
-      '🚀 ~ PusherService ~ sendPushNotification ~ externalUserIds:',
-      externalUserIds,
-    );
     const notification = new OneSignal.Notification();
     const appID = process.env.ONESIGNAL_APP_ID;
     // process.env.NODE_ENV == 'production'
@@ -85,10 +81,6 @@ export class PusherService {
 
     try {
       const result = await this.client.createNotification(notification);
-      console.log(
-        '🚀 ~ PusherService ~ sendPushNotification ~ result:',
-        result,
-      );
       return result;
     } catch (error) {
       console.log('send push notification error: ', error);
