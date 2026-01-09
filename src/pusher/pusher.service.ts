@@ -14,22 +14,19 @@ export class PusherService {
     //   cluster: "us2",
     // });
 
-    const app_key_provider = {
+    const appKeyProvider = {
       getToken() {
-        const appID =
-          process.env.NODE_ENV == 'production'
-            ? 'MWY3Y2JjMDgtMzIwMy00NWZiLThiMWEtNWUxYjgyNmZhMDU4'
-            : process.env.NODE_ENV == 'staging'
-            ? // ? 'ODc4ZDRjYWUtNWM2MS00ZTEyLThkNTAtOTk1YTBhYWExZTE5'   //staging
-              'os_v2_app_hla77rczpjfe5knsf63km7yx2raghgbn6czukouxdtsef7vn46xuev544rmfvp54aq573ag7lwraza4htrssxwmbf76u6syhogjbdwq' //test
-            : 'YTliYWU0NDUtNjgwZi00YTcwLTg2MjItYzYyZmU1YzE1Yjdh';
-        return appID;
+        const apiKey = process.env.ONESIGNAL_API_KEY;
+        if (!apiKey) {
+          throw new Error('ONESIGNAL_API_KEY is not configured');
+        }
+        return apiKey;
       },
     };
     const configuration = OneSignal.createConfiguration({
       authMethods: {
         app_key: {
-          tokenProvider: app_key_provider,
+          tokenProvider: appKeyProvider,
         },
       },
     });
@@ -64,14 +61,18 @@ export class PusherService {
     content: string,
     additionalData = null,
   ) {
+    console.log(
+      '🚀 ~ PusherService ~ sendPushNotification ~ externalUserIds:',
+      externalUserIds,
+    );
     const notification = new OneSignal.Notification();
-    const appID =
-      process.env.NODE_ENV == 'production'
-        ? '7b554f0c-68e1-4701-97cb-9d46554611e7'
-        : process.env.NODE_ENV == 'staging'
-        ? // ? '78cf09be-f363-4294-838d-695eb71bdee6'    //staging
-          '3ac1ffc4-597a-4a4e-a9b2-2fb6a67f17d4' //test
-        : '6421c1e6-f5ed-4b26-8df7-dca0d80bf80f';
+    const appID = process.env.ONESIGNAL_APP_ID;
+    // process.env.NODE_ENV == 'production'
+    //   ? '7b554f0c-68e1-4701-97cb-9d46554611e7'
+    //   : process.env.NODE_ENV == 'staging'
+    //   ? // ? '78cf09be-f363-4294-838d-695eb71bdee6'    //staging
+    //     '3ac1ffc4-597a-4a4e-a9b2-2fb6a67f17d4' //test
+    //   : '6421c1e6-f5ed-4b26-8df7-dca0d80bf80f';
     notification.app_id = appID;
     // notification.app_id = "7b554f0c-68e1-4701-97cb-9d46554611e7";
     // notification.include_aliases = {alias_label: ["Email"]};
@@ -83,7 +84,12 @@ export class PusherService {
     notification.data = additionalData;
 
     try {
-      return await this.client.createNotification(notification);
+      const result = await this.client.createNotification(notification);
+      console.log(
+        '🚀 ~ PusherService ~ sendPushNotification ~ result:',
+        result,
+      );
+      return result;
     } catch (error) {
       console.log('send push notification error: ', error);
     }
