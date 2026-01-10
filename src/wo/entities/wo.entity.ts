@@ -83,6 +83,9 @@ export class WoEntity {
   @Index()
   type: number; //0: service call ,  1: quoted,  2: PM,  3: Parts Only
 
+  @ManyToOne(() => UserEntity, (user) => user.quotedWO)
+  quotedBy: UserEntity;
+
   @Column({ nullable: true })
   description: string;
 

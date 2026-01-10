@@ -105,6 +105,7 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
   }
 
   async create(createWoDto: CreateWoDto, company: string) {
+    console.log('🚀 ~ WoService ~ create ~ createWoDto:', createWoDto);
     var newWO = new WoEntity(createWoDto);
 
     //check if work order number is duplicated
@@ -344,6 +345,7 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
       .leftJoinAndSelect('wo.assignedTechs', 'assignedTechs')
       .leftJoinAndSelect('assignedTechs.user', 'techUser')
       .leftJoinAndSelect('wo.branch', 'branch')
+      .leftJoinAndSelect('wo.quotedBy', 'quotedBy')
       .where('wo.status >= :status', { status: status })
       .andWhere('wo.company = :company', { company: company })
       .andWhere(
@@ -418,6 +420,11 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
     if (criteria && criteria.endDate) {
       query = query.andWhere('wo.createdAt <= :endDate', {
         endDate: criteria.endDate,
+      });
+    }
+    if (criteria && criteria.quotedBy >= 0) {
+      query = query.andWhere('quotedBy.id = :id', {
+        id: criteria.quotedBy,
       });
     }
     //sorting
@@ -1080,80 +1087,84 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
         wo.branch.id,
         company,
       );
-      let recipientEmailArray = await this.userService.getRecipientEmailArray(
-        item,
-      );
+      if (item) {
+        let recipientEmailArray = await this.userService.getRecipientEmailArray(
+          item,
+        );
 
-      let updatedHTML = '<b>Updated Information:</b>' + '<br/>';
-      if (data.number)
-        updatedHTML +=
-          `${data.eventUser.name} changed the number from ${wo.number} to ${data.number}` +
-          '<br/><br/>';
-      if (data.status)
-        updatedHTML +=
-          `${data.eventUser.name} changed the status from ${getWorkOrderStatus(
-            wo.status,
-          )} to ${getWorkOrderStatus(data.status)}` + '<br/><br/>';
-      if (data.customer)
-        updatedHTML +=
-          `${data.eventUser.name} changed the Customer from ${wo.customer.companyName} to ${data.customer.companyName}` +
-          '<br/><br/>';
-      if (data.type)
-        updatedHTML +=
-          `${data.eventUser.name} changed the Type of Service from ${
-            WO_TYPE_LIST[wo.type]
-          } to ${WO_TYPE_LIST[data.type]}` + '<br/><br/>';
-      if (data.NTE)
-        updatedHTML +=
-          `${data.eventUser.name} changed the NTE from ${wo.NTE} to ${data.NTE}` +
-          '<br/><br/>';
-      if (data.startDate)
-        updatedHTML +=
-          `${data.eventUser.name} changed the Start Date from ${formatDate(
-            wo.startDate,
-            'MM/DD/YYYY',
-          )} to ${formatDate(data.startDate, 'MM/DD/YYYY')}` + '<br/><br/>';
-      if (data.asset)
-        updatedHTML +=
-          `${data.eventUser.name} changed the Asset from  ${wo.asset} to ${data.asset}` +
-          '<br/><br/>';
-      if (data.customerPONumber)
-        updatedHTML +=
-          `${data.eventUser.name} changed the Customer PO # from ${wo.customerPONumber} to ${data.customerPONumber}` +
-          '<br/><br/>';
-      if (data.description)
-        updatedHTML +=
-          `${data.eventUser.name} changed the Description <br/>
+        let updatedHTML = '<b>Updated Information:</b>' + '<br/>';
+        if (data.number)
+          updatedHTML +=
+            `${data.eventUser.name} changed the number from ${wo.number} to ${data.number}` +
+            '<br/><br/>';
+        if (data.status)
+          updatedHTML +=
+            `${
+              data.eventUser.name
+            } changed the status from ${getWorkOrderStatus(
+              wo.status,
+            )} to ${getWorkOrderStatus(data.status)}` + '<br/><br/>';
+        if (data.customer)
+          updatedHTML +=
+            `${data.eventUser.name} changed the Customer from ${wo.customer.companyName} to ${data.customer.companyName}` +
+            '<br/><br/>';
+        if (data.type)
+          updatedHTML +=
+            `${data.eventUser.name} changed the Type of Service from ${
+              WO_TYPE_LIST[wo.type]
+            } to ${WO_TYPE_LIST[data.type]}` + '<br/><br/>';
+        if (data.NTE)
+          updatedHTML +=
+            `${data.eventUser.name} changed the NTE from ${wo.NTE} to ${data.NTE}` +
+            '<br/><br/>';
+        if (data.startDate)
+          updatedHTML +=
+            `${data.eventUser.name} changed the Start Date from ${formatDate(
+              wo.startDate,
+              'MM/DD/YYYY',
+            )} to ${formatDate(data.startDate, 'MM/DD/YYYY')}` + '<br/><br/>';
+        if (data.asset)
+          updatedHTML +=
+            `${data.eventUser.name} changed the Asset from  ${wo.asset} to ${data.asset}` +
+            '<br/><br/>';
+        if (data.customerPONumber)
+          updatedHTML +=
+            `${data.eventUser.name} changed the Customer PO # from ${wo.customerPONumber} to ${data.customerPONumber}` +
+            '<br/><br/>';
+        if (data.description)
+          updatedHTML +=
+            `${data.eventUser.name} changed the Description <br/>
           From: ${wo.description} <br/> 
           To: ${data.description}` + '<br/><br/>';
-      if (data.billedData) {
-        updatedHTML +=
-          `${data.eventUser.name} added billed date.  <br/>Date: ${
-            wo.billedData.at(-1).date
-          }  <br/>Note: ${data.billedData.at(-1).note}` + '<br/><br/>';
-      }
+        if (data.billedData) {
+          updatedHTML +=
+            `${data.eventUser.name} added billed date.  <br/>Date: ${
+              wo.billedData.at(-1).date
+            }  <br/>Note: ${data.billedData.at(-1).note}` + '<br/><br/>';
+        }
 
-      const mailOptions = {
-        from: config.mail.supportEmail,
-        to: recipientEmailArray, // list of receivers (separated by ,)
-        subject: 'Updated WO# ' + wo.number + ', ' + wo.customer.companyName,
-        text: 'Updated WO# ' + wo.number + ', ' + wo.customer.companyName,
-        html:
-          `WO#: ${wo.number}` +
-          '<br/>' +
-          `Type of WO#: ${WO_TYPE_LIST[wo.type]}` +
-          '<br/>' +
-          `Customer Name: ${wo.customer.companyName}` +
-          '<br/>' +
-          `Description: ${wo.description}` +
-          '<br/>' +
-          `Technician Assigned: ${getAssignedTechsNameArray(
-            wo.assignedTechs,
-          )}` +
-          '<br/><br/>' +
-          updatedHTML,
-      };
-      this.emailService.sendEmail(mailOptions);
+        const mailOptions = {
+          from: config.mail.supportEmail,
+          to: recipientEmailArray, // list of receivers (separated by ,)
+          subject: 'Updated WO# ' + wo.number + ', ' + wo.customer.companyName,
+          text: 'Updated WO# ' + wo.number + ', ' + wo.customer.companyName,
+          html:
+            `WO#: ${wo.number}` +
+            '<br/>' +
+            `Type of WO#: ${WO_TYPE_LIST[wo.type]}` +
+            '<br/>' +
+            `Customer Name: ${wo.customer.companyName}` +
+            '<br/>' +
+            `Description: ${wo.description}` +
+            '<br/>' +
+            `Technician Assigned: ${getAssignedTechsNameArray(
+              wo.assignedTechs,
+            )}` +
+            '<br/><br/>' +
+            updatedHTML,
+        };
+        this.emailService.sendEmail(mailOptions);
+      }
     } catch (e) {
       console.log(e);
     }
@@ -1944,6 +1955,7 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
       .leftJoinAndSelect('wo.requestedCustomerUser', 'requestedCustomerUser')
       .leftJoinAndSelect('wo.history', 'history')
       .leftJoinAndSelect('history.user', 'historyUser')
+      .leftJoinAndSelect('wo.quotedBy', 'quotedBy')
       .where('wo.id = :id', { id: id })
       .addOrderBy('assignedTechs.createdAt', 'ASC')
       .getOne();

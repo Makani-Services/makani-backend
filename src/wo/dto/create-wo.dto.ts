@@ -12,6 +12,7 @@ export class CreateWoDto {
   openUser: UserEntity;
   customer: CustomerEntity;
   closedUser: UserEntity;
+  quotedBy: UserEntity;
 
   @IsString()
   company: string;

@@ -77,6 +77,9 @@ export class UserEntity {
   @OneToMany(() => WoEntity, (wo) => wo.closedUser)
   closedWO: WoEntity[];
 
+  @OneToMany(() => WoEntity, (wo) => wo.quotedBy)
+  quotedWO: WoEntity[];
+
   @OneToMany(() => TechnicianEntity, (tech) => tech.user)
   assignedAsTech: TechnicianEntity;
 
