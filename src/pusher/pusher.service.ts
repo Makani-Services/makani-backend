@@ -81,6 +81,10 @@ export class PusherService {
 
     try {
       const result = await this.client.createNotification(notification);
+      console.log(
+        '🚀 ~ PusherService ~ sendPushNotification ~ result:',
+        result,
+      );
       return result;
     } catch (error) {
       console.log('send push notification error: ', error);
