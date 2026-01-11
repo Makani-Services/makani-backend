@@ -304,10 +304,6 @@ export class UserService extends TypeOrmCrudService<UserEntity> {
     branch: number,
     company: string,
   ): Promise<string> {
-    console.log(
-      '🚀 ~ UserService ~ generateExcelForTeamManage ~ branch:',
-      typeof branch,
-    );
     const users = await this.getAllUsers(branch, null, company);
     let data = [];
     for (let user of users) {
@@ -372,15 +368,20 @@ export class UserService extends TypeOrmCrudService<UserEntity> {
         value: (order) => order.addedDate,
       },
     ];
-    await writeXlsxFile(data, {
-      schema,
-      headerStyle: {
-        backgroundColor: '#eeeeee',
-        fontWeight: 'bold',
-        align: 'center',
-      },
-      filePath: filePath,
-    });
+    try {
+      await writeXlsxFile(data, {
+        schema,
+        headerStyle: {
+          backgroundColor: '#eeeeee',
+          fontWeight: 'bold',
+          align: 'center',
+        },
+        filePath: filePath,
+      });
+    } catch (error) {
+      console.log('Error generating Excel for team manage: ', error);
+      return null;
+    }
 
     return fileName;
   }
