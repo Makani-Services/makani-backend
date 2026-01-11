@@ -4,6 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import writeXlsxFile from 'write-excel-file/node';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { RoleEntity } from 'src/role/entities/role.entity';
@@ -15,6 +16,7 @@ import { default as config } from '../config';
 import * as fs from 'fs';
 import { CompanyEntity } from 'src/company/entities/company.entity';
 import { CompanyService } from 'src/company/company.service';
+import { formatDate } from 'src/core/common/common';
 
 @Injectable()
 export class UserService extends TypeOrmCrudService<UserEntity> {
@@ -296,6 +298,91 @@ export class UserService extends TypeOrmCrudService<UserEntity> {
 
   async confirmLoggedHours(userId: number): Promise<UpdateResult> {
     return await this.repo.update(userId, { hasLoggedHoursToday: true });
+  }
+
+  async generateExcelForTeamManage(
+    branch: number,
+    company: string,
+  ): Promise<string> {
+    console.log(
+      '🚀 ~ UserService ~ generateExcelForTeamManage ~ branch:',
+      typeof branch,
+    );
+    const users = await this.getAllUsers(branch, null, company);
+    let data = [];
+    for (let user of users) {
+      const row = {
+        name: user.name,
+        email: user.email,
+        role: user.roles[0].name,
+        branch: user.branches.map((branch) => branch.name).join(', '),
+        addedDate: formatDate(user.createdAt, 'MM/DD/YYYY - HH:mm'),
+      };
+      data.push(row);
+    }
+    const fileName = `Team_Manage_report.xlsx`;
+    const filePath = `./public/${company}/reports/${fileName}`;
+    if (!fs.existsSync(`./public/${company}/reports/`)) {
+      fs.mkdirSync(`./public/${company}/reports/`, { recursive: true });
+    }
+    const schema = [
+      {
+        column: 'Name',
+        type: String,
+        width: 25,
+        wrap: true,
+        align: 'center',
+        alignVertical: 'center',
+        value: (order) => order.name,
+      },
+      {
+        column: 'Email',
+        type: String,
+        width: 35,
+        wrap: true,
+        align: 'center',
+        alignVertical: 'center',
+        value: (order) => order.email,
+      },
+      {
+        column: 'Role',
+        type: String,
+        width: 15,
+        wrap: true,
+        align: 'center',
+        alignVertical: 'center',
+        value: (order) => order.role,
+      },
+      {
+        column: 'Branch',
+        type: String,
+        width: 70,
+        wrap: true,
+        align: 'center',
+        alignVertical: 'center',
+        value: (order) => order.branch,
+      },
+      {
+        column: 'Added Date',
+        type: String,
+        width: 20,
+        wrap: true,
+        align: 'center',
+        alignVertical: 'center',
+        value: (order) => order.addedDate,
+      },
+    ];
+    await writeXlsxFile(data, {
+      schema,
+      headerStyle: {
+        backgroundColor: '#eeeeee',
+        fontWeight: 'bold',
+        align: 'center',
+      },
+      filePath: filePath,
+    });
+
+    return fileName;
   }
 
   // async deleteOneUser(userId: number): Promise<Boolean> {

@@ -138,6 +138,18 @@ export class UserController {
     return await this.service.confirmLoggedHours(body.userId);
   }
 
+  @Get('generate_excel_for_team_manage')
+  async generateExcelForTeamManage(
+    @Query() query: any,
+    @Headers() headers: any,
+  ) {
+    const branch = query.branch;
+    return await this.service.generateExcelForTeamManage(
+      Number(branch),
+      headers.company,
+    );
+  }
+
   // @UseInterceptors(FileInterceptor('file'))
   @Post('file')
   @UseInterceptors(
