@@ -11,7 +11,7 @@ export class ScheduledTaskController {
     return {
       platform: 'ios',
       latest_version: '1.9.9',
-      force_update: false,
+      force_update: true,
     };
   }
 
@@ -21,7 +21,7 @@ export class ScheduledTaskController {
     return {
       platform: 'android',
       latest_version: '1.9.9',
-      force_update: false,
+      force_update: true,
     };
   }
 
