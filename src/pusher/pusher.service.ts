@@ -81,6 +81,8 @@ export class PusherService {
       en: content,
     };
     notification.data = additionalData;
+    notification.ios_badge_type = 'increase';
+    notification.ios_badge_count = 1;
 
     try {
       return await this.client.createNotification(notification);
