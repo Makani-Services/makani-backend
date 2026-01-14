@@ -305,14 +305,17 @@ export class UserService extends TypeOrmCrudService<UserEntity> {
     company: string,
   ): Promise<string> {
     const users = await this.getAllUsers(branch, null, company);
+    const activeUsers = users.filter((user) => user.isEnabled);
+    const archivedUsers = users.filter((user) => !user.isEnabled);
     let data = [];
-    for (let user of users) {
+    for (let user of [...activeUsers, ...archivedUsers]) {
       const row = {
         name: user.name,
         email: user.email,
         role: user.roles[0].name,
         branch: user.branches.map((branch) => branch.name).join(', '),
         addedDate: formatDate(user.createdAt, 'MM/DD/YYYY - HH:mm'),
+        status: user.isEnabled ? 'Active' : 'Archived',
       };
       data.push(row);
     }
@@ -366,6 +369,15 @@ export class UserService extends TypeOrmCrudService<UserEntity> {
         align: 'center',
         alignVertical: 'center',
         value: (order) => order.addedDate,
+      },
+      {
+        column: 'Status',
+        type: String,
+        width: 10,
+        wrap: true,
+        align: 'center',
+        alignVertical: 'center',
+        value: (order) => order.status,
       },
     ];
     try {
