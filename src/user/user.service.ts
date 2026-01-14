@@ -220,7 +220,7 @@ export class UserService extends TypeOrmCrudService<UserEntity> {
   async uploadFile(fileName: string, id: number): Promise<UserEntity> {
     var user: UserEntity = await this.repo.findOne({
       where: { id: id },
-      relations: ['roles', 'roles.permissions'],
+      relations: ['roles', 'roles.permissions', 'branches'],
     });
 
     if (user.avatar != 'default.png') {

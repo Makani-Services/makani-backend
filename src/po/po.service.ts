@@ -774,45 +774,46 @@ export class PoService extends TypeOrmCrudService<PoEntity> {
             oldPo.wo.branch.id,
             company,
           );
-        let recipientEmailArray = await this.userService.getRecipientEmailArray(
-          item,
-        );
+        if (item) {
+          let recipientEmailArray =
+            await this.userService.getRecipientEmailArray(item);
 
-        let updatedHTML = '<b>Updated Data:</b>' + '<br/>';
-        if (oldPo.paymentType !== po.paymentType) {
-          updatedHTML +=
-            `Payment Type: ${paymentItems[po.paymentType]}` + '<br/>';
-        }
-        if (oldPo.vendor !== po.vendor) {
-          updatedHTML += `Vendor: ${po.vendor}` + '<br/>';
-        }
-        if (oldPo.description !== po.description) {
-          updatedHTML += `Description: ${po.description}` + '<br/>';
-        }
+          let updatedHTML = '<b>Updated Data:</b>' + '<br/>';
+          if (oldPo.paymentType !== po.paymentType) {
+            updatedHTML +=
+              `Payment Type: ${paymentItems[po.paymentType]}` + '<br/>';
+          }
+          if (oldPo.vendor !== po.vendor) {
+            updatedHTML += `Vendor: ${po.vendor}` + '<br/>';
+          }
+          if (oldPo.description !== po.description) {
+            updatedHTML += `Description: ${po.description}` + '<br/>';
+          }
 
-        const mailOptions = {
-          from: config.mail.supportEmail,
-          to: recipientEmailArray,
-          subject: `Updated PO # ${oldPo.number} created for WO# ${oldPo.wo.number}`,
-          text: `Updated PO # ${oldPo.number} created for WO# ${oldPo.wo.number}`,
-          html:
-            `PO#: ${oldPo.number}` +
-            '<br/>' +
-            `Technician: ${oldPo.issuedUser.name}` +
-            '<br/>' +
-            `Vendor: ${oldPo.vendor}` +
-            '<br/>' +
-            `Payment Type: ${paymentItems[oldPo.paymentType]}` +
-            '<br/>' +
-            `Description: ${oldPo.description}` +
-            '<br/>' +
-            `WO#: ${oldPo.wo.number}` +
-            '<br/>' +
-            `WO Description: ${oldPo.wo.description}` +
-            '<br/><br/>' +
-            updatedHTML,
-        };
-        this.emailService.sendEmail(mailOptions);
+          const mailOptions = {
+            from: config.mail.supportEmail,
+            to: recipientEmailArray,
+            subject: `Updated PO # ${oldPo.number} created for WO# ${oldPo.wo.number}`,
+            text: `Updated PO # ${oldPo.number} created for WO# ${oldPo.wo.number}`,
+            html:
+              `PO#: ${oldPo.number}` +
+              '<br/>' +
+              `Technician: ${oldPo.issuedUser.name}` +
+              '<br/>' +
+              `Vendor: ${oldPo.vendor}` +
+              '<br/>' +
+              `Payment Type: ${paymentItems[oldPo.paymentType]}` +
+              '<br/>' +
+              `Description: ${oldPo.description}` +
+              '<br/>' +
+              `WO#: ${oldPo.wo.number}` +
+              '<br/>' +
+              `WO Description: ${oldPo.wo.description}` +
+              '<br/><br/>' +
+              updatedHTML,
+          };
+          this.emailService.sendEmail(mailOptions);
+        }
       } catch (error) {
         console.log('Sending WO issue email error: ', error);
       }
