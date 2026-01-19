@@ -533,16 +533,16 @@ export class TechnicianService extends TypeOrmCrudService<TechnicianEntity> {
       }
     }
 
-    // if (timeCardData.length === 0) {
-    //   let tech = await this.userService.getUserById(userId);
-    //   timeCardData.push({
-    //     name: getFormattedTechName(tech.name),
-    //     hours: 'N/R',
-    //     woNumber: 'N/R',
-    //     customer: '',
-    //     woDescription: '',
-    //   });
-    // }
+    if (timeCardData.length === 0) {
+      let tech = await this.userService.getUserById(userId);
+      timeCardData.push({
+        name: getFormattedTechName(tech.name),
+        hours: 'N/R',
+        woNumber: 'N/R',
+        customer: '',
+        woDescription: '',
+      });
+    }
 
     return timeCardData;
   }
