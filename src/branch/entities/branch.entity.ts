@@ -42,6 +42,9 @@ export class BranchEntity {
   @ManyToMany(() => UserEntity, (user) => user.branches)
   users: UserEntity[];
 
+  @OneToMany(() => UserEntity, (user) => user.currentBranch)
+  currentBranchUsers: UserEntity[];
+
   @OneToMany(() => WoEntity, (wo) => wo.branch)
   wo: WoEntity[];
 

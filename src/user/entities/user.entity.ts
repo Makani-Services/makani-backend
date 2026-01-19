@@ -105,6 +105,9 @@ export class UserEntity {
   @JoinTable()
   branches: BranchEntity[];
 
+  @ManyToOne(() => BranchEntity, (branch) => branch.currentBranchUsers)
+  currentBranch: BranchEntity;
+
   @OneToMany(() => InviteEntity, (invite) => invite.invitedBy, {
     cascade: true,
   })
