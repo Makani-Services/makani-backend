@@ -34,7 +34,7 @@ export class ScheduledTaskController {
 
     let force_update = false;
     if (user.branches[0].name == 'Hawaii') {
-      force_update = true;
+      force_update = false;
     }
     return {
       platform: 'android',
