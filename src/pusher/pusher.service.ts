@@ -22,12 +22,6 @@ export class PusherService {
     : '23fb209e-92b2-4432-aab7-d743fbf3f0da';
 
   constructor() {
-    // this.pusher = new Pusher({
-    //   appId: "1697445",
-    //   key: "14a5c13e2017d06f250c",
-    //   secret: "1a914d63d5b0d8dd2827",
-    //   cluster: "us2",
-    // });
 
     const API_KEY=
           process.env.NODE_ENV == 'production'
@@ -36,17 +30,6 @@ export class PusherService {
             ? // ? 'ODc4ZDRjYWUtNWM2MS00ZTEyLThkNTAtOTk1YTBhYWExZTE5'   //staging
               'os_v2_app_hla77rczpjfe5knsf63km7yx2raghgbn6czukouxdtsef7vn46xuev544rmfvp54aq573ag7lwraza4htrssxwmbf76u6syhogjbdwq' //test
             : 'os_v2_app_mqq4dzxv5vfsndpx3sqnqc7yb55wxernsiquelvaflc5jo7unhtkywlj4drlmuakfnmbpgrgiyelun2jxew3wuufonu3ia563bhveoi';
-
-           
-
-    // const configuration = OneSignal.createConfiguration({
-    //   authMethods: {
-    //     app_key: {
-    //       tokenProvider: app_key_provider,
-    //     },
-    //   },
-    // });
-    console.log("🚀 ~ PusherService ~ app_key_provider:", this.appId, API_KEY)
 
     const configuration = OneSignal.createConfiguration({
       organizationApiKey: this.appId,
@@ -83,8 +66,6 @@ export class PusherService {
     const notification = new OneSignal.Notification();
    
     notification.app_id = this.appId;
-    // notification.app_id = "7b554f0c-68e1-4701-97cb-9d46554611e7";
-    // notification.include_aliases = {alias_label: ["Email"]};
     notification.include_aliases = {
       "external_id": externalUserIds
     },
@@ -121,10 +102,14 @@ export class PusherService {
     // notification.app_id = "7b554f0c-68e1-4701-97cb-9d46554611e7";
     // notification.include_aliases = {alias_label: ["Email"]};
     // notification.include_external_user_ids = externalUserIds;
+    notification.include_aliases = {
+      "external_id": externalUserIds
+    },
     notification.headings = { en: title };
     notification.contents = {
       en: content,
     };
+    notification.target_channel = "push";
     notification.data = additionalData;
 
     try {

@@ -105,7 +105,6 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
   }
 
   async create(createWoDto: CreateWoDto, company: string) {
-    console.log('🚀 ~ WoService ~ create ~ createWoDto:', createWoDto);
     var newWO = new WoEntity(createWoDto);
 
     //check if work order number is duplicated
