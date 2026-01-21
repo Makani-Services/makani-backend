@@ -63,7 +63,7 @@ export class TechnicianService extends TypeOrmCrudService<TechnicianEntity> {
         where: {
           id: savedTech.id,
         },
-        relations: ['user', 'wo', 'wo.customer'],
+        relations: ['user', 'wo', 'wo.customer', 'user.currentBranch', 'wo.branch'],
       });
       techs.push(tech);
 
@@ -256,6 +256,13 @@ export class TechnicianService extends TypeOrmCrudService<TechnicianEntity> {
   }
 
   async sendEmailNotification(user: UserEntity, wo: WoEntity) {
+  console.log("🚀 ~ TechnicianService ~ sendEmailNotification ~ wo:", wo)
+
+    let message = "A new Work Order has been assigned to you";
+    if (user.currentBranch?.id !== wo.branch.id) {
+      message = `A new Work Order has been assigned to you from ${wo.branch.name}, make sure you are in the correct branch`;
+    }
+
     const mailOptions = {
       from: config.mail.supportEmail,
       to: user.email, // list of receivers (separated by ,)
@@ -264,7 +271,7 @@ export class TechnicianService extends TypeOrmCrudService<TechnicianEntity> {
       html:
         'Hi ' +
         user.name +
-        '! <br><br> A new Work Order has been assigned to you: <br>' +
+        '! <br><br> ' + message + ': <br>' +
         'WO #: ' +
         wo.number +
         '<br>' +
