@@ -42,8 +42,8 @@ export class PusherService {
     notification.app_id = process.env.ONESIGNAL_APP_ID;
     notification.include_aliases = {
       "external_id": externalUserIds
-    },
-      notification.headings = { en: title };
+    };
+    notification.headings = { en: title };
     notification.contents = {
       en: content,
     };
@@ -71,8 +71,8 @@ export class PusherService {
     notification.app_id = process.env.CUSTOMER_ONESIGNAL_APP_ID;
     notification.include_aliases = {
       "external_id": externalUserIds
-    },
-      notification.headings = { en: title };
+    }
+    notification.headings = { en: title };
     notification.contents = {
       en: content,
     };
