@@ -12,13 +12,13 @@ export class ScheduledTaskController {
   //iOS
   @Get('get_version_info/ios')
   async getiOSVersionInfo(@Query() query: any) {
-    const { userId } = query;
-    const user = await this.userService.getUserById(userId);
+    // const { userId } = query;
+    // const user = await this.userService.getUserById(userId);
 
-    let force_update = false;
-    if (user.branches[0].name === 'Hawaii') {
-      force_update = false;
-    }
+    // let force_update = false;
+    // if (user.branches[0].name === 'Hawaii') {
+    //   force_update = false;
+    // }
     return {
       platform: 'ios',
       latest_version: '2.0.2',
@@ -29,13 +29,13 @@ export class ScheduledTaskController {
   //Android
   @Get('get_version_info/android')
   async getAndroidVersionInfo(@Query() query: any) {
-    const { userId } = query;
-    const user = await this.userService.getUserById(userId);
+    // const { userId } = query;
+    // const user = await this.userService.getUserById(userId);
 
-    let force_update = false;
-    if (user.branches[0].name == 'Hawaii') {
-      force_update = false;
-    }
+    // let force_update = false;
+    // if (user.branches[0].name == 'Hawaii') {
+    //   force_update = false;
+    // }
     return {
       platform: 'android',
       latest_version: '2.0.2',
