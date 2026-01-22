@@ -256,7 +256,6 @@ export class TechnicianService extends TypeOrmCrudService<TechnicianEntity> {
   }
 
   async sendEmailNotification(user: UserEntity, wo: WoEntity) {
-  console.log("🚀 ~ TechnicianService ~ sendEmailNotification ~ wo:", wo)
 
     let message = "A new Work Order has been assigned to you";
     if (user.currentBranch?.id !== wo.branch.id) {
