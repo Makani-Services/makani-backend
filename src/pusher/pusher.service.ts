@@ -9,6 +9,11 @@ export class PusherService {
 
   constructor() {
 
+    console.log("ONESIGNAL_APP_ID: ", process.env.ONESIGNAL_APP_ID)
+    console.log("ONESIGNAL_API_KEY: ", process.env.ONESIGNAL_API_KEY)
+    console.log("CUSTOMER_ONESIGNAL_APP_ID: ", process.env.CUSTOMER_ONESIGNAL_APP_ID)
+    console.log("CUSTOMER_ONESIGNAL_API_KEY: ", process.env.CUSTOMER_ONESIGNAL_API_KEY)
+
     const configuration = OneSignal.createConfiguration({
       organizationApiKey: process.env.ONESIGNAL_APP_ID,
       restApiKey: process.env.ONESIGNAL_API_KEY
