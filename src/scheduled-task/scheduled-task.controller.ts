@@ -7,7 +7,7 @@ export class ScheduledTaskController {
   constructor(
     private readonly scheduledTaskService: ScheduledTaskService,
     private readonly userService: UserService,
-  ) {}
+  ) { }
 
   //iOS
   @Get('get_version_info/ios')
@@ -21,7 +21,7 @@ export class ScheduledTaskController {
     }
     return {
       platform: 'ios',
-      latest_version: '2.0.1',
+      latest_version: '2.0.2',
       force_update: force_update,
     };
   }
@@ -38,7 +38,7 @@ export class ScheduledTaskController {
     }
     return {
       platform: 'android',
-      latest_version: '2.0.1',
+      latest_version: '2.0.2',
       force_update: force_update,
     };
   }
