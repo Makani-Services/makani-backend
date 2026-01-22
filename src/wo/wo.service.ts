@@ -811,10 +811,9 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
               '<br/>' +
               `Description: ${wo.description}` +
               '<br/>' +
-              `Technician Assigned:  ${
-                data.assignedTechs
-                  ? getAssignedTechsNameArray(data.assignedTechs)
-                  : 'Waiting for Assignment'
+              `Technician Assigned:  ${data.assignedTechs
+                ? getAssignedTechsNameArray(data.assignedTechs)
+                : 'Waiting for Assignment'
               }`,
           };
           this.emailService.sendEmail(mailOptions);
@@ -927,10 +926,9 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
               '<br/>' +
               `Description: ${wo.description}` +
               '<br/>' +
-              `Technician Assigned:  ${
-                wo.assignedTechs
-                  ? getAssignedTechsNameArray(wo.assignedTechs)
-                  : 'Waiting for Assignment'
+              `Technician Assigned:  ${wo.assignedTechs
+                ? getAssignedTechsNameArray(wo.assignedTechs)
+                : 'Waiting for Assignment'
               }`,
           };
           this.emailService.sendEmail(mailOptions);
@@ -1020,10 +1018,9 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
                 '<br/>' +
                 `Description: ${wo.description}` +
                 '<br/>' +
-                `Technician Assigned:  ${
-                  wo.assignedTechs
-                    ? getAssignedTechsNameArray(wo.assignedTechs)
-                    : 'Waiting for Assignment'
+                `Technician Assigned:  ${wo.assignedTechs
+                  ? getAssignedTechsNameArray(wo.assignedTechs)
+                  : 'Waiting for Assignment'
                 }`,
             };
             this.emailService.sendEmail(mailOptions);
@@ -1098,8 +1095,7 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
             '<br/><br/>';
         if (data.status)
           updatedHTML +=
-            `${
-              data.eventUser.name
+            `${data.eventUser.name
             } changed the status from ${getWorkOrderStatus(
               wo.status,
             )} to ${getWorkOrderStatus(data.status)}` + '<br/><br/>';
@@ -1109,8 +1105,7 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
             '<br/><br/>';
         if (data.type)
           updatedHTML +=
-            `${data.eventUser.name} changed the Type of Service from ${
-              WO_TYPE_LIST[wo.type]
+            `${data.eventUser.name} changed the Type of Service from ${WO_TYPE_LIST[wo.type]
             } to ${WO_TYPE_LIST[data.type]}` + '<br/><br/>';
         if (data.NTE)
           updatedHTML +=
@@ -1137,8 +1132,7 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
           To: ${data.description}` + '<br/><br/>';
         if (data.billedData) {
           updatedHTML +=
-            `${data.eventUser.name} added billed date.  <br/>Date: ${
-              wo.billedData.at(-1).date
+            `${data.eventUser.name} added billed date.  <br/>Date: ${wo.billedData.at(-1).date
             }  <br/>Note: ${data.billedData.at(-1).note}` + '<br/><br/>';
         }
 
@@ -1607,17 +1601,16 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
     woMaterials.forEach((material) => {
       woMaterialsData.push({
         name: `${material.materialCategory.name} Used?`,
-        content: `${material.isAdded ? 'Yes' : 'No'}${
-          material.isAdded && material.materialType
-            ? ' - Type: ' +
-              material.materialType.name +
-              ' - Quantity: ' +
-              material.quantity +
-              '(' +
-              material.materialCategory.unit +
-              ')'
-            : ''
-        }`,
+        content: `${material.isAdded ? 'Yes' : 'No'}${material.isAdded && material.materialType
+          ? ' - Type: ' +
+          material.materialType.name +
+          ' - Quantity: ' +
+          material.quantity +
+          '(' +
+          material.materialCategory.unit +
+          ')'
+          : ''
+          }`,
       });
     });
     console.log('111111111111:', woMaterialsData);
@@ -1630,8 +1623,8 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
         company === 'rscs' && wo.branch?.name === 'MRC'
           ? `${API_URL}/rscs/company/MRCLogo.png`
           : companyData.logo
-          ? `${API_URL}/${company}/company/logo.png`
-          : '',
+            ? `${API_URL}/${company}/company/logo.png`
+            : '',
       companyAddress: wo.branch.address,
       companyPhone: wo.branch.phone,
       companyWebsite:
@@ -2570,9 +2563,8 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
         };
         data.push(row);
       }
-      let fileNameForPast7Days = `${
-        type === 'OPEN_WO' ? 'Open_WOs' : 'Completed_WOs'
-      } Past 7 Days.xlsx`;
+      let fileNameForPast7Days = `${type === 'OPEN_WO' ? 'Open_WOs' : 'Completed_WOs'
+        } Past 7 Days.xlsx`;
       let filePathForPast7Days = `./public/rscs/reports/${fileNameForPast7Days}`;
       if (!fs.existsSync(`./public/rscs/reports/`)) {
         fs.mkdirSync(`./public/rscs/reports/`, { recursive: true });
@@ -2593,19 +2585,16 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
       const mailOptions = {
         from: config.mail.supportEmail,
         to: recipientEmailArray,
-        subject: `${branch.name} ${
-          type === 'OPEN_WO' ? 'Open' : 'Completed'
-        } WO Report ${formatDate(date, 'MM/DD/YYYY')}`,
-        text: `${branch.name} ${
-          type === 'OPEN_WO' ? 'Open' : 'Completed'
-        } WO Report ${formatDate(date, 'MM/DD/YYYY')}`,
-        html: `${branch.name} ${
-          type === 'OPEN_WO' ? 'Open' : 'Completed'
-        } Work Order Report for ${branch.name} <br/> 
+        subject: `${branch.name} ${type === 'OPEN_WO' ? 'Open' : 'Completed'
+          } WO Report ${formatDate(date, 'MM/DD/YYYY')}`,
+        text: `${branch.name} ${type === 'OPEN_WO' ? 'Open' : 'Completed'
+          } WO Report ${formatDate(date, 'MM/DD/YYYY')}`,
+        html: `${branch.name} ${type === 'OPEN_WO' ? 'Open' : 'Completed'
+          } Work Order Report for ${branch.name} <br/> 
         Report Begin Date: ${formatDate(
-          startDateForPast7Days,
-          'MM/DD/YYYY',
-        )} <br/>
+            startDateForPast7Days,
+            'MM/DD/YYYY',
+          )} <br/>
         Report End Date: ${formatDate(endDate, 'MM/DD/YYYY')} <br/>`,
         attachments: [
           {
@@ -2643,9 +2632,8 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
         };
         data.push(row);
       }
-      let fileNameForPast30Days = `${
-        type === 'OPEN_WO' ? 'Open_WOs' : 'Completed_WOs'
-      } Past 30 Days.xlsx`;
+      let fileNameForPast30Days = `${type === 'OPEN_WO' ? 'Open_WOs' : 'Completed_WOs'
+        } Past 30 Days.xlsx`;
       let filePathForPast30Days = `./public/rscs/reports/${fileNameForPast30Days}`;
       if (!fs.existsSync(`./public/rscs/reports/`)) {
         fs.mkdirSync(`./public/rscs/reports/`, { recursive: true });
@@ -2666,19 +2654,16 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
       const mailOptions = {
         from: config.mail.supportEmail,
         to: recipientEmailArray,
-        subject: `${branch.name} ${
-          type === 'OPEN_WO' ? 'Open' : 'Completed'
-        } WO Report ${formatDate(date, 'MM/DD/YYYY')}`,
-        text: `${branch.name} ${
-          type === 'OPEN_WO' ? 'Open' : 'Completed'
-        } WO Report ${formatDate(date, 'MM/DD/YYYY')}`,
-        html: `${branch.name} ${
-          type === 'OPEN_WO' ? 'Open' : 'Completed'
-        } Work Order Report for ${branch.name} <br/> 
+        subject: `${branch.name} ${type === 'OPEN_WO' ? 'Open' : 'Completed'
+          } WO Report ${formatDate(date, 'MM/DD/YYYY')}`,
+        text: `${branch.name} ${type === 'OPEN_WO' ? 'Open' : 'Completed'
+          } WO Report ${formatDate(date, 'MM/DD/YYYY')}`,
+        html: `${branch.name} ${type === 'OPEN_WO' ? 'Open' : 'Completed'
+          } Work Order Report for ${branch.name} <br/> 
         Report Begin Date: ${formatDate(
-          startDateForPast30Days,
-          'MM/DD/YYYY',
-        )} <br/>
+            startDateForPast30Days,
+            'MM/DD/YYYY',
+          )} <br/>
         Report End Date: ${formatDate(endDate, 'MM/DD/YYYY')} <br/>`,
         attachments: [
           {
@@ -2716,12 +2701,11 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
         };
         data.push(row);
       }
-      let fileNameForCustomDays = `${
-        type === 'OPEN_WO' ? 'Open_WOs' : 'Completed_WOs'
-      } FROM ${formatDate(customStartDate, 'MM_DD_YYYY')} TO ${formatDate(
-        customEndDate,
-        'MM_DD_YYYY',
-      )}.xlsx`;
+      let fileNameForCustomDays = `${type === 'OPEN_WO' ? 'Open_WOs' : 'Completed_WOs'
+        } FROM ${formatDate(customStartDate, 'MM_DD_YYYY')} TO ${formatDate(
+          customEndDate,
+          'MM_DD_YYYY',
+        )}.xlsx`;
 
       let filePathForCustomDays = `./public/rscs/reports/${fileNameForCustomDays}`;
       if (!fs.existsSync(`./public/rscs/reports/`)) {
@@ -2743,15 +2727,12 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
       const mailOptions = {
         from: config.mail.supportEmail,
         to: recipientEmailArray,
-        subject: `${branch.name} ${
-          type === 'OPEN_WO' ? 'Open' : 'Completed'
-        } WO Report ${formatDate(date, 'MM/DD/YYYY')}`,
-        text: `${branch.name} ${
-          type === 'OPEN_WO' ? 'Open' : 'Completed'
-        } WO Report ${formatDate(date, 'MM/DD/YYYY')}`,
-        html: `${branch.name} ${
-          type === 'OPEN_WO' ? 'Open' : 'Completed'
-        } Work Order Report for ${branch.name} <br/> 
+        subject: `${branch.name} ${type === 'OPEN_WO' ? 'Open' : 'Completed'
+          } WO Report ${formatDate(date, 'MM/DD/YYYY')}`,
+        text: `${branch.name} ${type === 'OPEN_WO' ? 'Open' : 'Completed'
+          } WO Report ${formatDate(date, 'MM/DD/YYYY')}`,
+        html: `${branch.name} ${type === 'OPEN_WO' ? 'Open' : 'Completed'
+          } Work Order Report for ${branch.name} <br/> 
         Report Begin Date: ${formatDate(customStartDate, 'MM/DD/YYYY')} <br/>
         Report End Date: ${formatDate(customEndDate, 'MM/DD/YYYY')} <br/>`,
         attachments: [
