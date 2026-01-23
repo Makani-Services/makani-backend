@@ -389,7 +389,7 @@ export class TechnicianService extends TypeOrmCrudService<TechnicianEntity> {
           if (
             moment(workDate).isSameOrAfter(moment(startDate), 'day') &&
             moment(workDate).isSameOrBefore(moment(endDate), 'day') &&
-            (timesheet.regularTime || timesheet.overTime)
+            (timesheet.regularTime || timesheet.overTime || timesheet.travelTime)
           ) {
             let item = {
               customer: timesheetArray[i].wo.customer.companyName,
@@ -397,6 +397,7 @@ export class TechnicianService extends TypeOrmCrudService<TechnicianEntity> {
               date: workDate,
               regularTime: timesheet.regularTime,
               overTime: timesheet.overTime,
+              travelTime: timesheet.travelTime,
               branch: timesheetArray[i].wo.branch.name,
             };
             timeCardData.push(item);

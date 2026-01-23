@@ -7,22 +7,22 @@ export const API_URL =
   process.env.NODE_ENV == 'production'
     ? 'https://makani.services'
     : process.env.NODE_ENV == 'staging'
-    ? 'https://test.makani.services'
-    : 'http://localhost:5000';
+      ? 'https://test.makani.services'
+      : 'http://localhost:5000';
 
 export const FRONTEND_URL =
   process.env.NODE_ENV == 'production'
     ? 'https://makani.services'
     : process.env.NODE_ENV == 'staging'
-    ? 'https://test.makani.services'
-    : 'http://localhost:3000';
+      ? 'https://test.makani.services'
+      : 'http://localhost:3000';
 
 export const CUSTOMER_FRONTEND_URL =
   process.env.NODE_ENV == 'production'
     ? 'https://customer.makani.services'
     : process.env.NODE_ENV == 'staging'
-    ? 'https://test.customer.makani.services'
-    : 'http://localhost:5173';
+      ? 'https://test.customer.makani.services'
+      : 'http://localhost:5173';
 
 export const WO_TYPE_LIST = ['Service call', 'Quoted job'];
 
@@ -37,13 +37,15 @@ export const getFormattedHoursFromMins = (minutes) => {
   return `${formattedHours}:${formattedMinutes}`;
 };
 
-export const getMinutesFromFormattedHours = (timeString) => {
+export const getMinutesFromFormattedHours = timeString => {
+  if (!timeString) return 0;
   const [hours, minutes] = timeString.split(':').map(Number);
   if (isNaN(hours) || isNaN(minutes)) {
     return 0;
   }
   return hours * 60 + minutes;
 };
+
 
 export const formatDate = (
   dateString,

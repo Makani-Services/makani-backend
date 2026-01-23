@@ -28,6 +28,8 @@ import {
   compressImage,
   getAssignedTechsNameArray,
   getDaysOfWeekByYearMonthWeek,
+  getFormattedHoursFromMins,
+  getMinutesFromFormattedHours,
   getPOReceiptPath,
   getPrimaryAndSecondaryTechs,
   getServiceTicketPath,
@@ -675,8 +677,8 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
       .leftJoinAndSelect('order.pos', 'pos')
       .leftJoinAndSelect('pos.issuedUser', 'issuedUser')
       .leftJoinAndSelect('pos.poItems', 'poItems')
-      .orderBy('customer.companyName', 'ASC')
-      // .orderBy('order.createdAt', 'DESC')
+      // .orderBy('customer.companyName', 'ASC')
+      .orderBy('order.createdAt', 'DESC')
       .getMany();
 
     orders = orders.map((order) => {
@@ -739,7 +741,8 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
       .leftJoinAndSelect('order.pos', 'pos')
       .leftJoinAndSelect('pos.issuedUser', 'issuedUser')
       .leftJoinAndSelect('pos.poItems', 'poItems')
-      .orderBy('customer.companyName', 'ASC')
+      // .orderBy('customer.companyName', 'ASC')
+      .orderBy('order.createdAt', 'DESC')
       .getMany();
   }
 
@@ -1482,6 +1485,21 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
       ],
     });
 
+    const getTotalRegularTravelTime = (item) => {
+      const hasRegularTime = item.regularTime && item.regularTime !== '00:00'
+      const hasTravelTime = item.travelTime && item.travelTime !== '00:00'
+
+      if (!hasRegularTime && !hasTravelTime) {
+        return '__:__';
+      }
+
+      const totalMinutes =
+        getMinutesFromFormattedHours(item?.regularTime) +
+        getMinutesFromFormattedHours(item?.travelTime);
+
+      return getFormattedHoursFromMins(totalMinutes);
+    };
+
     let timesheetData = [];
     for (let tech of wo.assignedTechs) {
       const technician = tech as TechnicianEntity;
@@ -1490,8 +1508,11 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
         let timesheet = JSON.parse(technician.timesheet);
 
         for (let item of timesheet) {
+          const totalRegularTravelTime = getTotalRegularTravelTime(
+            item
+          );
           if (
-            (item.regularTime && item.regularTime !== '00:00') ||
+            totalRegularTravelTime ||
             (item.overTime && item.overTime !== '00:00')
           ) {
             timesheetData.push({
@@ -1500,10 +1521,7 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
               date: moment(wo.startDate)
                 .add(item.dayDiff, 'days')
                 .format('MM/DD/YYYY'),
-              regularTime:
-                item.regularTime && item.regularTime !== '00:00'
-                  ? item.regularTime
-                  : '__:__',
+              regularTime: totalRegularTravelTime || '__:__',
               overTime:
                 item.overTime && item.overTime !== '00:00'
                   ? item.overTime
