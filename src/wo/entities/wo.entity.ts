@@ -177,14 +177,14 @@ export class WoEntity {
   @Column({ nullable: true })
   materials: string; //other materials
 
-  @Column({ nullable: true })
-  isRefrigerantAdded: boolean;
+  // @Column({ nullable: true })
+  // isRefrigerantAdded: boolean;
 
-  @Column({ nullable: true })
-  refrigerantType: string;
+  // @Column({ nullable: true })
+  // refrigerantType: string;
 
-  @Column({ nullable: true })
-  refrigerantQuantity: number;
+  // @Column({ nullable: true })
+  // refrigerantQuantity: number;
 
   @Column({ nullable: true })
   ticketReceipients: string;
