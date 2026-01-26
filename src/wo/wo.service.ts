@@ -678,7 +678,7 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
       .leftJoinAndSelect('pos.issuedUser', 'issuedUser')
       .leftJoinAndSelect('pos.poItems', 'poItems')
       // .orderBy('customer.companyName', 'ASC')
-      .orderBy('order.createdAt', 'DESC')
+      .orderBy('assignedTechs.acceptedDate', 'DESC')
       .getMany();
 
     orders = orders.map((order) => {
@@ -742,7 +742,8 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
       .leftJoinAndSelect('pos.issuedUser', 'issuedUser')
       .leftJoinAndSelect('pos.poItems', 'poItems')
       // .orderBy('customer.companyName', 'ASC')
-      .orderBy('order.createdAt', 'DESC')
+      // .orderBy('order.createdAt', 'DESC')
+      .orderBy('assignedTechs.acceptedDate', 'DESC')
       .getMany();
   }
 
