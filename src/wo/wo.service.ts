@@ -1357,30 +1357,32 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
         wo.branch.id,
         company,
       );
-      let recipientEmailArray = await this.userService.getRecipientEmailArray(
-        item,
-      );
+      if (item) {
+        let recipientEmailArray = await this.userService.getRecipientEmailArray(
+          item,
+        );
 
-      const fileName = 'service_ticket_' + String(wo.number) + '.pdf';
-      const filePath = `public/${company}/serviceticket/${fileName}`;
-      const attachment = fs.readFileSync(filePath).toString('base64');
+        const fileName = 'service_ticket_' + String(wo.number) + '.pdf';
+        const filePath = `public/${company}/serviceticket/${fileName}`;
+        const attachment = fs.readFileSync(filePath).toString('base64');
 
-      const mailOptions = {
-        from: config.mail.supportEmail,
-        to: recipientEmailArray,
-        subject: `Incomplete Service Ticket #${wo.number}`,
-        text: `A Draft Service Ticket has been submitted for WO#${wo.number}`,
-        html: ' ',
-        attachments: [
-          {
-            content: attachment,
-            filename: fileName,
-            type: 'application/pdf',
-            disposition: 'attachment',
-          },
-        ],
-      };
-      this.emailService.sendEmail(mailOptions);
+        const mailOptions = {
+          from: config.mail.supportEmail,
+          to: recipientEmailArray,
+          subject: `Incomplete Service Ticket #${wo.number}`,
+          text: `A Draft Service Ticket has been submitted for WO#${wo.number}`,
+          html: ' ',
+          attachments: [
+            {
+              content: attachment,
+              filename: fileName,
+              type: 'application/pdf',
+              disposition: 'attachment',
+            },
+          ],
+        };
+        this.emailService.sendEmail(mailOptions);
+      }
     } catch (e) {
       console.log(e);
     }
