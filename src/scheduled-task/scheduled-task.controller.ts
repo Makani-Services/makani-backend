@@ -21,7 +21,7 @@ export class ScheduledTaskController {
     // }
     return {
       platform: 'ios',
-      latest_version: '2.0.3',
+      latest_version: '2.0.4',
       force_update: true,
     };
   }
@@ -38,7 +38,7 @@ export class ScheduledTaskController {
     // }
     return {
       platform: 'android',
-      latest_version: '2.0.3',
+      latest_version: '2.0.4',
       force_update: true,
     };
   }
