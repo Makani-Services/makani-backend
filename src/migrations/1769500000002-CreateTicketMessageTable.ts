@@ -1,0 +1,56 @@
+import { MigrationInterface, QueryRunner } from 'typeorm';
+
+export class CreateTicketMessageTable1769500000002
+  implements MigrationInterface
+{
+  name = 'CreateTicketMessageTable1769500000002';
+
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`
+      CREATE TABLE "ticket_message" (
+        "id" SERIAL NOT NULL,
+        "ticketId" integer NOT NULL,
+        "senderId" integer,
+        "message" character varying,
+        "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
+        "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
+        CONSTRAINT "PK_ticket_message_id" PRIMARY KEY ("id")
+      )
+    `);
+
+    await queryRunner.query(`
+      ALTER TABLE "ticket_message"
+      ADD CONSTRAINT "FK_ticket_message_ticket"
+      FOREIGN KEY ("ticketId") REFERENCES "ticket"("id") ON DELETE CASCADE ON UPDATE NO ACTION
+    `);
+
+    await queryRunner.query(`
+      ALTER TABLE "ticket_message"
+      ADD CONSTRAINT "FK_ticket_message_sender"
+      FOREIGN KEY ("senderId") REFERENCES "user_entity"("id") ON DELETE NO ACTION ON UPDATE NO ACTION
+    `);
+
+    await queryRunner.query(`
+      CREATE INDEX "IDX_ticket_message_ticketId" ON "ticket_message" ("ticketId")
+    `);
+
+    await queryRunner.query(`
+      CREATE INDEX "IDX_ticket_message_senderId" ON "ticket_message" ("senderId")
+    `);
+  }
+
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`DROP INDEX "IDX_ticket_message_senderId"`);
+    await queryRunner.query(`DROP INDEX "IDX_ticket_message_ticketId"`);
+
+    await queryRunner.query(
+      `ALTER TABLE "ticket_message" DROP CONSTRAINT "FK_ticket_message_sender"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "ticket_message" DROP CONSTRAINT "FK_ticket_message_ticket"`,
+    );
+
+    await queryRunner.query(`DROP TABLE "ticket_message"`);
+  }
+}
+
