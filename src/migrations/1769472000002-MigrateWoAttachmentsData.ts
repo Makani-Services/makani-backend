@@ -12,9 +12,9 @@ export class MigrateWoAttachmentsData1769472000002
      * - uploadedBy is NULL (legacy data)
      */
     await queryRunner.query(`
-      INSERT INTO "wo_attachment" ("filename", "woId")
+      INSERT INTO "wo_attachment" ("fileName", "woId")
       SELECT
-        unnest("attachments") AS "filename",
+        unnest("attachments") AS "fileName",
         "id" AS "woId"
       FROM "wo"
       WHERE "attachments" IS NOT NULL

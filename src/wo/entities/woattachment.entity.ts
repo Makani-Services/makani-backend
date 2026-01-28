@@ -23,7 +23,7 @@ export class WoAttachmentEntity {
     wo: WoEntity;
 
     @Column()
-    filename: string;
+    fileName: string;
 
     /**
      * Who uploaded the attachment

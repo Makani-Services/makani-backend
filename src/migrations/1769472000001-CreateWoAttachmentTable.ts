@@ -8,7 +8,7 @@ export class CreateWoAttachmentTable1769472000001
     await queryRunner.query(`
       CREATE TABLE "wo_attachment" (
         "id" SERIAL NOT NULL,
-        "filename" character varying NOT NULL,
+        "fileName" character varying NOT NULL,
         "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
         "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
         "woId" integer,

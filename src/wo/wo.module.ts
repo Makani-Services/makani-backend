@@ -36,11 +36,13 @@ import { CustomerNoteService } from 'src/customer-note/customer-note.service';
 import { CustomerNotificationModule } from 'src/customer-notification/customer-notification.module';
 import { CustomerUserModule } from 'src/customer-user/customer-user.module';
 import { MaterialModule } from 'src/material/material.module';
+import { WoAttachmentEntity } from './entities/woattachment.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       WoEntity,
+      WoAttachmentEntity,
       RoleEntity,
       PermissionEntity,
       UserEntity,
