@@ -18,6 +18,7 @@ import {
   OneToMany,
   Index,
 } from 'typeorm';
+import { WoAttachmentEntity } from './woattachment.entity';
 
 @Entity('wo')
 export class WoEntity {
@@ -137,8 +138,11 @@ export class WoEntity {
   @Column({ type: 'timestamptz', nullable: true })
   completedDate: Date;
 
-  @Column({ nullable: true, type: 'varchar', array: true })
-  attachments: string[];
+  // @Column({ nullable: true, type: 'varchar', array: true })
+  // attachments: string[];
+
+  @OneToMany(() => WoAttachmentEntity, (attachment) => attachment.wo)
+  attachments: WoAttachmentEntity[];
 
   @Column({ nullable: true, type: 'varchar', array: true })
   proposals: string[];
