@@ -1960,6 +1960,7 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
       .leftJoinAndSelect('wo.history', 'history')
       .leftJoinAndSelect('history.user', 'historyUser')
       .leftJoinAndSelect('wo.quotedBy', 'quotedBy')
+      .leftJoinAndSelect('wo.attachments', 'attachments')
       .where('wo.id = :id', { id: id })
       .addOrderBy('assignedTechs.createdAt', 'ASC')
       .getOne();
