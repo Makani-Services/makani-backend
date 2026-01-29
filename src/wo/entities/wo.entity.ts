@@ -82,7 +82,7 @@ export class WoEntity {
 
   @Column({ nullable: true })
   @Index()
-  type: number; //0: service call ,  1: quoted,  2: PM,  3: Parts Only
+  type: number; //0: Service Call ,  1: Quoted Job,  2: PM,  3: Parts Only   4: Compressor Rebuild
 
   @ManyToOne(() => UserEntity, (user) => user.quotedWO)
   quotedBy: UserEntity;
