@@ -73,6 +73,7 @@ import { PoService } from 'src/po/po.service';
 import { CustomerNotificationService } from 'src/customer-notification/customer-notification.service';
 import { CustomerNotificationEntity } from 'src/customer-notification/entities/customer-notification.entity';
 import { CustomerUserService } from 'src/customer-user/customer-user.service';
+import { CustomerUserEntity } from 'src/customer-user/entities/customer-user.entity';
 import { MaterialService } from 'src/material/material.service';
 import { WoAttachmentEntity } from './entities/woattachment.entity';
 // import { ModuleRef } from '@nestjs/core';
@@ -94,6 +95,8 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
     private poItemRepo: Repository<PoItemEntity>,
     @InjectRepository(HistoryEntity)
     private historyRepo: Repository<HistoryEntity>,
+    @InjectRepository(CustomerUserEntity)
+    private customerUserRepo: Repository<CustomerUserEntity>,
     private readonly userService: UserService,
     private readonly pusherService: PusherService,
     private readonly emailService: EmailService,
@@ -1186,13 +1189,37 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
     fileNames: string[],
     id: number,
     type: number,
+    userId: number,
+    customerUserId: number
   ): Promise<any> {
     const wo = await this.repo.findOne({ where: { id: id } });
 
+    // Try to find user in UserEntity first, then CustomerUserEntity
+    let uploadedBy: UserEntity | null = null;
+    let uploadedByCustomerUser: CustomerUserEntity | null = null;
+
+    if (userId) {
+      uploadedBy = await this.userRepo.findOne({ where: { id: userId } });
+    }
+    if (customerUserId) {
+      uploadedByCustomerUser = await this.customerUserRepo.findOne({ where: { id: customerUserId } });
+    }
+
     if (type === 1) {
-      const newAttachments = fileNames.map(
-        (fileName) => new WoAttachmentEntity({ wo, fileName: fileName }),
-      );
+      const newAttachments = fileNames.map((fileName) => {
+        const attachmentData: Partial<WoAttachmentEntity> = {
+          wo,
+          fileName: fileName,
+        };
+
+        if (uploadedBy) {
+          attachmentData.uploadedBy = uploadedBy;
+        } else if (uploadedByCustomerUser) {
+          attachmentData.uploadedByCustomerUser = uploadedByCustomerUser;
+        }
+
+        return new WoAttachmentEntity(attachmentData);
+      });
       await this.woAttachmentRepo.save(newAttachments);
 
       const attachments = await this.woAttachmentRepo.find({
@@ -1961,6 +1988,9 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
       .leftJoinAndSelect('history.user', 'historyUser')
       .leftJoinAndSelect('wo.quotedBy', 'quotedBy')
       .leftJoinAndSelect('wo.attachments', 'attachments')
+      .leftJoinAndSelect('attachments.uploadedBy', 'uploadedBy')
+      .leftJoinAndSelect('attachments.uploadedByCustomerUser', 'uploadedByCustomerUser')
+      .leftJoinAndSelect('uploadedByCustomerUser.customer', 'uploadedByCustomerUserCustomer')
       .where('wo.id = :id', { id: id })
       .addOrderBy('assignedTechs.createdAt', 'ASC')
       .getOne();

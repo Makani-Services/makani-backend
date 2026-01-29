@@ -376,7 +376,7 @@ export class WoController {
     }),
   )
   uploadMultipleFiles(
-    @Body() body: { orderId: string; type: string },
+    @Body() body: any,
     @UploadedFiles(
       new ParseFilePipeBuilder()
         .addMaxSizeValidator({
@@ -388,10 +388,14 @@ export class WoController {
     )
     files: Array<Express.Multer.File>,
   ) {
+    console.log('🚀 ~ WoController ~ uploadMultipleFiles ~ body:', body);
+
     return this.woService.uploadFile(
       files.map((file) => file.filename),
       Number(body.orderId),
       Number(body.type),
+      Number(body.userId),
+      Number(body.customerUserId)
     );
   }
 }

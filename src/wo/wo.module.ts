@@ -35,6 +35,7 @@ import { CustomerNoteEntity } from 'src/customer-note/entities/customer-note.ent
 import { CustomerNoteService } from 'src/customer-note/customer-note.service';
 import { CustomerNotificationModule } from 'src/customer-notification/customer-notification.module';
 import { CustomerUserModule } from 'src/customer-user/customer-user.module';
+import { CustomerUserEntity } from 'src/customer-user/entities/customer-user.entity';
 import { MaterialModule } from 'src/material/material.module';
 import { WoAttachmentEntity } from './entities/woattachment.entity';
 
@@ -55,6 +56,7 @@ import { WoAttachmentEntity } from './entities/woattachment.entity';
       PoItemEntity,
       TimesheetEntity,
       CustomerNoteEntity,
+      CustomerUserEntity,
     ]),
     CustomerNotificationModule,
     CustomerUserModule,
@@ -81,4 +83,4 @@ import { WoAttachmentEntity } from './entities/woattachment.entity';
   ],
   exports: [WoService],
 })
-export class WoModule {}
+export class WoModule { }
