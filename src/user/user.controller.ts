@@ -34,6 +34,7 @@ import { IResponse } from '../auth/interfaces/response.interface';
 import { Permissions } from 'src/core/decorators/permissions.decorator';
 import { FileInterceptor } from '@nestjs/platform-express/multer/interceptors';
 import { Not, In } from 'typeorm';
+import { PusherService } from '../pusher/pusher.service';
 
 // @Permissions('Administrator')
 @UseGuards(JwtAuthGuard, PermissionsGuard)
@@ -55,7 +56,10 @@ import { Not, In } from 'typeorm';
 @UseInterceptors(UniqueConstraintInterceptor)
 export class UserController {
   // constructor parameter variable name MUST be "service" when using @nestjsx/crud
-  constructor(public service: UserService) {}
+  constructor(
+    public service: UserService,
+    private pusherService: PusherService,
+  ) { }
 
   @Get('getAll')
   // @Permissions(['USER:READ'])
@@ -100,7 +104,20 @@ export class UserController {
   // @Permissions('Administrator')
   @Post('update_user')
   async updateOne(@Body() body: any) {
-    return await this.service.updateUser(body.user);
+    const result = await this.service.updateUser(body.user);
+    if (result) {
+      try {
+        this.pusherService.sendPushNotification(
+          [result.email],
+          '',
+          'User updated',
+          { type: 'USER_UPDATED' },
+        );
+      } catch (error) {
+        console.log('Error sending push notification for user update:', error);
+      }
+    }
+    return result;
   }
 
   @Get('get-a-user-by-id')
