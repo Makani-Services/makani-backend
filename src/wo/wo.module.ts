@@ -3,6 +3,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { WoService } from './wo.service';
 import { WoController } from './wo.controller';
+import { WoCustomerService } from './wo-customer/wo-customer.service';
+import { WoCustomerController } from './wo-customer/wo-customer.controller';
 import { WoEntity } from './entities/wo.entity';
 import { RoleEntity } from 'src/role/entities/role.entity';
 import { JwtService } from '@nestjs/jwt';
@@ -62,9 +64,10 @@ import { WoAttachmentEntity } from './entities/woattachment.entity';
     CustomerUserModule,
     MaterialModule,
   ],
-  controllers: [WoController],
+  controllers: [WoController, WoCustomerController],
   providers: [
     WoService,
+    WoCustomerService,
     JwtService,
     UserService,
     RoleService,
