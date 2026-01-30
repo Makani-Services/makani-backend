@@ -32,7 +32,7 @@ import * as path from 'path';
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller('api/wo')
 export class WoController {
-  constructor(private readonly woService: WoService) {}
+  constructor(private readonly woService: WoService) { }
 
   // @Permissions(['WO:CREATE'])
   @Post('/create_wo')
@@ -274,12 +274,12 @@ export class WoController {
   @Get('/delete_attachment')
   deleteAttachment(@Query() query: any, @Headers() headers: any) {
     const woId = query.woId;
-    const attachmentIndex = query.index;
+    const attachmentId = query.attachmentId;
     const company = headers['company'];
     const type = query.type;
     return this.woService.deleteAttachment(
       woId,
-      attachmentIndex,
+      attachmentId,
       company,
       Number(type),
     );
@@ -376,7 +376,7 @@ export class WoController {
     }),
   )
   uploadMultipleFiles(
-    @Body() body: { orderId: string; type: string },
+    @Body() body: any,
     @UploadedFiles(
       new ParseFilePipeBuilder()
         .addMaxSizeValidator({
@@ -388,10 +388,14 @@ export class WoController {
     )
     files: Array<Express.Multer.File>,
   ) {
+    console.log('🚀 ~ WoController ~ uploadMultipleFiles ~ body:', body);
+
     return this.woService.uploadFile(
       files.map((file) => file.filename),
       Number(body.orderId),
       Number(body.type),
+      Number(body.userId),
+      Number(body.customerUserId)
     );
   }
 }

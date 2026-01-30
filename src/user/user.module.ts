@@ -11,9 +11,11 @@ import { JwtService } from '@nestjs/jwt';
 import { CompanyService } from 'src/company/company.service';
 import { CompanyEntity } from 'src/company/entities/company.entity';
 import { ReportEntity } from 'src/report/entities/report.entity';
+import { PusherModule } from 'src/pusher/pusher.module';
 
 @Module({
   imports: [
+    PusherModule,
     TypeOrmModule.forFeature([
       UserEntity,
       RoleEntity,
@@ -27,4 +29,4 @@ import { ReportEntity } from 'src/report/entities/report.entity';
   providers: [UserService, JwtService, CompanyService],
   exports: [UserService],
 })
-export class UserModule {}
+export class UserModule { }

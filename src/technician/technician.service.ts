@@ -158,7 +158,7 @@ export class TechnicianService extends TypeOrmCrudService<TechnicianEntity> {
       userIds,
       'Work Order assigned',
       'Work Order(' + wo.number + ') is assigned to you',
-      { screen: 'jobs/requested' },
+      { type: 'JOB_REQUESTED' },
     );
 
     //send email notification

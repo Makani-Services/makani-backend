@@ -116,9 +116,9 @@ export class ScheduledTaskService implements OnModuleInit {
     private readonly technicianService: TechnicianService,
     private readonly pusherService: PusherService,
     private schedulerRegistry: SchedulerRegistry,
-  ) {}
+  ) { }
 
-  onModuleInit() {}
+  onModuleInit() { }
 
   @Cron('* * * * *', {
     timeZone: 'Pacific/Honolulu',
@@ -738,9 +738,8 @@ export class ScheduledTaskService implements OnModuleInit {
     }
     let recipientEmailArray = recipients.map((user) => user.email);
 
-    const fileName = `${
-      cycle === 0 ? 'Weekly' : 'Monthly'
-    }_Report_For_Open_POs_${moment().format('YYYY_MM_DD')}.xlsx`;
+    const fileName = `${cycle === 0 ? 'Weekly' : 'Monthly'
+      }_Report_For_Open_POs_${moment().format('YYYY_MM_DD')}.xlsx`;
     const filePath = `./public/${company}/reports/${fileName}`;
     if (!fs.existsSync(`./public/${company}/reports/`)) {
       fs.mkdirSync(`./public/${company}/reports/`, { recursive: true });
@@ -816,9 +815,8 @@ export class ScheduledTaskService implements OnModuleInit {
 
     let recipientEmailArray = recipients.map((user) => user.email);
 
-    const fileName = `${
-      cycle === 0 ? 'Weekly' : 'Monthly'
-    }_Report_For_Open_WOs_${moment().format('YYYY_MM_DD')}.xlsx`;
+    const fileName = `${cycle === 0 ? 'Weekly' : 'Monthly'
+      }_Report_For_Open_WOs_${moment().format('YYYY_MM_DD')}.xlsx`;
     const filePath = `./public/${company}/reports/${fileName}`;
     if (!fs.existsSync(`./public/${company}/reports/`)) {
       fs.mkdirSync(`./public/${company}/reports/`, { recursive: true });
@@ -998,9 +996,8 @@ export class ScheduledTaskService implements OnModuleInit {
       },
     ];
 
-    const fileName = `${
-      cycle === 0 ? 'Weekly' : 'Monthly'
-    }_Report_For_Completed_WOs_${moment().format('YYYY_MM_DD')}.xlsx`;
+    const fileName = `${cycle === 0 ? 'Weekly' : 'Monthly'
+      }_Report_For_Completed_WOs_${moment().format('YYYY_MM_DD')}.xlsx`;
     const filePath = `./public/${company}/reports/${fileName}`;
     if (!fs.existsSync(`./public/${company}/reports/`)) {
       fs.mkdirSync(`./public/${company}/reports/`, { recursive: true });
@@ -1021,9 +1018,8 @@ export class ScheduledTaskService implements OnModuleInit {
       const mailOptions = {
         from: config.mail.supportEmail,
         to: recipientEmailArray,
-        subject: `${
-          cycle === 0 ? 'Weekly' : 'Monthly'
-        }_Report_For_Completed_WOs`,
+        subject: `${cycle === 0 ? 'Weekly' : 'Monthly'
+          }_Report_For_Completed_WOs`,
         text: ' ',
         html: ' ',
         attachments: [
@@ -1078,9 +1074,8 @@ export class ScheduledTaskService implements OnModuleInit {
 
     let recipientEmailArray = recipients.map((user) => user.email);
 
-    const fileName = `${
-      cycle === 0 ? 'Weekly' : 'Monthly'
-    }_Report_For_Reviewed_WOs_${moment().format('YYYY_MM_DD')}.xlsx`;
+    const fileName = `${cycle === 0 ? 'Weekly' : 'Monthly'
+      }_Report_For_Reviewed_WOs_${moment().format('YYYY_MM_DD')}.xlsx`;
     const filePath = `./public/${company}/reports/${fileName}`;
     if (!fs.existsSync(`./public/${company}/reports/`)) {
       fs.mkdirSync(`./public/${company}/reports/`, { recursive: true });
@@ -1101,9 +1096,8 @@ export class ScheduledTaskService implements OnModuleInit {
       const mailOptions = {
         from: config.mail.supportEmail,
         to: recipientEmailArray,
-        subject: `${
-          cycle === 0 ? 'Weekly' : 'Monthly'
-        }_Report_For_Reviewed_WOs`,
+        subject: `${cycle === 0 ? 'Weekly' : 'Monthly'
+          }_Report_For_Reviewed_WOs`,
         text: ' ',
         html: ' ',
         attachments: [
@@ -1158,9 +1152,8 @@ export class ScheduledTaskService implements OnModuleInit {
 
     let recipientEmailArray = recipients.map((user) => user.email);
 
-    const fileName = `${
-      cycle === 0 ? 'Weekly' : 'Monthly'
-    }_Report_For_Billed_WOs_${moment().format('YYYY_MM_DD')}.xlsx`;
+    const fileName = `${cycle === 0 ? 'Weekly' : 'Monthly'
+      }_Report_For_Billed_WOs_${moment().format('YYYY_MM_DD')}.xlsx`;
     const filePath = `./public/${company}/reports/${fileName}`;
     if (!fs.existsSync(`./public/${company}/reports/`)) {
       fs.mkdirSync(`./public/${company}/reports/`, { recursive: true });
@@ -1381,7 +1374,7 @@ export class ScheduledTaskService implements OnModuleInit {
           emails,
           'Daily Time Log Reminder',
           'Please remember to log your time for today.',
-          { screen: 'jobs/assigned' },
+          { type: 'DAILY_TIME_LOG_REMINDER' },
         );
 
         // Update all user records in parallel

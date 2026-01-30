@@ -73,7 +73,9 @@ import { PoService } from 'src/po/po.service';
 import { CustomerNotificationService } from 'src/customer-notification/customer-notification.service';
 import { CustomerNotificationEntity } from 'src/customer-notification/entities/customer-notification.entity';
 import { CustomerUserService } from 'src/customer-user/customer-user.service';
+import { CustomerUserEntity } from 'src/customer-user/entities/customer-user.entity';
 import { MaterialService } from 'src/material/material.service';
+import { WoAttachmentEntity } from './entities/woattachment.entity';
 // import { ModuleRef } from '@nestjs/core';
 
 libre.convertAsync = require('util').promisify(libre.convert);
@@ -82,6 +84,8 @@ libre.convertAsync = require('util').promisify(libre.convert);
 export class WoService extends TypeOrmCrudService<WoEntity> {
   constructor(
     @InjectRepository(WoEntity) repo: Repository<WoEntity>,
+    @InjectRepository(WoAttachmentEntity)
+    private woAttachmentRepo: Repository<WoAttachmentEntity>,
     @InjectRepository(RoleEntity) private roleRepo: Repository<RoleEntity>,
     @InjectRepository(UserEntity) private userRepo: Repository<UserEntity>,
     @InjectRepository(TechnicianEntity)
@@ -91,6 +95,8 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
     private poItemRepo: Repository<PoItemEntity>,
     @InjectRepository(HistoryEntity)
     private historyRepo: Repository<HistoryEntity>,
+    @InjectRepository(CustomerUserEntity)
+    private customerUserRepo: Repository<CustomerUserEntity>,
     private readonly userService: UserService,
     private readonly pusherService: PusherService,
     private readonly emailService: EmailService,
@@ -1183,36 +1189,44 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
     fileNames: string[],
     id: number,
     type: number,
-  ): Promise<string[]> {
-    const wo = await this.repo.findOne({
-      where: { id: id },
-      // relations: [
-      //   'requestedUser',
-      //   'openUser',
-      //   'customer',
-      //   'serviceTicketProvider',
-      //   'assignedTechs',
-      //   'assignedTechs.user',
-      //   'pos',
-      //   'pos.issuedUser',
-      //   'pos.poItems',
-      //   'requestedCustomerUser',
-      //   'history',
-      //   'history.user',
-      //   'customerNotes',
-      //   'customerNotes.sender',
-      //   'customerNotes.customerSender',
-      // ],
-    });
+    userId: number,
+    customerUserId: number
+  ): Promise<any> {
+    const wo = await this.repo.findOne({ where: { id: id } });
+
+    // Try to find user in UserEntity first, then CustomerUserEntity
+    let uploadedBy: UserEntity | null = null;
+    let uploadedByCustomerUser: CustomerUserEntity | null = null;
+
+    if (userId) {
+      uploadedBy = await this.userRepo.findOne({ where: { id: userId } });
+    }
+    if (customerUserId) {
+      uploadedByCustomerUser = await this.customerUserRepo.findOne({ where: { id: customerUserId } });
+    }
 
     if (type === 1) {
-      if (wo.attachments) {
-        for (let fileName of fileNames) {
-          wo.attachments.push(fileName);
+      const newAttachments = fileNames.map((fileName) => {
+        const attachmentData: Partial<WoAttachmentEntity> = {
+          wo,
+          fileName: fileName,
+        };
+
+        if (uploadedBy) {
+          attachmentData.uploadedBy = uploadedBy;
+        } else if (uploadedByCustomerUser) {
+          attachmentData.uploadedByCustomerUser = uploadedByCustomerUser;
         }
-      } else {
-        wo.attachments = fileNames;
-      }
+
+        return new WoAttachmentEntity(attachmentData);
+      });
+      await this.woAttachmentRepo.save(newAttachments);
+
+      const attachments = await this.woAttachmentRepo.find({
+        where: { wo: { id } },
+        order: { createdAt: 'ASC' },
+      });
+      return attachments;
     } else if (type === 2) {
       if (wo.proposals) {
         for (let fileName of fileNames) {
@@ -1221,10 +1235,10 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
       } else {
         wo.proposals = fileNames;
       }
+      await this.repo.save(wo);
+      return wo.proposals || [];
     }
 
-    await this.repo.save(wo);
-    return type === 1 ? wo.attachments : wo.proposals;
   }
 
   //attach materials
@@ -1485,6 +1499,7 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
         'pos.issuedUser',
         'pos.poItems',
         'branch',
+        'attachments',
       ],
     });
 
@@ -1538,10 +1553,10 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
     let attachments = [];
     if (wo.attachments) {
       for (let attachment of wo.attachments) {
-        if (isImageFile(attachment)) {
+        if (isImageFile(attachment.fileName)) {
           attachments.push({
-            fileName: getRealFileName(attachment),
-            url: getThumbnailUrl(company, attachment),
+            fileName: getRealFileName(attachment.fileName),
+            url: getThumbnailUrl(company, attachment.fileName),
           });
         }
       }
@@ -1550,12 +1565,12 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
     if (wo.attachments) {
       for (let attachment of wo.attachments) {
         if (
-          isImageFile(attachment) &&
-          !fs.existsSync(getThumbnailPath(company, attachment))
+          isImageFile(attachment.fileName) &&
+          !fs.existsSync(getThumbnailPath(company, attachment.fileName))
         ) {
           try {
             await compressImage(
-              getUploadPath(company, attachment),
+              getUploadPath(company, attachment.fileName),
               `./public/${company}/thumbnails`,
             );
           } catch (error) {
@@ -1952,6 +1967,9 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
     orders['pos'] = await this.findAllPosByWoId(id);
     orders['history'] = await this.historyService.getAllByWoId(id);
     orders['customerNotes'] = await this.customerNoteService.getAllByWoId(id);
+    orders['attachments'] = await this.woAttachmentRepo.find({
+      where: { wo: { id: id } },
+    });
     return orders;
   }
 
@@ -1969,6 +1987,10 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
       .leftJoinAndSelect('wo.history', 'history')
       .leftJoinAndSelect('history.user', 'historyUser')
       .leftJoinAndSelect('wo.quotedBy', 'quotedBy')
+      .leftJoinAndSelect('wo.attachments', 'attachments')
+      .leftJoinAndSelect('attachments.uploadedBy', 'uploadedBy')
+      .leftJoinAndSelect('attachments.uploadedByCustomerUser', 'uploadedByCustomerUser')
+      .leftJoinAndSelect('uploadedByCustomerUser.customer', 'uploadedByCustomerUserCustomer')
       .where('wo.id = :id', { id: id })
       .addOrderBy('assignedTechs.createdAt', 'ASC')
       .getOne();
@@ -2022,6 +2044,7 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
         'pos.issuedUser',
         'pos.poItems',
         'requestedCustomerUser',
+        'attachments',
       ],
     });
 
@@ -2030,7 +2053,7 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
       //delete wo attachments
       if (wo.attachments) {
         for (let attachment of wo.attachments) {
-          const filePath = getUploadPath(company, attachment);
+          const filePath = getUploadPath(company, attachment.fileName);
           try {
             fs.unlinkSync(filePath);
           } catch (err) {
@@ -2851,29 +2874,34 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
     return [...orderNumbers];
   }
 
-  async deleteAttachment(woId, index, company, type) {
+  async deleteAttachment(woId, attachmentId, company, type) {
     console.log('🚀 ~ deleteAttachment ~ type:', type, typeof type);
     let wo = await this.repo.findOneBy({ id: woId });
 
     if (type === 1) {
-      let attachment = wo.attachments[index];
-      let newAttachments = [...wo.attachments];
-      newAttachments.splice(index, 1);
-      if (attachment) {
-        try {
-          await fs.promises.unlink(`./public/${company}/uploads/${attachment}`);
-          let result = await this.repo.update(woId, {
-            attachments: newAttachments,
-          });
-          return true;
-        } catch (error) {
-          return error;
-        }
+      // const attachments = await this.woAttachmentRepo.find({
+      //   where: { wo: { id: woId } },
+      //   order: { createdAt: 'ASC' },
+      // });
+      // const attachment = attachments[index];
+      // if (!attachment) return false;
+
+      const attachment = await this.woAttachmentRepo.findOneBy({ id: attachmentId });
+      if (!attachment) return false;
+
+      try {
+        await fs.promises.unlink(
+          `./public/${company}/uploads/${attachment.fileName}`,
+        );
+        await this.woAttachmentRepo.delete({ id: attachmentId });
+        return true;
+      } catch (error) {
+        console.log('Error deleting wo attachment:', error);
       }
     } else if (type === 2) {
-      let proposal = wo.proposals[index];
+      let proposal = wo.proposals[attachmentId];
       let newProposals = [...wo.proposals];
-      newProposals.splice(index, 1);
+      newProposals.splice(attachmentId, 1);
       if (proposal) {
         try {
           await fs.promises.unlink(`./public/${company}/uploads/${proposal}`);
