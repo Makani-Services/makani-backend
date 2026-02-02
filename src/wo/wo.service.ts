@@ -1993,6 +1993,7 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
       .leftJoinAndSelect('uploadedByCustomerUser.customer', 'uploadedByCustomerUserCustomer')
       .where('wo.id = :id', { id: id })
       .addOrderBy('assignedTechs.createdAt', 'ASC')
+      .addOrderBy('attachments.createdAt', 'ASC')
       .getOne();
 
     order['startDateString'] = order.startDate
