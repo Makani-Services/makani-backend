@@ -21,8 +21,8 @@ export class ScheduledTaskController {
     // }
     return {
       platform: 'ios',
-      latest_version: '2.0.6',
-      force_update: true,
+      latest_version: '2.0.7',
+      force_update: false,
     };
   }
 
@@ -38,8 +38,8 @@ export class ScheduledTaskController {
     // }
     return {
       platform: 'android',
-      latest_version: '2.0.6',
-      force_update: true,
+      latest_version: '2.0.7',
+      force_update: false,
     };
   }
 
@@ -56,7 +56,7 @@ export class ScheduledTaskController {
     // }
     return {
       platform: 'ios',
-      latest_version: '1.0.2',
+      latest_version: '1.0.3',
       force_update: false,
     };
   }
@@ -73,7 +73,7 @@ export class ScheduledTaskController {
     // }
     return {
       platform: 'android',
-      latest_version: '1.0.2',
+      latest_version: '1.0.3',
       force_update: false,
     };
   }
