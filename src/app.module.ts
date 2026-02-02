@@ -36,6 +36,7 @@ import { CustomerRoleModule } from './customer-role/customer-role.module';
 import { CustomerNoteModule } from './customer-note/customer-note.module';
 import { CustomerNotificationModule } from './customer-notification/customer-notification.module';
 import { MaterialModule } from './material/material.module';
+import { ServiceTypeModule } from './service-type/service-type.module';
 
 let publicFolder = {
   rootPath: join(__dirname, '..', 'public'),
@@ -83,6 +84,7 @@ if (
     CustomerNoteModule,
     CustomerNotificationModule,
     MaterialModule,
+    ServiceTypeModule,
   ],
   controllers: [AppController],
   providers: [AppService],
