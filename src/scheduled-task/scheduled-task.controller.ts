@@ -85,6 +85,10 @@ export class ScheduledTaskController {
 //   https://makani.services/api/scheduled-task/get_version_info/android
 //   https://makani.services/api/scheduled-task/get_version_info
 
+//   https://makani.services/api/scheduled-task/get_version_info_for_customer/ios
+//   https://makani.services/api/scheduled-task/get_version_info_for_customer/android
+//   https://makani.services/api/scheduled-task/get_version_info_for_customer
+
 //   https://test.makani.services/api/scheduled-task/get_version_info/ios
 //   https://test.makani.services/api/scheduled-task/get_version_info/android
 //   https://test.makani.services/api/scheduled-task/get_version_info
