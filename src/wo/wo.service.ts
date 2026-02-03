@@ -632,6 +632,7 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
       .leftJoinAndSelect('order.pos', 'pos')
       .leftJoinAndSelect('pos.issuedUser', 'issuedUser')
       .leftJoinAndSelect('pos.poItems', 'poItems')
+      .leftJoinAndSelect('order.serviceType', 'serviceType')
       .orderBy('order.createdAt', 'DESC')
       .getMany();
   }
@@ -642,6 +643,7 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
       .createQueryBuilder('order')
       .leftJoinAndSelect('order.branch', 'branch')
       .leftJoinAndSelect('order.customer', 'customer')
+      .leftJoinAndSelect('order.serviceType', 'serviceType')
       .where('order.status < :status', { status: 5 })
       .andWhere('branch.id = :branchId', { branchId })
       // .andWhere('assignedTechs.techStatus = :techStatus', {
@@ -706,6 +708,7 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
       .createQueryBuilder('order')
       .leftJoinAndSelect('order.branch', 'branch')
       .leftJoinAndSelect('order.customer', 'customer')
+      .leftJoinAndSelect('order.serviceType', 'serviceType')
       .where('order.status >= :status', { status: 5 })
       .andWhere('branch.id = :branchId', { branchId })
       // .orWhere('assignedTechs.techStatus = :techStatus', {
