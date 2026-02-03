@@ -353,6 +353,7 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
       .leftJoinAndSelect('assignedTechs.user', 'techUser')
       .leftJoinAndSelect('wo.branch', 'branch')
       .leftJoinAndSelect('wo.quotedBy', 'quotedBy')
+      .leftJoinAndSelect('wo.serviceType', 'serviceType')
       .where('wo.status >= :status', { status: status })
       .andWhere('wo.company = :company', { company: company })
       .andWhere(
@@ -398,9 +399,9 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
     }
 
     //filtering
-    if (criteria && criteria.type >= 0) {
-      query = query.andWhere('wo.type = :type', {
-        type: criteria.type,
+    if (criteria && criteria.serviceType >= 0) {
+      query = query.andWhere('wo.serviceType.id = :serviceTypeId', {
+        serviceTypeId: criteria.serviceType,
       });
     }
 
@@ -765,6 +766,7 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
         'assignedTechs.user',
         'branch',
         'customerLocation',
+        'serviceType',
       ],
     });
 
@@ -815,7 +817,7 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
             html:
               `WO#: ${data.number}` +
               '<br/>' +
-              `Type of WO#: ${WO_TYPE_LIST[data.type]}` +
+              `Service Type: ${wo.serviceType.serviceType}` +
               '<br/>' +
               `Customer Name: ${wo.customer.companyName}` +
               '<br/>' +
@@ -930,7 +932,7 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
             html:
               `WO#: ${wo.number}` +
               '<br/>' +
-              `Type of WO#: ${WO_TYPE_LIST[wo.type]}` +
+              `Service Type: ${wo.serviceType.serviceType}` +
               '<br/>' +
               `Customer Name: ${wo.customer.companyName}` +
               '<br/>' +
@@ -989,7 +991,7 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
             html:
               `WO#: ${wo.number}` +
               '<br/>' +
-              `Type of WO#: ${WO_TYPE_LIST[wo.type]}` +
+              `Service Type: ${wo.serviceType.serviceType}` +
               '<br/>' +
               `Customer Name: ${wo.customer.companyName}` +
               '<br/>' +
@@ -1022,7 +1024,7 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
               html:
                 `WO#: ${wo.number}` +
                 '<br/>' +
-                `Type of WO#: ${WO_TYPE_LIST[wo.type]}` +
+                `Service Type: ${wo.serviceType.serviceType}` +
                 '<br/>' +
                 `Customer Name: ${wo.customer.companyName}` +
                 '<br/>' +
@@ -1154,7 +1156,7 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
           html:
             `WO#: ${wo.number}` +
             '<br/>' +
-            `Type of WO#: ${WO_TYPE_LIST[wo.type]}` +
+            `Service Type: ${wo.serviceType.serviceType}` +
             '<br/>' +
             `Customer Name: ${wo.customer.companyName}` +
             '<br/>' +
@@ -1970,6 +1972,7 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
     orders['attachments'] = await this.woAttachmentRepo.find({
       where: { wo: { id: id } },
     });
+
     return orders;
   }
 
@@ -1991,6 +1994,7 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
       .leftJoinAndSelect('attachments.uploadedBy', 'uploadedBy')
       .leftJoinAndSelect('attachments.uploadedByCustomerUser', 'uploadedByCustomerUser')
       .leftJoinAndSelect('uploadedByCustomerUser.customer', 'uploadedByCustomerUserCustomer')
+      .leftJoinAndSelect('wo.serviceType', 'serviceType')
       .where('wo.id = :id', { id: id })
       .addOrderBy('assignedTechs.createdAt', 'ASC')
       .getOne();
@@ -2018,6 +2022,7 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
         'pos.issuedUser',
         'pos.poItems',
         'requestedCustomerUser',
+        'serviceType',
       ],
     });
 

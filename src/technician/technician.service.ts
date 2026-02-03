@@ -87,23 +87,25 @@ export class TechnicianService extends TypeOrmCrudService<TechnicianEntity> {
         'pos',
         'pos.poItems',
         'branch',
+        'serviceType',
       ],
     });
+    console.log("🚀 ~ TechnicianService ~ create ~ newWO:", newWO)
     if (oldWO.assignedTechs.length === 0) {
       try {
         let type = 0;
 
-        switch (newWO.type) {
-          case 0:
+        switch (newWO.serviceType.serviceType) {
+          case "Service Call":
             type = 0;
             break;
-          case 1:
+          case "Quoted Job":
             type = 6;
             break;
-          case 2:
+          case "PM":
             type = 7;
             break;
-          case 3:
+          case "Parts Only":
             type = 8;
             break;
         }
@@ -129,8 +131,8 @@ export class TechnicianService extends TypeOrmCrudService<TechnicianEntity> {
               'WO#: ' +
               newWO.number +
               '<br/>' +
-              'Type of WO#: ' +
-              WO_TYPE_LIST[newWO.type] +
+              'Service Type: ' +
+              newWO.serviceType.serviceType +
               '<br/>' +
               'Customer Name: ' +
               newWO.customer.companyName +
