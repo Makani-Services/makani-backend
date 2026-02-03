@@ -2,9 +2,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { WoEntity } from 'src/wo/entities/wo.entity';
 
 @Entity('service_type')
 export class ServiceTypeEntity {
@@ -22,6 +24,9 @@ export class ServiceTypeEntity {
 
   @Column({ nullable: true })
   company: string;
+
+  @OneToMany(() => WoEntity, (wo) => wo.serviceType)
+  wos: WoEntity[];
 
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
