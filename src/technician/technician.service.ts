@@ -12,7 +12,6 @@ import { Repository } from 'typeorm';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { WoEntity } from 'src/wo/entities/wo.entity';
 import { UpdateTechnicianDto } from './dto/update-technician.dto';
-import * as nodemailer from 'nodemailer';
 import { default as config } from '../config';
 import { WoService } from 'src/wo/wo.service';
 import { PusherService } from 'src/pusher/pusher.service';
@@ -21,8 +20,6 @@ import { UserService } from 'src/user/user.service';
 import { NotificationEntity } from 'src/notification/entities/notification.entity';
 import { NotificationService } from 'src/notification/notification.service';
 import {
-  WO_TYPE_LIST,
-  formatDate,
   getAssignedTechsNameArray,
   getFormattedTechName,
   timeToDecimal,

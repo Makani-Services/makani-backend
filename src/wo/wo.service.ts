@@ -19,7 +19,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as ejs from 'ejs';
 import * as htmlPDF from 'html-pdf-node';
-import * as nodemailer from 'nodemailer';
 import * as _ from 'lodash';
 import writeXlsxFile from 'write-excel-file/node';
 import {
@@ -48,7 +47,6 @@ import * as moment from 'moment';
 import { default as config } from '../config';
 import { TechnicianEntity } from 'src/technician/entities/technician.entity';
 import {
-  WO_TYPE_LIST,
   formatDate,
   getAvatarUrl,
   getRealFileName,
