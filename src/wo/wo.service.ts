@@ -2189,6 +2189,7 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
       .leftJoinAndSelect('pos.issuedUser', 'issuedUser')
       .leftJoinAndSelect('pos.poItems', 'poItems')
       .leftJoinAndSelect('order.branch', 'branch')
+      .leftJoinAndSelect('order.serviceType', 'serviceType')
       .getMany();
   }
 
@@ -2226,6 +2227,7 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
       .leftJoinAndSelect('pos.issuedUser', 'issuedUser')
       .leftJoinAndSelect('pos.poItems', 'poItems')
       .leftJoinAndSelect('order.branch', 'branch')
+      .leftJoinAndSelect('order.serviceType', 'serviceType')
       .getMany();
   }
 
@@ -2263,6 +2265,7 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
       .leftJoinAndSelect('pos.issuedUser', 'issuedUser')
       .leftJoinAndSelect('pos.poItems', 'poItems')
       .leftJoinAndSelect('order.branch', 'branch')
+      .leftJoinAndSelect('order.serviceType', 'serviceType')
       .getMany();
   }
 
@@ -2300,6 +2303,7 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
       .leftJoinAndSelect('pos.issuedUser', 'issuedUser')
       .leftJoinAndSelect('pos.poItems', 'poItems')
       .leftJoinAndSelect('order.branch', 'branch')
+      .leftJoinAndSelect('order.serviceType', 'serviceType')
       .getMany();
   }
 

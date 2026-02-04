@@ -22,7 +22,7 @@ export class ScheduledTaskController {
     return {
       platform: 'ios',
       latest_version: '2.0.6',
-      force_update: true,
+      force_update: false,
     };
   }
 
@@ -39,7 +39,7 @@ export class ScheduledTaskController {
     return {
       platform: 'android',
       latest_version: '2.0.6',
-      force_update: true,
+      force_update: false,
     };
   }
 

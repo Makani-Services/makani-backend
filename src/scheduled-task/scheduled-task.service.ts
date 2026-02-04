@@ -803,7 +803,7 @@ export class ScheduledTaskService implements OnModuleInit {
     for (let order of openWOArray) {
       const row = {
         number: order.number,
-        type: order.type == 0 ? 'Service Call' : 'Quoted',
+        type: order.serviceType.serviceType,
         customer: order.customer?.companyName,
         NTE: order.NTE,
         description: order.description,
@@ -884,7 +884,7 @@ export class ScheduledTaskService implements OnModuleInit {
 
       const row = {
         number: order.number,
-        type: order.type == 0 ? 'Service Call' : 'Quoted',
+        type: order.serviceType.serviceType,
         customer: order.customer?.company,
         NTE: order.NTE,
         description: order.description,
@@ -1062,7 +1062,7 @@ export class ScheduledTaskService implements OnModuleInit {
     for (let order of reviewedWOArray) {
       const row = {
         number: order.number,
-        type: order.type == 0 ? 'Service Call' : 'Quoted',
+        type: order.serviceType.serviceType,
         customer: order.customer?.company,
         NTE: order.NTE,
         description: order.description,
@@ -1140,7 +1140,7 @@ export class ScheduledTaskService implements OnModuleInit {
     for (let order of billedWOArray) {
       const row = {
         number: order.number,
-        type: order.type == 0 ? 'Service Call' : 'Quoted',
+        type: order.serviceType.serviceType,
         customer: order.customer?.company,
         NTE: order.NTE,
         description: order.description,
