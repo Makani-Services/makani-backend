@@ -585,7 +585,7 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
     for (let order of ordersForExcel) {
       const row = {
         number: order.number,
-        type: order.type == 0 ? 'Service Call' : 'Quoted',
+        type: order.serviceType.serviceType,
         customer: order.customer?.company,
         NTE: order.NTE,
         description: order.description,
@@ -1118,10 +1118,10 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
           updatedHTML +=
             `${data.eventUser.name} changed the Customer from ${wo.customer.companyName} to ${data.customer.companyName}` +
             '<br/><br/>';
-        if (data.type)
+        if (data.serviceType)
           updatedHTML +=
-            `${data.eventUser.name} changed the Type of Service from ${WO_TYPE_LIST[wo.type]
-            } to ${WO_TYPE_LIST[data.type]}` + '<br/><br/>';
+            `${data.eventUser.name} changed the Type of Service from ${wo.serviceType.serviceType
+            } to ${data.serviceType.serviceType}` + '<br/><br/>';
         if (data.NTE)
           updatedHTML +=
             `${data.eventUser.name} changed the NTE from ${wo.NTE} to ${data.NTE}` +
@@ -2422,6 +2422,7 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
       .leftJoinAndSelect('pos.poItems', 'items')
       .leftJoinAndSelect('wo.assignedTechs', 'assignedTechs')
       .leftJoinAndSelect('assignedTechs.user', 'techUser')
+      .leftJoinAndSelect('wo.serviceType', 'serviceType')
       .leftJoinAndSelect('wo.branch', 'branch');
     if (type === 'OPEN_WO') {
       query = query.where('wo.status < :status', { status: 5 });
@@ -2603,7 +2604,7 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
         );
         const row = {
           number: order.number,
-          type: order.type == 0 ? 'Service Call' : 'Quoted',
+          type: order.serviceType.serviceType,
           customer: order.customer?.company,
           NTE: order.NTE,
           description: order.description,
@@ -2672,7 +2673,7 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
         );
         const row = {
           number: order.number,
-          type: order.type == 0 ? 'Service Call' : 'Quoted',
+          type: order.serviceType.serviceType,
           customer: order.customer?.company,
           NTE: order.NTE,
           description: order.description,
@@ -2741,7 +2742,7 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
         );
         const row = {
           number: order.number,
-          type: order.type == 0 ? 'Service Call' : 'Quoted',
+          type: order.serviceType.serviceType,
           customer: order.customer?.company,
           NTE: order.NTE,
           description: order.description,
