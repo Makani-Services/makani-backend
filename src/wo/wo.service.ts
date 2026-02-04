@@ -2602,7 +2602,7 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
         );
         const row = {
           number: order.number,
-          type: order.serviceType.serviceType,
+          type: order.serviceType?.serviceType,
           customer: order.customer?.company,
           NTE: order.NTE,
           description: order.description,
@@ -2671,7 +2671,7 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
         );
         const row = {
           number: order.number,
-          type: order.serviceType.serviceType,
+          type: order.serviceType?.serviceType,
           customer: order.customer?.company,
           NTE: order.NTE,
           description: order.description,
@@ -2740,7 +2740,7 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
         );
         const row = {
           number: order.number,
-          type: order.serviceType.serviceType,
+          type: order.serviceType?.serviceType,
           customer: order.customer?.company,
           NTE: order.NTE,
           description: order.description,
