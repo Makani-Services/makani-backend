@@ -19,7 +19,7 @@ export class TicketService extends TypeOrmCrudService<TicketEntity> {
     super(repo);
   }
 
-  async findAll(keyword?: string, company?: string) {
+  async findAll(status?: number, createdById?: number, company?: string) {
     let query = this.repo
       .createQueryBuilder('ticket')
       .leftJoinAndSelect('ticket.createdBy', 'createdBy')
@@ -30,16 +30,11 @@ export class TicketService extends TypeOrmCrudService<TicketEntity> {
       query = query.andWhere('ticket.company = :company', { company });
     }
 
-    if (keyword) {
-      query = query.andWhere(
-        new Brackets((qb) => {
-          qb.where('ticket.subject ILike :searchString', {
-            searchString: `%${keyword}%`,
-          }).orWhere('ticket.description ILike :searchString', {
-            searchString: `%${keyword}%`,
-          });
-        }),
-      );
+    if (status) {
+      query = query.andWhere('ticket.status = :status', { status });
+    }
+    if (createdById) {
+      query = query.andWhere('ticket.createdById = :createdById', { createdById });
     }
 
     query = query.orderBy('ticket.createdAt', 'DESC');
