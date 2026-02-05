@@ -24,7 +24,7 @@ export class TicketService extends TypeOrmCrudService<TicketEntity> {
       .createQueryBuilder('ticket')
       .leftJoinAndSelect('ticket.createdBy', 'createdBy')
       .leftJoinAndSelect('ticket.messages', 'messages')
-      .leftJoinAndSelect('ticket.attachments', 'attachments');
+      .leftJoinAndSelect('ticket.attachments', 'attachments')
 
     if (company) {
       query = query.andWhere('ticket.company = :company', { company });
@@ -65,6 +65,7 @@ export class TicketService extends TypeOrmCrudService<TicketEntity> {
       poNumber: data.poNumber,
       status: data.status,
       company: company,
+      appVersion: data.appVersion,
       createdBy: ({ id: data.createdById } as UserEntity)
     });
 
