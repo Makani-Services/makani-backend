@@ -37,6 +37,8 @@ export class TicketEntity {
   @Column({ type: 'smallint', unsigned: true })
   status: number;
 
+  // 0: open,   100: closed
+
   @ManyToOne(() => UserEntity, { nullable: true })
   createdBy?: UserEntity;
 
