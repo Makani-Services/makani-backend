@@ -8,6 +8,9 @@ import { CreateTicketDto } from './dto/create-ticket.dto';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
 import { TicketAttachmentEntity } from './entities/ticketattachment.entity';
 import { TicketEntity } from './entities/ticket.entity';
+import { TicketMessageAttachmentEntity } from './entities/ticketmessageattachment.entity';
+import { TicketMessageEntity } from './entities/ticketmessage.entity';
+import { CreateTicketMessageDto } from 'src/ticket/dto/create-ticket-message.dto';
 
 @Injectable()
 export class TicketService extends TypeOrmCrudService<TicketEntity> {
@@ -15,6 +18,10 @@ export class TicketService extends TypeOrmCrudService<TicketEntity> {
     @InjectRepository(TicketEntity) repo: Repository<TicketEntity>,
     @InjectRepository(TicketAttachmentEntity)
     private readonly attachmentRepo: Repository<TicketAttachmentEntity>,
+    @InjectRepository(TicketMessageEntity)
+    private readonly messageRepo: Repository<TicketMessageEntity>,
+    @InjectRepository(TicketMessageAttachmentEntity)
+    private readonly messageAttachmentRepo: Repository<TicketMessageAttachmentEntity>,
   ) {
     super(repo);
   }
@@ -48,7 +55,7 @@ export class TicketService extends TypeOrmCrudService<TicketEntity> {
 
     const ticket = await this.repo.findOne({
       where,
-      relations: ['createdBy', 'messages', 'attachments'],
+      relations: ['createdBy', 'attachments', 'messages', 'messages.attachments', 'messages.sender'],
     });
 
     if (!ticket) throw new NotFoundException('Ticket not found');
@@ -119,6 +126,55 @@ export class TicketService extends TypeOrmCrudService<TicketEntity> {
     );
 
     return await this.attachmentRepo.save(attachments);
+  }
+
+  async createMessage(
+    data: CreateTicketMessageDto,
+    company?: string,
+  ): Promise<TicketMessageEntity> {
+    console.log("🚀 ~ TicketService ~ createMessage ~ data:", data)
+    const where: any = { id: data.ticketId };
+    if (company) where.company = company;
+
+    const ticket = await this.repo.findOne({ where });
+    if (!ticket) throw new NotFoundException('Ticket not found');
+
+    const message = new TicketMessageEntity({
+      ticket,
+      message: data.message,
+      sender: ({ id: data.senderId } as UserEntity),
+    });
+
+    return await this.messageRepo.save(message);
+  }
+
+  async uploadMessageAttachments(
+    messageId: number,
+    files: Array<Express.Multer.File>,
+    company?: string,
+  ): Promise<TicketMessageAttachmentEntity[]> {
+    const message = await this.messageRepo.findOne({
+      where: { id: messageId },
+      relations: ['ticket'],
+    });
+
+    if (!message) throw new NotFoundException('Ticket message not found');
+    if (company && message.ticket?.company !== company) {
+      throw new NotFoundException('Ticket message not found');
+    }
+
+    const attachments = files.map(
+      (file) =>
+        new TicketMessageAttachmentEntity({
+          message,
+          fileName: file.filename,
+          mimeType: file.mimetype,
+          size: file.size,
+          url: company ? getUploadUrl(company, file.filename) : undefined,
+        }),
+    );
+
+    return await this.messageAttachmentRepo.save(attachments);
   }
 
 
