@@ -15,6 +15,7 @@ import { CustomerEntity } from 'src/customer/entities/customer.entity';
 import { UserService } from 'src/user/user.service';
 import { EmailService } from 'src/email/email.service';
 import { default as config } from '../config';
+import axios from 'axios';
 
 
 @Injectable()
@@ -124,43 +125,8 @@ export class TicketService extends TypeOrmCrudService<TicketEntity> {
 
     let result = await this.repo.save(newTicket);
     result = await this.getById(result.id, company);
-    console.log("🚀 ~ TicketService ~ save ~ result:", result)
-    //send email notification to the super users
-    try {
-      const superUsers = await this.userService.getUsersWithRole('Super Admin', 0, company);
-      console.log("🚀 ~ TicketService ~ save ~ superUsers:", superUsers)
 
-      const createdByName =
-        result.createdByUser?.name ||
-        result.createdByCustomer?.companyName ||
-        '';
-      const requesterName =
-        result.requesterUser?.name ||
-        result.requesterCustomer?.companyName ||
-        '';
-
-      const emailHtml = [
-        `Subject: ${result.subject ?? ''}`,
-        `Ticket Number: ${result.number ?? ''}`,
-        `Description: ${result.description ?? ''}`,
-        `WO Number: ${result.woNumber ?? ''}`,
-        `PO Number: ${result.poNumber ?? ''}`,
-        `App Version: ${result.appVersion ?? ''}`,
-        `Created By: ${createdByName ?? ''}`,
-      ].join('<br/>');
-
-      let toEmailArray = superUsers.map(user => user.email);
-      const mailOptions = {
-        from: config.mail.supportEmail,
-        to: toEmailArray,
-        subject: 'New ticket created',
-        text: 'New ticket created - ticket number: ' + ticketNumber,
-        html: emailHtml,
-      };
-      this.emailService.sendEmail(mailOptions);
-    } catch (error) {
-      console.log('Error sending email notification to super users:', error);
-    }
+    await this.sendTicketCreatedEmail(result.id, company);
 
     return result;
   }
@@ -183,6 +149,92 @@ export class TicketService extends TypeOrmCrudService<TicketEntity> {
     });
 
     return await this.repo.save(updated);
+  }
+
+  private async buildImageAttachments(attachments: TicketAttachmentEntity[]) {
+    if (!attachments || attachments.length === 0) return [];
+
+    const imageAttachments = attachments.filter((attachment) => attachment?.url);
+    if (imageAttachments.length === 0) return [];
+
+    const fetched = await Promise.all(
+      imageAttachments.map(async (attachment, index) => {
+        try {
+          const response = await axios.get(attachment.url, {
+            responseType: 'arraybuffer',
+          });
+          const contentType =
+            attachment.mimeType ||
+            response.headers?.['content-type'] ||
+            'application/octet-stream';
+
+          return {
+            content: Buffer.from(response.data).toString('base64'),
+            filename:
+              attachment.fileName || `ticket-attachment-${attachment.id ?? index}`,
+            type: contentType,
+            disposition: 'attachment',
+          };
+        } catch (error) {
+          console.log('Error fetching attachment for email:', {
+            url: attachment.url,
+            error,
+          });
+          return null;
+        }
+      }),
+    );
+
+    return fetched.filter(Boolean);
+  }
+
+  private async sendTicketCreatedEmail(
+    ticketId: number,
+    company?: string,
+  ): Promise<void> {
+    //send email notification to the super users
+    try {
+      const ticket = await this.getById(ticketId, company);
+      const superUsers = await this.userService.getUsersWithRole(
+        'Super Admin',
+        0,
+        company,
+      );
+
+      const createdByName =
+        ticket.createdByUser?.name ||
+        ticket.createdByCustomer?.companyName ||
+        '';
+
+      const emailHtml = [
+        `Subject: ${ticket.subject ?? ''}`,
+        `Ticket Number: ${ticket.number ?? ''}`,
+        `Description: ${ticket.description ?? ''}`,
+        `WO Number: ${ticket.woNumber ?? ''}`,
+        `PO Number: ${ticket.poNumber ?? ''}`,
+        `App Version: ${ticket.appVersion ?? ''}`,
+        `Created By: ${createdByName ?? ''}`,
+      ].join('<br/>');
+
+      const toEmailArray = superUsers.map((user) => user.email);
+      const mailOptions: any = {
+        from: config.mail.supportEmail,
+        to: toEmailArray,
+        subject: 'New ticket created',
+        text: 'New ticket created - ticket number: ' + ticket.number,
+        html: emailHtml,
+      };
+      const emailAttachments = await this.buildImageAttachments(
+        ticket.attachments ?? [],
+      );
+      if (emailAttachments.length > 0) {
+        mailOptions.attachments = emailAttachments;
+      }
+
+      await this.emailService.sendEmail(mailOptions);
+    } catch (error) {
+      console.log('Error sending email notification to super users:', error);
+    }
   }
 
   async delete(ticketId: number): Promise<boolean> {
@@ -213,7 +265,8 @@ export class TicketService extends TypeOrmCrudService<TicketEntity> {
         }),
     );
 
-    return await this.attachmentRepo.save(attachments);
+    const savedAttachments = await this.attachmentRepo.save(attachments);
+    return savedAttachments;
   }
 
   async createMessage(
