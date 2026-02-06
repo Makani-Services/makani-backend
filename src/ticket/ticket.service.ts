@@ -95,6 +95,8 @@ export class TicketService extends TypeOrmCrudService<TicketEntity> {
         'messages.attachments',
         'messages.senderUser',
         'messages.senderCustomer',
+        'messages.ticket.requesterUser',
+        'messages.ticket.requesterCustomer',
       ],
     });
 
@@ -137,26 +139,25 @@ export class TicketService extends TypeOrmCrudService<TicketEntity> {
         result.requesterCustomer?.companyName ||
         '';
 
-      const emailHtml =
-        'Subject: ' + result.subject + '<br/>' +
-        'Ticket Number: ' + result.number + '<br/>' +
-        'Description: ' + result.description + '<br/>' +
-        'WO Number: ' + result.woNumber + '<br/>' +
-        'PO Number: ' + result.poNumber + '<br/>' +
-        'App Version: ' + result.appVersion + '<br/>' +
-        'Created By: ' + createdByName + '<br/>' +
-        'Requested User: ' + requesterName + '<br/>';
+      const emailHtml = [
+        `Subject: ${result.subject ?? ''}`,
+        `Ticket Number: ${result.number ?? ''}`,
+        `Description: ${result.description ?? ''}`,
+        `WO Number: ${result.woNumber ?? ''}`,
+        `PO Number: ${result.poNumber ?? ''}`,
+        `App Version: ${result.appVersion ?? ''}`,
+        `Created By: ${createdByName ?? ''}`,
+      ].join('<br/>');
 
-      for (const user of superUsers) {
-        const mailOptions = {
-          from: config.mail.supportEmail,
-          to: user.email,
-          subject: 'New ticket created',
-          text: 'New ticket created - ticket number: ' + ticketNumber,
-          html: emailHtml,
-        };
-        this.emailService.sendEmail(mailOptions);
-      }
+      let toEmailArray = superUsers.map(user => user.email);
+      const mailOptions = {
+        from: config.mail.supportEmail,
+        to: toEmailArray,
+        subject: 'New ticket created',
+        text: 'New ticket created - ticket number: ' + ticketNumber,
+        html: emailHtml,
+      };
+      this.emailService.sendEmail(mailOptions);
     } catch (error) {
       console.log('Error sending email notification to super users:', error);
     }
@@ -237,37 +238,37 @@ export class TicketService extends TypeOrmCrudService<TicketEntity> {
       });
 
       let message = await this.messageRepo.save(messageEntity);
-      message = await this.messageRepo.findOne({ where: { id: message.id }, relations: ['ticket', 'senderUser', 'senderCustomer'] });
+      message = await this.messageRepo.findOne({ where: { id: message.id }, relations: ['ticket', 'ticket.requesterUser', 'ticket.requesterCustomer', 'senderUser', 'senderUser.roles', 'senderCustomer'] });
 
       //send email notification to the assigned agent/user/customer
 
       const superUsers = await this.userService.getUsersWithRole('Super Admin', 0, company);
-      console.log("🚀 ~ TicketService ~ save ~ superUsers:", superUsers)
+      const superUsersEmailArray = superUsers.map(user => user.email);
 
-      const senderUser =
-        message.senderUser ||
-        message.senderCustomer ||
-        null;
-
-      const senderName = message.senderUser?.name || message.senderCustomer?.companyName || '';
-
-
-      let toEmailArray = [];
-      if (senderUser) {
-        toEmailArray = superUsers.map(user => user.email);
-      } else {
-        toEmailArray = [message.ticket.requesterUser];
+      let senderName = '';
+      let toEmailArray = null;
+      if (message.senderCustomer) {
+        senderName = message.senderCustomer.companyName;
+      } else if (message.senderUser) {
+        if (message.senderUser.roles[0].name === 'Super Admin') {
+          toEmailArray = message.ticket.requesterUser ? message.ticket.requesterUser.email : message.ticket.requesterCustomer ? message.ticket.requesterCustomer.companyName : null;
+        } else {
+          toEmailArray = superUsersEmailArray;
+        }
+        senderName = message.senderUser.name;
       }
+      console.log("🚀 ~ TicketService ~ createMessage ~ toEmailArray:", toEmailArray)
 
-      const emailHtml =
-        'Subject: ' + message.ticket.subject + '<br/>' +
-        'Ticket Number: ' + message.ticket.number + '<br/>' +
-        'Description: ' + message.ticket.description + '<br/>' +
-        'WO Number: ' + message.ticket.woNumber + '<br/>' +
-        'PO Number: ' + message.ticket.poNumber + '<br/>' +
-        'App Version: ' + message.ticket.appVersion + '<br/>' +
-        'Sender: ' + senderName + '<br/>' +
-        'Message: ' + message.message + '<br/>';
+      const emailHtml = [
+        `Subject: ${message.ticket.subject ?? ''}`,
+        `Ticket Number: ${message.ticket.number ?? ''}`,
+        `Description: ${message.ticket.description ?? ''}`,
+        `WO Number: ${message.ticket.woNumber ?? ''}`,
+        `PO Number: ${message.ticket.poNumber ?? ''}`,
+        `App Version: ${message.ticket.appVersion ?? ''}`,
+        `Sender: ${senderName ?? ''}`,
+        `Message: ${message.message ?? ''}`,
+      ].join('<br/>');
 
       const mailOptions = {
         from: config.mail.supportEmail,

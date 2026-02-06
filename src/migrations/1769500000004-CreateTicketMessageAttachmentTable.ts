@@ -9,13 +9,13 @@ export class CreateTicketMessageAttachmentTable1769500000004
     await queryRunner.query(`
       CREATE TABLE "ticket_message_attachment" (
         "id" SERIAL NOT NULL,
+        "messageId" integer NOT NULL,
         "fileName" character varying,
         "mimeType" character varying,
         "url" character varying,
         "size" integer,
         "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
         "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
-        "messageId" integer NOT NULL,
         CONSTRAINT "PK_ticket_message_attachment_id" PRIMARY KEY ("id")
       )
     `);
@@ -35,12 +35,9 @@ export class CreateTicketMessageAttachmentTable1769500000004
     await queryRunner.query(
       `DROP INDEX "IDX_ticket_message_attachment_message_id"`,
     );
-
-    await queryRunner.query(`
-      ALTER TABLE "ticket_message_attachment"
-      DROP CONSTRAINT "FK_ticket_message_attachment_message"
-    `);
-
+    await queryRunner.query(
+      `ALTER TABLE "ticket_message_attachment" DROP CONSTRAINT "FK_ticket_message_attachment_message"`,
+    );
     await queryRunner.query(`DROP TABLE "ticket_message_attachment"`);
   }
 }

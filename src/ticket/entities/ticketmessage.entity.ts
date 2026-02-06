@@ -24,11 +24,9 @@ export class TicketMessageEntity {
   ticket: TicketEntity;
 
   @ManyToOne(() => UserEntity, { nullable: true })
-  @JoinColumn({ name: 'senderId' })
   senderUser?: UserEntity;
 
   @ManyToOne(() => CustomerEntity, { nullable: true })
-  @JoinColumn({ name: 'senderCustomerId' })
   senderCustomer?: CustomerEntity;
 
   @OneToMany(() => TicketMessageAttachmentEntity, (attachment) => attachment.message, {
