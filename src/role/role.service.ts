@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { PermissionEntity } from "src/permission/entities/permission.entity";
 import { PermissionRepository } from "src/permission/permission.repository";
-import { FindOperator, Repository } from 'typeorm';
+import { FindOperator, Not, Repository } from 'typeorm';
 import { RoleDeleteDto } from "./dto/role.delete";
 import { RoleInputDto } from "./dto/role.input";
 import { RoleUpdateDto } from "./dto/role.update";
@@ -22,6 +22,9 @@ export class RoleService extends TypeOrmCrudService<RoleEntity> {
 
   async customGetAll() {
     return await this.repo.find({
+      where: {
+        name: Not('Super Admin'),
+      },
       relations: ["permissions"]
     });
   }
