@@ -12,6 +12,10 @@ import { TicketMessageAttachmentEntity } from './entities/ticketmessageattachmen
 import { TicketMessageEntity } from './entities/ticketmessage.entity';
 import { CreateTicketMessageDto } from 'src/ticket/dto/create-ticket-message.dto';
 import { CustomerEntity } from 'src/customer/entities/customer.entity';
+import { UserService } from 'src/user/user.service';
+import { EmailService } from 'src/email/email.service';
+import { default as config } from '../config';
+
 
 @Injectable()
 export class TicketService extends TypeOrmCrudService<TicketEntity> {
@@ -23,6 +27,8 @@ export class TicketService extends TypeOrmCrudService<TicketEntity> {
     private readonly messageRepo: Repository<TicketMessageEntity>,
     @InjectRepository(TicketMessageAttachmentEntity)
     private readonly messageAttachmentRepo: Repository<TicketMessageAttachmentEntity>,
+    private readonly userService: UserService,
+    private readonly emailService: EmailService,
   ) {
     super(repo);
   }
@@ -114,7 +120,48 @@ export class TicketService extends TypeOrmCrudService<TicketEntity> {
       assignedAgent: ({ id: data.assignedAgentId } as UserEntity),
     });
 
-    return await this.repo.save(newTicket);
+    let result = await this.repo.save(newTicket);
+    result = await this.getById(result.id, company);
+    console.log("🚀 ~ TicketService ~ save ~ result:", result)
+    //send email notification to the super users
+    try {
+      const superUsers = await this.userService.getUsersWithRole('Super Admin', 0, company);
+      console.log("🚀 ~ TicketService ~ save ~ superUsers:", superUsers)
+
+      const createdByName =
+        result.createdByUser?.name ||
+        result.createdByCustomer?.companyName ||
+        '';
+      const requesterName =
+        result.requesterUser?.name ||
+        result.requesterCustomer?.companyName ||
+        '';
+
+      const emailHtml =
+        'Subject: ' + result.subject + '<br/>' +
+        'Ticket Number: ' + result.number + '<br/>' +
+        'Description: ' + result.description + '<br/>' +
+        'WO Number: ' + result.woNumber + '<br/>' +
+        'PO Number: ' + result.poNumber + '<br/>' +
+        'App Version: ' + result.appVersion + '<br/>' +
+        'Created By: ' + createdByName + '<br/>' +
+        'Requested User: ' + requesterName + '<br/>';
+
+      for (const user of superUsers) {
+        const mailOptions = {
+          from: config.mail.supportEmail,
+          to: user.email,
+          subject: 'New ticket created',
+          text: 'New ticket created - ticket number: ' + ticketNumber,
+          html: emailHtml,
+        };
+        this.emailService.sendEmail(mailOptions);
+      }
+    } catch (error) {
+      console.log('Error sending email notification to super users:', error);
+    }
+
+    return result;
   }
 
   async updateTicket(data: UpdateTicketDto): Promise<TicketEntity> {
@@ -172,23 +219,69 @@ export class TicketService extends TypeOrmCrudService<TicketEntity> {
     data: CreateTicketMessageDto,
     company?: string,
   ): Promise<TicketMessageEntity> {
-    console.log("🚀 ~ TicketService ~ createMessage ~ data:", data)
-    const where: any = { id: data.ticketId };
-    if (company) where.company = company;
+    try {
+      console.log("🚀 ~ TicketService ~ createMessage ~ data:", data)
+      const where: any = { id: data.ticketId };
+      if (company) where.company = company;
 
-    const ticket = await this.repo.findOne({ where });
-    if (!ticket) throw new NotFoundException('Ticket not found');
+      const ticket = await this.repo.findOne({ where });
+      if (!ticket) throw new NotFoundException('Ticket not found');
 
-    const message = new TicketMessageEntity({
-      ticket,
-      message: data.message,
-      senderUser: data.senderUserId ? ({ id: data.senderUserId } as UserEntity) : undefined,
-      senderCustomer: data.senderCustomerId
-        ? ({ id: data.senderCustomerId } as CustomerEntity)
-        : undefined,
-    });
+      const messageEntity = new TicketMessageEntity({
+        ticket,
+        message: data.message,
+        senderUser: data.senderUserId ? ({ id: data.senderUserId } as UserEntity) : undefined,
+        senderCustomer: data.senderCustomerId
+          ? ({ id: data.senderCustomerId } as CustomerEntity)
+          : undefined,
+      });
 
-    return await this.messageRepo.save(message);
+      let message = await this.messageRepo.save(messageEntity);
+      message = await this.messageRepo.findOne({ where: { id: message.id }, relations: ['ticket', 'senderUser', 'senderCustomer'] });
+
+      //send email notification to the assigned agent/user/customer
+
+      const superUsers = await this.userService.getUsersWithRole('Super Admin', 0, company);
+      console.log("🚀 ~ TicketService ~ save ~ superUsers:", superUsers)
+
+      const senderUser =
+        message.senderUser ||
+        message.senderCustomer ||
+        null;
+
+      const senderName = message.senderUser?.name || message.senderCustomer?.companyName || '';
+
+
+      let toEmailArray = [];
+      if (senderUser) {
+        toEmailArray = superUsers.map(user => user.email);
+      } else {
+        toEmailArray = [message.ticket.requesterUser];
+      }
+
+      const emailHtml =
+        'Subject: ' + message.ticket.subject + '<br/>' +
+        'Ticket Number: ' + message.ticket.number + '<br/>' +
+        'Description: ' + message.ticket.description + '<br/>' +
+        'WO Number: ' + message.ticket.woNumber + '<br/>' +
+        'PO Number: ' + message.ticket.poNumber + '<br/>' +
+        'App Version: ' + message.ticket.appVersion + '<br/>' +
+        'Sender: ' + senderName + '<br/>' +
+        'Message: ' + message.message + '<br/>';
+
+      const mailOptions = {
+        from: config.mail.supportEmail,
+        to: toEmailArray,
+        subject: 'New ticket message',
+        text: 'New ticket message - ticket number: ' + message.ticket.number,
+        html: emailHtml,
+      };
+      this.emailService.sendEmail(mailOptions);
+
+      return message
+    } catch (error) {
+      console.log('Error sending email notification to assigned agent/user/customer:', error);
+    }
   }
 
   async uploadMessageAttachments(
