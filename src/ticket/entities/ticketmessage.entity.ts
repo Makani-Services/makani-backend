@@ -1,10 +1,12 @@
 import { TicketEntity } from './ticket.entity';
 import { TicketMessageAttachmentEntity } from './ticketmessageattachment.entity';
+import { CustomerEntity } from 'src/customer/entities/customer.entity';
 import { UserEntity } from 'src/user/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -22,7 +24,12 @@ export class TicketMessageEntity {
   ticket: TicketEntity;
 
   @ManyToOne(() => UserEntity, { nullable: true })
-  sender?: UserEntity;
+  @JoinColumn({ name: 'senderId' })
+  senderUser?: UserEntity;
+
+  @ManyToOne(() => CustomerEntity, { nullable: true })
+  @JoinColumn({ name: 'senderCustomerId' })
+  senderCustomer?: CustomerEntity;
 
   @OneToMany(() => TicketMessageAttachmentEntity, (attachment) => attachment.message, {
     cascade: true,

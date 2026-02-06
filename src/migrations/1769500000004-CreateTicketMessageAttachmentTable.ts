@@ -15,7 +15,7 @@ export class CreateTicketMessageAttachmentTable1769500000004
         "size" integer,
         "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
         "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
-        "messageId" integer,
+        "messageId" integer NOT NULL,
         CONSTRAINT "PK_ticket_message_attachment_id" PRIMARY KEY ("id")
       )
     `);

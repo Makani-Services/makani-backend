@@ -14,14 +14,14 @@ export class CreateTicketTable1769500000001 implements MigrationInterface {
         "poNumber" character varying,
         "appVersion" character varying,
         "status" smallint NOT NULL,
-        "company" character varying,
-        "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
-        "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
         "createdByUserId" integer,
         "createdByCustomerId" integer,
         "requesterUserId" integer,
         "requesterCustomerId" integer,
         "assignedAgentId" integer,
+        "company" character varying,
+        "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+        "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
         CONSTRAINT "PK_ticket_id" PRIMARY KEY ("id")
       )
     `);
@@ -59,18 +59,23 @@ export class CreateTicketTable1769500000001 implements MigrationInterface {
     await queryRunner.query(`
       CREATE INDEX "IDX_ticket_created_by_user_id" ON "ticket" ("createdByUserId")
     `);
+
     await queryRunner.query(`
       CREATE INDEX "IDX_ticket_created_by_customer_id" ON "ticket" ("createdByCustomerId")
     `);
+
     await queryRunner.query(`
       CREATE INDEX "IDX_ticket_requester_user_id" ON "ticket" ("requesterUserId")
     `);
+
     await queryRunner.query(`
       CREATE INDEX "IDX_ticket_requester_customer_id" ON "ticket" ("requesterCustomerId")
     `);
+
     await queryRunner.query(`
       CREATE INDEX "IDX_ticket_assigned_agent_id" ON "ticket" ("assignedAgentId")
     `);
+
     await queryRunner.query(`
       CREATE INDEX "IDX_ticket_company" ON "ticket" ("company")
     `);
@@ -85,24 +90,23 @@ export class CreateTicketTable1769500000001 implements MigrationInterface {
     await queryRunner.query(`DROP INDEX "IDX_ticket_created_by_user_id"`);
 
     await queryRunner.query(`
-      ALTER TABLE "ticket"
-      DROP CONSTRAINT "FK_ticket_assigned_agent"
+      ALTER TABLE "ticket" DROP CONSTRAINT "FK_ticket_assigned_agent"
     `);
+
     await queryRunner.query(`
-      ALTER TABLE "ticket"
-      DROP CONSTRAINT "FK_ticket_requester_customer"
+      ALTER TABLE "ticket" DROP CONSTRAINT "FK_ticket_requester_customer"
     `);
+
     await queryRunner.query(`
-      ALTER TABLE "ticket"
-      DROP CONSTRAINT "FK_ticket_requester_user"
+      ALTER TABLE "ticket" DROP CONSTRAINT "FK_ticket_requester_user"
     `);
+
     await queryRunner.query(`
-      ALTER TABLE "ticket"
-      DROP CONSTRAINT "FK_ticket_created_by_customer"
+      ALTER TABLE "ticket" DROP CONSTRAINT "FK_ticket_created_by_customer"
     `);
+
     await queryRunner.query(`
-      ALTER TABLE "ticket"
-      DROP CONSTRAINT "FK_ticket_created_by_user"
+      ALTER TABLE "ticket" DROP CONSTRAINT "FK_ticket_created_by_user"
     `);
 
     await queryRunner.query(`DROP TABLE "ticket"`);

@@ -37,6 +37,9 @@ export class TicketService extends TypeOrmCrudService<TicketEntity> {
       .leftJoinAndSelect('ticket.assignedAgent', 'assignedAgent')
       .leftJoinAndSelect('ticket.messages', 'messages')
       .leftJoinAndSelect('ticket.attachments', 'attachments')
+      .leftJoinAndSelect('messages.attachments', 'messageAttachments')
+      .leftJoinAndSelect('messages.senderUser', 'messageSenderUser')
+      .leftJoinAndSelect('messages.senderCustomer', 'messageSenderCustomer')
 
     if (company) {
       baseQuery = baseQuery.andWhere('ticket.company = :company', { company });
@@ -63,7 +66,8 @@ export class TicketService extends TypeOrmCrudService<TicketEntity> {
 
     baseQuery = baseQuery
       .orderBy('CASE WHEN ticket.status = 100 THEN 1 ELSE 0 END', 'ASC')
-      .addOrderBy('ticket.createdAt', 'DESC');
+      .addOrderBy('ticket.createdAt', 'DESC')
+      .addOrderBy('messages.createdAt', 'ASC');
 
     return await baseQuery.getMany();
   }
@@ -74,7 +78,18 @@ export class TicketService extends TypeOrmCrudService<TicketEntity> {
 
     const ticket = await this.repo.findOne({
       where,
-      relations: ['createdByUser', 'createdByCustomer', 'requesterUser', 'requesterCustomer', 'assignedAgent', 'attachments', 'messages', 'messages.attachments', 'messages.sender'],
+      relations: [
+        'createdByUser',
+        'createdByCustomer',
+        'requesterUser',
+        'requesterCustomer',
+        'assignedAgent',
+        'attachments',
+        'messages',
+        'messages.attachments',
+        'messages.senderUser',
+        'messages.senderCustomer',
+      ],
     });
 
     if (!ticket) throw new NotFoundException('Ticket not found');
@@ -167,7 +182,10 @@ export class TicketService extends TypeOrmCrudService<TicketEntity> {
     const message = new TicketMessageEntity({
       ticket,
       message: data.message,
-      sender: ({ id: data.senderId } as UserEntity),
+      senderUser: data.senderUserId ? ({ id: data.senderUserId } as UserEntity) : undefined,
+      senderCustomer: data.senderCustomerId
+        ? ({ id: data.senderCustomerId } as CustomerEntity)
+        : undefined,
     });
 
     return await this.messageRepo.save(message);
