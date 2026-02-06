@@ -28,6 +28,7 @@ import { KeywordEntity } from 'src/keyword/entities/keyword.entity';
 import { CustomerUserInviteEntity } from 'src/customer-user-invite/entities/customer-user-invite.entity';
 import { CompanyEntity } from 'src/company/entities/company.entity';
 import { CustomerNoteEntity } from 'src/customer-note/entities/customer-note.entity';
+import { TicketEntity } from 'src/ticket/entities/ticket.entity';
 
 @Entity('user_entity')
 export class UserEntity {
@@ -134,6 +135,15 @@ export class UserEntity {
 
   @OneToMany(() => CustomerNoteEntity, (customerNote) => customerNote.sender)
   sentCustomerNotes: CustomerNoteEntity[];
+
+  @OneToMany(() => TicketEntity, (ticket) => ticket.requesterUser)
+  requestedTickets: TicketEntity[];
+
+  @OneToMany(() => TicketEntity, (ticket) => ticket.createdByUser)
+  createdTickets: TicketEntity[];
+
+  @OneToMany(() => TicketEntity, (ticket) => ticket.assignedAgent)
+  assignedTickets: TicketEntity[];
 
   constructor(data: Partial<UserEntity> = {}) {
     Object.assign(this, data);

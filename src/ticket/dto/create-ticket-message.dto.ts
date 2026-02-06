@@ -15,5 +15,6 @@ export class CreateTicketMessageDto {
   @ApiProperty({ required: false })
   @IsOptional()
   @IsInt()
+  @Min(1)
   readonly senderId?: number;
 }

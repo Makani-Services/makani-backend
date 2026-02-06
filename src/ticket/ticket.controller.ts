@@ -27,7 +27,7 @@ export class TicketController {
 
   @Get('get_all')
   async getAll(@Query() query: any, @Headers() headers: any) {
-    return await this.service.findAll(query.status, query.createdById, headers.company);
+    return await this.service.findAll(query, headers.company);
   }
 
   @Get('get_one')

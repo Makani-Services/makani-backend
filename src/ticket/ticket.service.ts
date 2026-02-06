@@ -11,6 +11,7 @@ import { TicketEntity } from './entities/ticket.entity';
 import { TicketMessageAttachmentEntity } from './entities/ticketmessageattachment.entity';
 import { TicketMessageEntity } from './entities/ticketmessage.entity';
 import { CreateTicketMessageDto } from 'src/ticket/dto/create-ticket-message.dto';
+import { CustomerEntity } from 'src/customer/entities/customer.entity';
 
 @Injectable()
 export class TicketService extends TypeOrmCrudService<TicketEntity> {
@@ -26,27 +27,45 @@ export class TicketService extends TypeOrmCrudService<TicketEntity> {
     super(repo);
   }
 
-  async findAll(status?: number, createdById?: number, company?: string) {
-    let query = this.repo
+  async findAll(query: any, company?: string) {
+    let baseQuery = this.repo
       .createQueryBuilder('ticket')
-      .leftJoinAndSelect('ticket.createdBy', 'createdBy')
+      .leftJoinAndSelect('ticket.createdByUser', 'createdByUser')
+      .leftJoinAndSelect('ticket.createdByCustomer', 'createdByCustomer')
+      .leftJoinAndSelect('ticket.requesterUser', 'requesterUser')
+      .leftJoinAndSelect('ticket.requesterCustomer', 'requesterCustomer')
+      .leftJoinAndSelect('ticket.assignedAgent', 'assignedAgent')
       .leftJoinAndSelect('ticket.messages', 'messages')
       .leftJoinAndSelect('ticket.attachments', 'attachments')
 
     if (company) {
-      query = query.andWhere('ticket.company = :company', { company });
+      baseQuery = baseQuery.andWhere('ticket.company = :company', { company });
     }
 
-    if (status) {
-      query = query.andWhere('ticket.status = :status', { status });
+    if (query.status) {
+      baseQuery = baseQuery.andWhere('ticket.status = :status', { status: query.status });
     }
-    if (createdById) {
-      query = query.andWhere('ticket.createdById = :createdById', { createdById });
+    if (query.createdByUserId) {
+      baseQuery = baseQuery.andWhere('ticket.createdByUserId = :createdByUserId', { createdByUserId: query.createdByUserId });
+    }
+    if (query.createdByCustomerId) {
+      baseQuery = baseQuery.andWhere('ticket.createdByCustomerId = :createdByCustomerId', { createdByCustomerId: query.createdByCustomerId });
+    }
+    if (query.requesterUserId) {
+      baseQuery = baseQuery.andWhere('ticket.requesterUserId = :requesterUserId', { requesterUserId: query.requesterUserId });
+    }
+    if (query.requesterCustomerId) {
+      baseQuery = baseQuery.andWhere('ticket.requesterCustomerId = :requesterCustomerId', { requesterCustomerId: query.requesterCustomerId });
+    }
+    if (query.assignedAgentId) {
+      baseQuery = baseQuery.andWhere('ticket.assignedAgentId = :assignedAgentId', { assignedAgentId: query.assignedAgentId });
     }
 
-    query = query.orderBy('ticket.createdAt', 'DESC');
+    baseQuery = baseQuery
+      .orderBy('CASE WHEN ticket.status = 100 THEN 1 ELSE 0 END', 'ASC')
+      .addOrderBy('ticket.createdAt', 'DESC');
 
-    return await query.getMany();
+    return await baseQuery.getMany();
   }
 
   async getById(ticketId: number, company?: string) {
@@ -55,7 +74,7 @@ export class TicketService extends TypeOrmCrudService<TicketEntity> {
 
     const ticket = await this.repo.findOne({
       where,
-      relations: ['createdBy', 'attachments', 'messages', 'messages.attachments', 'messages.sender'],
+      relations: ['createdByUser', 'createdByCustomer', 'requesterUser', 'requesterCustomer', 'assignedAgent', 'attachments', 'messages', 'messages.attachments', 'messages.sender'],
     });
 
     if (!ticket) throw new NotFoundException('Ticket not found');
@@ -73,7 +92,11 @@ export class TicketService extends TypeOrmCrudService<TicketEntity> {
       status: data.status,
       company: company,
       appVersion: data.appVersion,
-      createdBy: ({ id: data.createdById } as UserEntity)
+      createdByUser: ({ id: data.createdByUserId } as UserEntity),
+      createdByCustomer: ({ id: data.createdByCustomerId } as CustomerEntity),
+      requesterUser: ({ id: data.requesterUserId } as UserEntity),
+      requesterCustomer: ({ id: data.requesterCustomerId } as CustomerEntity),
+      assignedAgent: ({ id: data.assignedAgentId } as UserEntity),
     });
 
     return await this.repo.save(newTicket);
@@ -88,10 +111,12 @@ export class TicketService extends TypeOrmCrudService<TicketEntity> {
       woNumber: data.woNumber,
       poNumber: data.poNumber,
       company: data.company,
-      createdBy:
-        data.createdById != null
-          ? ({ id: data.createdById } as UserEntity)
-          : undefined,
+      appVersion: data.appVersion,
+      createdByUser: ({ id: data.createdByUserId } as UserEntity),
+      createdByCustomer: ({ id: data.createdByCustomerId } as CustomerEntity),
+      requesterUser: ({ id: data.requesterUserId } as UserEntity),
+      requesterCustomer: ({ id: data.requesterCustomerId } as CustomerEntity),
+      assignedAgent: ({ id: data.assignedAgentId } as UserEntity),
     });
 
     return await this.repo.save(updated);

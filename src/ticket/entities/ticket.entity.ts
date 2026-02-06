@@ -39,11 +39,32 @@ export class TicketEntity {
 
   @Column({ type: 'smallint', unsigned: true })
   status: number;
-
   // 0: open,   100: closed
 
-  @ManyToOne(() => UserEntity, { nullable: true })
-  createdBy?: UserEntity;
+  @ManyToOne(() => UserEntity, (user) => user.createdTickets, {
+    nullable: true,
+  })
+  createdByUser?: UserEntity;
+
+  @ManyToOne(() => CustomerEntity, (customer) => customer.createdTickets, {
+    nullable: true,
+  })
+  createdByCustomer?: CustomerEntity;
+
+  @ManyToOne(() => UserEntity, (user) => user.requestedTickets, {
+    nullable: true,
+  })
+  requesterUser?: UserEntity;
+
+  @ManyToOne(() => CustomerEntity, (customer) => customer.requestedTickets, {
+    nullable: true,
+  })
+  requesterCustomer?: CustomerEntity;
+
+  @ManyToOne(() => UserEntity, (user) => user.assignedTickets, {
+    nullable: true,
+  })
+  assignedAgent?: UserEntity;
 
   @OneToMany(() => TicketMessageEntity, (message) => message.ticket, {
     cascade: true,

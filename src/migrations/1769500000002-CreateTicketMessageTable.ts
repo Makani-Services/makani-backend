@@ -1,8 +1,6 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class CreateTicketMessageTable1769500000002
-  implements MigrationInterface
-{
+export class CreateTicketMessageTable1769500000002 implements MigrationInterface {
   name = 'CreateTicketMessageTable1769500000002';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
@@ -33,7 +31,6 @@ export class CreateTicketMessageTable1769500000002
     await queryRunner.query(`
       CREATE INDEX "IDX_ticket_message_ticket_id" ON "ticket_message" ("ticketId")
     `);
-
     await queryRunner.query(`
       CREATE INDEX "IDX_ticket_message_sender_id" ON "ticket_message" ("senderId")
     `);
@@ -47,7 +44,6 @@ export class CreateTicketMessageTable1769500000002
       ALTER TABLE "ticket_message"
       DROP CONSTRAINT "FK_ticket_message_sender"
     `);
-
     await queryRunner.query(`
       ALTER TABLE "ticket_message"
       DROP CONSTRAINT "FK_ticket_message_ticket"
