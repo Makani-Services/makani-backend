@@ -7,6 +7,7 @@ import { HistoryEntity } from 'src/history/entities/history.entity';
 import { WoMaterialEntity } from 'src/material/entities/wo-material.entity';
 import { PoEntity } from 'src/po/entities/po.entity';
 import { TechnicianEntity } from 'src/technician/entities/technician.entity';
+import { ServiceTypeEntity } from 'src/service-type/entities/service-type.entity';
 import { UserEntity } from 'src/user/entities/user.entity';
 import {
   PrimaryGeneratedColumn,
@@ -86,6 +87,9 @@ export class WoEntity {
 
   @ManyToOne(() => UserEntity, (user) => user.quotedWO)
   quotedBy: UserEntity;
+
+  @ManyToOne(() => ServiceTypeEntity, (serviceType) => serviceType.wos)
+  serviceType: ServiceTypeEntity;
 
   @Column({ nullable: true })
   description: string;
