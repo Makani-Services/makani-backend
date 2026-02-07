@@ -8,7 +8,7 @@ export const rscsDataSourceOptions: DataSourceOptions = {
   port: config.db.port,
   username: config.db.user,
   password: config.db.pass,
-  database: 'ticket',
+  database: 'rscs',
   entities: [join(__dirname, '../**/*.entity{.ts,.js}')],
   migrations: [join(__dirname, '../migrations/*{.ts,.js}')],
   migrationsRun: false,
