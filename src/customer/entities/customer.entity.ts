@@ -5,6 +5,7 @@ import { CustomerLocationEntity } from 'src/customer-location/entities/customer-
 import { CustomerUserEntity } from 'src/customer-user/entities/customer-user.entity';
 import { CustomerUserInviteEntity } from 'src/customer-user-invite/entities/customer-user-invite.entity';
 import { RoleEntity } from 'src/role/entities/role.entity';
+import { TicketEntity } from 'src/ticket/entities/ticket.entity';
 import { WoEntity } from 'src/wo/entities/wo.entity';
 import {
   BeforeInsert,
@@ -45,6 +46,12 @@ export class CustomerEntity {
 
   @OneToMany(() => CustomerUserInviteEntity, (invite) => invite.customer)
   invites: CustomerUserInviteEntity[];
+
+  @OneToMany(() => TicketEntity, (ticket) => ticket.requesterCustomer)
+  requestedTickets: TicketEntity[];
+
+  @OneToMany(() => TicketEntity, (ticket) => ticket.createdByCustomer)
+  createdTickets: TicketEntity[];
 
   @ManyToOne(() => BranchEntity, (branch) => branch.customer)
   branch: BranchEntity;

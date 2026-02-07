@@ -36,6 +36,7 @@ import { CustomerRoleModule } from './customer-role/customer-role.module';
 import { CustomerNoteModule } from './customer-note/customer-note.module';
 import { CustomerNotificationModule } from './customer-notification/customer-notification.module';
 import { MaterialModule } from './material/material.module';
+import { TicketModule } from './ticket/ticket.module';
 import { ServiceTypeModule } from './service-type/service-type.module';
 
 let publicFolder = {
@@ -84,9 +85,10 @@ if (
     CustomerNoteModule,
     CustomerNotificationModule,
     MaterialModule,
+    TicketModule,
     ServiceTypeModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

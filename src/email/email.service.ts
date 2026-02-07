@@ -34,7 +34,8 @@ export class EmailService {
       await sgMail.send(mailOptions);
       return true;
     } catch (error) {
-      console.error('Error sending email:', error.response.body);
+      const errResponse = error?.response?.body ?? error?.response ?? error;
+      console.error('Error sending email:', errResponse);
       return false;
     }
   }
