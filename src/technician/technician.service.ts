@@ -12,7 +12,6 @@ import { Repository } from 'typeorm';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { WoEntity } from 'src/wo/entities/wo.entity';
 import { UpdateTechnicianDto } from './dto/update-technician.dto';
-import * as nodemailer from 'nodemailer';
 import { default as config } from '../config';
 import { WoService } from 'src/wo/wo.service';
 import { PusherService } from 'src/pusher/pusher.service';
@@ -21,8 +20,6 @@ import { UserService } from 'src/user/user.service';
 import { NotificationEntity } from 'src/notification/entities/notification.entity';
 import { NotificationService } from 'src/notification/notification.service';
 import {
-  WO_TYPE_LIST,
-  formatDate,
   getAssignedTechsNameArray,
   getFormattedTechName,
   timeToDecimal,
@@ -87,23 +84,25 @@ export class TechnicianService extends TypeOrmCrudService<TechnicianEntity> {
         'pos',
         'pos.poItems',
         'branch',
+        'serviceType',
       ],
     });
+    console.log("🚀 ~ TechnicianService ~ create ~ newWO:", newWO)
     if (oldWO.assignedTechs.length === 0) {
       try {
         let type = 0;
 
-        switch (newWO.type) {
-          case 0:
+        switch (newWO.serviceType.serviceType) {
+          case "Service Call":
             type = 0;
             break;
-          case 1:
+          case "Quoted Job":
             type = 6;
             break;
-          case 2:
+          case "PM":
             type = 7;
             break;
-          case 3:
+          case "Parts Only":
             type = 8;
             break;
         }
@@ -129,8 +128,8 @@ export class TechnicianService extends TypeOrmCrudService<TechnicianEntity> {
               'WO#: ' +
               newWO.number +
               '<br/>' +
-              'Type of WO#: ' +
-              WO_TYPE_LIST[newWO.type] +
+              'Service Type: ' +
+              newWO.serviceType.serviceType +
               '<br/>' +
               'Customer Name: ' +
               newWO.customer.companyName +
@@ -158,7 +157,7 @@ export class TechnicianService extends TypeOrmCrudService<TechnicianEntity> {
       userIds,
       'Work Order assigned',
       'Work Order(' + wo.number + ') is assigned to you',
-      { screen: 'jobs/requested' },
+      { type: 'JOB_REQUESTED' },
     );
 
     //send email notification

@@ -150,6 +150,15 @@ export class ReportService extends TypeOrmCrudService<ReportEntity> {
         value: (order) => order.regularTime,
       },
       {
+        column: 'Travel Time',
+        type: String,
+        width: 15,
+        wrap: true,
+        align: 'center',
+        alignVertical: 'center',
+        value: (order) => order.travelTime,
+      },
+      {
         column: 'Over Time',
         type: String,
         width: 15,

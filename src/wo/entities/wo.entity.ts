@@ -7,6 +7,7 @@ import { HistoryEntity } from 'src/history/entities/history.entity';
 import { WoMaterialEntity } from 'src/material/entities/wo-material.entity';
 import { PoEntity } from 'src/po/entities/po.entity';
 import { TechnicianEntity } from 'src/technician/entities/technician.entity';
+import { ServiceTypeEntity } from 'src/service-type/entities/service-type.entity';
 import { UserEntity } from 'src/user/entities/user.entity';
 import {
   PrimaryGeneratedColumn,
@@ -18,6 +19,7 @@ import {
   OneToMany,
   Index,
 } from 'typeorm';
+import { WoAttachmentEntity } from './woattachment.entity';
 
 @Entity('wo')
 export class WoEntity {
@@ -81,10 +83,13 @@ export class WoEntity {
 
   @Column({ nullable: true })
   @Index()
-  type: number; //0: service call ,  1: quoted,  2: PM,  3: Parts Only
+  type: number; //0: Service Call ,  1: Quoted Job,  2: PM,  3: Parts Only   4: Compressor Rebuild
 
   @ManyToOne(() => UserEntity, (user) => user.quotedWO)
   quotedBy: UserEntity;
+
+  @ManyToOne(() => ServiceTypeEntity, (serviceType) => serviceType.wos)
+  serviceType: ServiceTypeEntity;
 
   @Column({ nullable: true })
   description: string;
@@ -137,8 +142,11 @@ export class WoEntity {
   @Column({ type: 'timestamptz', nullable: true })
   completedDate: Date;
 
-  @Column({ nullable: true, type: 'varchar', array: true })
-  attachments: string[];
+  // @Column({ nullable: true, type: 'varchar', array: true })
+  // attachments: string[];
+
+  @OneToMany(() => WoAttachmentEntity, (attachment) => attachment.wo)
+  attachments: WoAttachmentEntity[];
 
   @Column({ nullable: true, type: 'varchar', array: true })
   proposals: string[];
@@ -177,14 +185,14 @@ export class WoEntity {
   @Column({ nullable: true })
   materials: string; //other materials
 
-  @Column({ nullable: true })
-  isRefrigerantAdded: boolean;
+  // @Column({ nullable: true })
+  // isRefrigerantAdded: boolean;
 
-  @Column({ nullable: true })
-  refrigerantType: string;
+  // @Column({ nullable: true })
+  // refrigerantType: string;
 
-  @Column({ nullable: true })
-  refrigerantQuantity: number;
+  // @Column({ nullable: true })
+  // refrigerantQuantity: number;
 
   @Column({ nullable: true })
   ticketReceipients: string;

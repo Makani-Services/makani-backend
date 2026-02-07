@@ -116,9 +116,9 @@ export class ScheduledTaskService implements OnModuleInit {
     private readonly technicianService: TechnicianService,
     private readonly pusherService: PusherService,
     private schedulerRegistry: SchedulerRegistry,
-  ) {}
+  ) { }
 
-  onModuleInit() {}
+  onModuleInit() { }
 
   @Cron('* * * * *', {
     timeZone: 'Pacific/Honolulu',
@@ -738,9 +738,8 @@ export class ScheduledTaskService implements OnModuleInit {
     }
     let recipientEmailArray = recipients.map((user) => user.email);
 
-    const fileName = `${
-      cycle === 0 ? 'Weekly' : 'Monthly'
-    }_Report_For_Open_POs_${moment().format('YYYY_MM_DD')}.xlsx`;
+    const fileName = `${cycle === 0 ? 'Weekly' : 'Monthly'
+      }_Report_For_Open_POs_${moment().format('YYYY_MM_DD')}.xlsx`;
     const filePath = `./public/${company}/reports/${fileName}`;
     if (!fs.existsSync(`./public/${company}/reports/`)) {
       fs.mkdirSync(`./public/${company}/reports/`, { recursive: true });
@@ -804,7 +803,7 @@ export class ScheduledTaskService implements OnModuleInit {
     for (let order of openWOArray) {
       const row = {
         number: order.number,
-        type: order.type == 0 ? 'Service Call' : 'Quoted',
+        type: order.serviceType.serviceType,
         customer: order.customer?.companyName,
         NTE: order.NTE,
         description: order.description,
@@ -816,9 +815,8 @@ export class ScheduledTaskService implements OnModuleInit {
 
     let recipientEmailArray = recipients.map((user) => user.email);
 
-    const fileName = `${
-      cycle === 0 ? 'Weekly' : 'Monthly'
-    }_Report_For_Open_WOs_${moment().format('YYYY_MM_DD')}.xlsx`;
+    const fileName = `${cycle === 0 ? 'Weekly' : 'Monthly'
+      }_Report_For_Open_WOs_${moment().format('YYYY_MM_DD')}.xlsx`;
     const filePath = `./public/${company}/reports/${fileName}`;
     if (!fs.existsSync(`./public/${company}/reports/`)) {
       fs.mkdirSync(`./public/${company}/reports/`, { recursive: true });
@@ -886,7 +884,7 @@ export class ScheduledTaskService implements OnModuleInit {
 
       const row = {
         number: order.number,
-        type: order.type == 0 ? 'Service Call' : 'Quoted',
+        type: order.serviceType.serviceType,
         customer: order.customer?.company,
         NTE: order.NTE,
         description: order.description,
@@ -998,9 +996,8 @@ export class ScheduledTaskService implements OnModuleInit {
       },
     ];
 
-    const fileName = `${
-      cycle === 0 ? 'Weekly' : 'Monthly'
-    }_Report_For_Completed_WOs_${moment().format('YYYY_MM_DD')}.xlsx`;
+    const fileName = `${cycle === 0 ? 'Weekly' : 'Monthly'
+      }_Report_For_Completed_WOs_${moment().format('YYYY_MM_DD')}.xlsx`;
     const filePath = `./public/${company}/reports/${fileName}`;
     if (!fs.existsSync(`./public/${company}/reports/`)) {
       fs.mkdirSync(`./public/${company}/reports/`, { recursive: true });
@@ -1021,9 +1018,8 @@ export class ScheduledTaskService implements OnModuleInit {
       const mailOptions = {
         from: config.mail.supportEmail,
         to: recipientEmailArray,
-        subject: `${
-          cycle === 0 ? 'Weekly' : 'Monthly'
-        }_Report_For_Completed_WOs`,
+        subject: `${cycle === 0 ? 'Weekly' : 'Monthly'
+          }_Report_For_Completed_WOs`,
         text: ' ',
         html: ' ',
         attachments: [
@@ -1066,7 +1062,7 @@ export class ScheduledTaskService implements OnModuleInit {
     for (let order of reviewedWOArray) {
       const row = {
         number: order.number,
-        type: order.type == 0 ? 'Service Call' : 'Quoted',
+        type: order.serviceType.serviceType,
         customer: order.customer?.company,
         NTE: order.NTE,
         description: order.description,
@@ -1078,9 +1074,8 @@ export class ScheduledTaskService implements OnModuleInit {
 
     let recipientEmailArray = recipients.map((user) => user.email);
 
-    const fileName = `${
-      cycle === 0 ? 'Weekly' : 'Monthly'
-    }_Report_For_Reviewed_WOs_${moment().format('YYYY_MM_DD')}.xlsx`;
+    const fileName = `${cycle === 0 ? 'Weekly' : 'Monthly'
+      }_Report_For_Reviewed_WOs_${moment().format('YYYY_MM_DD')}.xlsx`;
     const filePath = `./public/${company}/reports/${fileName}`;
     if (!fs.existsSync(`./public/${company}/reports/`)) {
       fs.mkdirSync(`./public/${company}/reports/`, { recursive: true });
@@ -1101,9 +1096,8 @@ export class ScheduledTaskService implements OnModuleInit {
       const mailOptions = {
         from: config.mail.supportEmail,
         to: recipientEmailArray,
-        subject: `${
-          cycle === 0 ? 'Weekly' : 'Monthly'
-        }_Report_For_Reviewed_WOs`,
+        subject: `${cycle === 0 ? 'Weekly' : 'Monthly'
+          }_Report_For_Reviewed_WOs`,
         text: ' ',
         html: ' ',
         attachments: [
@@ -1146,7 +1140,7 @@ export class ScheduledTaskService implements OnModuleInit {
     for (let order of billedWOArray) {
       const row = {
         number: order.number,
-        type: order.type == 0 ? 'Service Call' : 'Quoted',
+        type: order.serviceType.serviceType,
         customer: order.customer?.company,
         NTE: order.NTE,
         description: order.description,
@@ -1158,9 +1152,8 @@ export class ScheduledTaskService implements OnModuleInit {
 
     let recipientEmailArray = recipients.map((user) => user.email);
 
-    const fileName = `${
-      cycle === 0 ? 'Weekly' : 'Monthly'
-    }_Report_For_Billed_WOs_${moment().format('YYYY_MM_DD')}.xlsx`;
+    const fileName = `${cycle === 0 ? 'Weekly' : 'Monthly'
+      }_Report_For_Billed_WOs_${moment().format('YYYY_MM_DD')}.xlsx`;
     const filePath = `./public/${company}/reports/${fileName}`;
     if (!fs.existsSync(`./public/${company}/reports/`)) {
       fs.mkdirSync(`./public/${company}/reports/`, { recursive: true });
@@ -1381,7 +1374,7 @@ export class ScheduledTaskService implements OnModuleInit {
           emails,
           'Daily Time Log Reminder',
           'Please remember to log your time for today.',
-          { screen: 'jobs/assigned' },
+          { type: 'DAILY_TIME_LOG_REMINDER' },
         );
 
         // Update all user records in parallel
@@ -1398,275 +1391,4 @@ export class ScheduledTaskService implements OnModuleInit {
     }
   }
 
-  /*
-  async sendWOReportsToClericalsAndManagers() {
-    //send WO reports email to clericals and managers
-    const schema = [
-      {
-        column: 'WO#',
-        type: String,
-        width: 15,
-        wrap: true,
-        align: 'center',
-        alignVertical: 'center',
-        value: (order) => order.number,
-      },
-      {
-        column: 'Type',
-        type: String,
-        width: 15,
-        wrap: true,
-        align: 'center',
-        alignVertical: 'center',
-        value: (order) => order.type,
-      },
-      {
-        column: 'Customer',
-        type: String,
-        width: 20,
-        wrap: true,
-        align: 'center',
-        alignVertical: 'center',
-        value: (order) => order.customer,
-      },
-      {
-        column: 'NTE',
-        type: Number,
-        width: 10,
-        wrap: true,
-        align: 'center',
-        alignVertical: 'center',
-        value: (order) => order.NTE,
-      },
-      {
-        column: 'Description',
-        type: String,
-        width: 50,
-        wrap: true,
-        align: 'center',
-        alignVertical: 'center',
-        value: (order) => order.description,
-      },
-      {
-        column: 'Technician',
-        type: String,
-        width: 30,
-        wrap: true,
-        align: 'center',
-        alignVertical: 'center',
-        value: (order) => order.technician,
-      },
-      {
-        column: 'Status',
-        type: String,
-        width: 10,
-        wrap: true,
-        align: 'center',
-        alignVertical: 'center',
-        value: (order) => order.status,
-      },
-    ];
-
-    let data = [];
-    let openWOs = await this.woService.getOpenWorkOrders();
-    for (let order of openWOs) {
-      const row = {
-        number: order.number,
-        type: order.type == 0 ? 'Service Call' : 'Quoted',
-        customer: order.customer?.company,
-        NTE: order.NTE,
-        description: order.description,
-        technician: getAssignedTechsNameArray(order.assignedTechs),
-        status: getWorkOrderStatus(order.status),
-      };
-      data.push(row);
-    }
-    const fileName = 'Open_WOs_weekly_report.xlsx';
-    const filePath = `./public/${company}/reports/${fileName}`;
-    if (!fs.existsSync(`./public/${company}/reports/`)) {
-      fs.mkdirSync(`./public/${company}/reports/`, { recursive: true });
-    }
-    await writeXlsxFile(data, {
-      schema,
-      headerStyle: {
-        backgroundColor: '#eeeeee',
-        fontWeight: 'bold',
-        align: 'center',
-      },
-      filePath: filePath,
-    });
-
-    try {
-      let item: NotificationEntity = await this.notificationService.getOneItem(
-        50,
-        0,
-        0,
-      );
-
-      let recipientEmailArray = await this.userService.getRecipientEmailArray(
-        item,
-      );
-      console.log('WO report recipientEmailArray: ', recipientEmailArray);
-      const fileName = 'Open_WOs_weekly_report.xlsx';
-      const filePath = `./public/${company}/reports/${fileName}`;
-      const mailOptions = {
-        from: config.mail.supportEmail,
-        to: recipientEmailArray, // list of receivers (separated by ,)
-        subject: 'Weekly Report',
-        text: ' ',
-        html: ' ',
-        attachments: [
-          {
-            filename: fileName,
-            path: filePath,
-          },
-        ],
-      };
-
-      this.emailService.sendEmail(mailOptions);
-    } catch (e) {
-      console.log(e);
-    }
-  }
-
-  async sendPOReportsToClericalsAndManagers(company = 'rscs') {
-    // send PO reports to managers and clericals
-    const schema = [
-      {
-        column: 'PO#',
-        type: String,
-        width: 15,
-        wrap: true,
-        align: 'center',
-        alignVertical: 'center',
-        value: (order) => order.number,
-      },
-      {
-        column: 'Vendor',
-        type: String,
-        width: 20,
-        wrap: true,
-        align: 'center',
-        alignVertical: 'center',
-        value: (order) => order.vendor,
-      },
-      {
-        column: 'Description',
-        type: String,
-        width: 50,
-        wrap: true,
-        align: 'center',
-        alignVertical: 'center',
-        value: (order) => order.description,
-      },
-      {
-        column: 'Technician',
-        type: String,
-        width: 25,
-        wrap: true,
-        align: 'center',
-        alignVertical: 'center',
-        value: (order) => order.technician,
-      },
-      {
-        column: 'Parent WO#',
-        type: String,
-        width: 15,
-        wrap: true,
-        align: 'center',
-        alignVertical: 'center',
-        value: (order) => order.parentWO,
-      },
-      {
-        column: 'Customer',
-        type: String,
-        width: 15,
-        wrap: true,
-        align: 'center',
-        alignVertical: 'center',
-        value: (order) => order.customer,
-      },
-      {
-        column: 'Issued By',
-        type: String,
-        width: 15,
-        wrap: true,
-        align: 'center',
-        alignVertical: 'center',
-        value: (order) => order.issuedUser,
-      },
-      {
-        column: 'Status',
-        type: String,
-        width: 15,
-        wrap: true,
-        align: 'center',
-        alignVertical: 'center',
-        value: (order) => order.status,
-      },
-    ];
-
-    let data = [];
-    let openPOs = await this.poService.getOpenPurchaseOrders();
-    for (let order of openPOs) {
-      const row = {
-        number: order.number ? order.number : '',
-        vendor: order.vendor,
-        description: order.description,
-        technician: getAssignedTechsNameArray(order.wo.assignedTechs),
-        parentWO: order.wo.number,
-        customer: order.wo.customer.companyName,
-        issuedUser: order.issuedUser ? order.issuedUser.name : '',
-        status: getPurchaseOrderStatus(order.status),
-      };
-      data.push(row);
-    }
-    const fileName = 'Open_POs_weekly_report.xlsx';
-    const filePath = `./public/${company}/reports/${fileName}`;
-    if (!fs.existsSync(`./public/${company}/reports/`)) {
-      fs.mkdirSync(`./public/${company}/reports/`, { recursive: true });
-    }
-    await writeXlsxFile(data, {
-      schema,
-      headerStyle: {
-        backgroundColor: '#eeeeee',
-        fontWeight: 'bold',
-        align: 'center',
-      },
-      filePath: filePath,
-    });
-
-    try {
-      let item: NotificationEntity = await this.notificationService.getOneItem(
-        50,
-        1,
-        0,
-      );
-
-      let recipientEmailArray = await this.userService.getRecipientEmailArray(
-        item,
-      );
-      console.log('PO report recipientEmailArray: ', recipientEmailArray);
-      const fileName = 'Open_POs_weekly_report.xlsx';
-      const filePath = `./public/${company}/reports/${fileName}`;
-      const mailOptions = {
-        from: config.mail.supportEmail,
-        to: recipientEmailArray, // list of receivers (separated by ,)
-        subject: 'Weekly Report',
-        text: ' ',
-        html: ' ',
-        attachments: [
-          {
-            filename: fileName,
-            path: filePath,
-          },
-        ],
-      };
-
-      this.emailService.sendEmail(mailOptions);
-    } catch (e) {
-      console.log(e);
-    }
-  }
-    */
 }

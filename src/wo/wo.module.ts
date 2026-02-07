@@ -3,6 +3,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { WoService } from './wo.service';
 import { WoController } from './wo.controller';
+import { WoCustomerService } from './wo-customer/wo-customer.service';
+import { WoCustomerController } from './wo-customer/wo-customer.controller';
 import { WoEntity } from './entities/wo.entity';
 import { RoleEntity } from 'src/role/entities/role.entity';
 import { JwtService } from '@nestjs/jwt';
@@ -35,12 +37,15 @@ import { CustomerNoteEntity } from 'src/customer-note/entities/customer-note.ent
 import { CustomerNoteService } from 'src/customer-note/customer-note.service';
 import { CustomerNotificationModule } from 'src/customer-notification/customer-notification.module';
 import { CustomerUserModule } from 'src/customer-user/customer-user.module';
+import { CustomerUserEntity } from 'src/customer-user/entities/customer-user.entity';
 import { MaterialModule } from 'src/material/material.module';
+import { WoAttachmentEntity } from './entities/woattachment.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       WoEntity,
+      WoAttachmentEntity,
       RoleEntity,
       PermissionEntity,
       UserEntity,
@@ -53,14 +58,16 @@ import { MaterialModule } from 'src/material/material.module';
       PoItemEntity,
       TimesheetEntity,
       CustomerNoteEntity,
+      CustomerUserEntity,
     ]),
     CustomerNotificationModule,
     CustomerUserModule,
     MaterialModule,
   ],
-  controllers: [WoController],
+  controllers: [WoController, WoCustomerController],
   providers: [
     WoService,
+    WoCustomerService,
     JwtService,
     UserService,
     RoleService,
@@ -79,4 +86,4 @@ import { MaterialModule } from 'src/material/material.module';
   ],
   exports: [WoService],
 })
-export class WoModule {}
+export class WoModule { }

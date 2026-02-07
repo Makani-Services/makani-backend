@@ -7,7 +7,6 @@ import { Repository } from 'typeorm';
 import { CustomerNotificationService } from 'src/customer-notification/customer-notification.service';
 import { WoEntity } from 'src/wo/entities/wo.entity';
 import { UserService } from 'src/user/user.service';
-import { WO_TYPE_LIST } from 'src/core/common/common';
 import { getAssignedTechsNameArray } from 'src/core/common/common';
 import { default as config } from '../config';
 import { EmailService } from 'src/email/email.service';
@@ -26,7 +25,7 @@ export class CustomerNoteService {
     private readonly pusherService: PusherService,
     @InjectRepository(WoEntity)
     private readonly woRepository: Repository<WoEntity>,
-  ) {}
+  ) { }
 
   async create(createCustomerNoteDto: any) {
     let wo = await this.woRepository.findOne({
@@ -82,9 +81,9 @@ export class CustomerNoteService {
             recipientEmailArray,
             'New Note',
             'WO number is ' +
-              wo.number +
-              ' New Note: ' +
-              createCustomerNoteDto.message,
+            wo.number +
+            ' New Note: ' +
+            createCustomerNoteDto.message,
           );
         }
       } catch (e) {
@@ -123,9 +122,9 @@ export class CustomerNoteService {
           recipientEmailArray,
           'New Customer Note',
           'WO number is ' +
-            wo.number +
-            ' New Customer Note: ' +
-            createCustomerNoteDto.message,
+          wo.number +
+          ' New Customer Note: ' +
+          createCustomerNoteDto.message,
         );
       } catch (e) {
         console.log(e);

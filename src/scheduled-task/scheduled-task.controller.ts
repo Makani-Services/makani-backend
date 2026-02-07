@@ -21,8 +21,8 @@ export class ScheduledTaskController {
     // }
     return {
       platform: 'ios',
-      latest_version: '2.0.3',
-      force_update: false,
+      latest_version: '2.0.9',
+      force_update: true,
     };
   }
 
@@ -38,23 +38,56 @@ export class ScheduledTaskController {
     // }
     return {
       platform: 'android',
-      latest_version: '2.0.3',
-      force_update: false,
+      latest_version: '2.0.9',
+      force_update: true,
     };
   }
 
-  // @Get('get_version_info')
-  // async getVersionInfo() {
-  //   return {
-  //     latest_version: '1.9',
-  //     force_update: true,
-  //   };
-  // }
+
+  //iOS
+  @Get('get_version_info_for_customer/ios')
+  async getiOSVersionInfoForCustomer(@Query() query: any) {
+    // const { userId } = query;
+    // const user = await this.userService.getUserById(userId);
+
+    // let force_update = false;
+    // if (user.branches[0].name === 'Hawaii') {
+    //   force_update = false;
+    // }
+    return {
+      platform: 'ios',
+      latest_version: '1.0.3',
+      force_update: true,
+    };
+  }
+
+  //Android
+  @Get('get_version_info_for_customer/android')
+  async getAndroidVersionInfoForCustomer(@Query() query: any) {
+    // const { userId } = query;
+    // const user = await this.userService.getUserById(userId);
+
+    // let force_update = false;
+    // if (user.branches[0].name == 'Hawaii') {
+    //   force_update = false;
+    // }
+    return {
+      platform: 'android',
+      latest_version: '1.0.3',
+      force_update: true,
+    };
+  }
+
+
 }
 
 //   https://makani.services/api/scheduled-task/get_version_info/ios
 //   https://makani.services/api/scheduled-task/get_version_info/android
 //   https://makani.services/api/scheduled-task/get_version_info
+
+//   https://makani.services/api/scheduled-task/get_version_info_for_customer/ios
+//   https://makani.services/api/scheduled-task/get_version_info_for_customer/android
+//   https://makani.services/api/scheduled-task/get_version_info_for_customer
 
 //   https://test.makani.services/api/scheduled-task/get_version_info/ios
 //   https://test.makani.services/api/scheduled-task/get_version_info/android
