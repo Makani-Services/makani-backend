@@ -1998,6 +1998,7 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
       .leftJoinAndSelect('wo.serviceType', 'serviceType')
       .where('wo.id = :id', { id: id })
       .addOrderBy('assignedTechs.createdAt', 'ASC')
+      .addOrderBy('attachments.createdAt', 'ASC')
       .getOne();
 
     order['startDateString'] = order.startDate
