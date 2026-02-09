@@ -22,9 +22,9 @@ export class RoleService extends TypeOrmCrudService<RoleEntity> {
 
   async customGetAll() {
     return await this.repo.find({
-      where: {
-        name: Not('Super Admin'),
-      },
+      // where: {
+      //   name: Not('Super Admin'),
+      // },
       relations: ["permissions"]
     });
   }
