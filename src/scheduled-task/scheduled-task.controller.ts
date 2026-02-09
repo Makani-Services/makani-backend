@@ -39,7 +39,7 @@ export class ScheduledTaskController {
     return {
       platform: 'android',
       latest_version: '2.1.0',
-      force_update: true,
+      force_update: false,
     };
   }
 
