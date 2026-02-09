@@ -324,6 +324,7 @@ export class PoService extends TypeOrmCrudService<PoEntity> {
       .leftJoinAndSelect('po.issuedBy', 'issuedBy')
       .leftJoinAndSelect('wo.customer', 'customer')
       .leftJoinAndSelect('wo.assignedTechs', 'assignedTechs')
+      .leftJoinAndSelect('wo.serviceType', 'serviceType')
       .leftJoinAndSelect('assignedTechs.user', 'techUser')
       .where('po.status >= :status', { status: status })
       .andWhere(
@@ -832,6 +833,7 @@ export class PoService extends TypeOrmCrudService<PoEntity> {
         'issuedBy',
         'wo.customer',
         'wo.assignedTechs.user',
+        'wo.serviceType',
       ],
     });
 
