@@ -109,8 +109,8 @@ export class UserController {
       try {
         this.pusherService.sendPushNotification(
           [result.email],
-          '',
-          'User updated',
+          ' ',
+          ' ',
           { type: 'USER_UPDATED' },
         );
       } catch (error) {
