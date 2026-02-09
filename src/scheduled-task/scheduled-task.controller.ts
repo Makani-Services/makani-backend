@@ -12,17 +12,17 @@ export class ScheduledTaskController {
   //iOS
   @Get('get_version_info/ios')
   async getiOSVersionInfo(@Query() query: any) {
-    // const { userId } = query;
-    // const user = await this.userService.getUserById(userId);
+    const { userId } = query;
+    const user = await this.userService.getUserById(userId);
 
-    // let force_update = false;
-    // if (user.branches[0].name === 'Hawaii') {
-    //   force_update = false;
-    // }
+    let force_update = false;
+    if (user.branches[0].name === 'Hawaii') {
+      force_update = true;
+    }
     return {
       platform: 'ios',
       latest_version: '2.1.0',
-      force_update: false,
+      force_update: force_update,
     };
   }
 
@@ -39,7 +39,7 @@ export class ScheduledTaskController {
     return {
       platform: 'android',
       latest_version: '2.1.0',
-      force_update: false,
+      force_update: true,
     };
   }
 
