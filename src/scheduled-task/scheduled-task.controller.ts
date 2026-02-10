@@ -22,7 +22,7 @@ export class ScheduledTaskController {
     return {
       platform: 'ios',
       latest_version: '2.1.1',
-      force_update: false,
+      force_update: true,
     };
   }
 
