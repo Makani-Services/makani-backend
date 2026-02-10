@@ -116,6 +116,7 @@ export class TicketService extends TypeOrmCrudService<TicketEntity> {
       status: data.status,
       company: company,
       appVersion: data.appVersion,
+      platform: data.platform,
       createdByUser: ({ id: data.createdByUserId } as UserEntity),
       createdByCustomer: ({ id: data.createdByCustomerId } as CustomerEntity),
       requesterUser: ({ id: data.requesterUserId } as UserEntity),

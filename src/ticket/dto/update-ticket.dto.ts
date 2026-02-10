@@ -72,4 +72,9 @@ export class UpdateTicketDto {
   @IsOptional()
   @IsString()
   readonly appVersion?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  readonly platform?: string;
 }

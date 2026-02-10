@@ -37,6 +37,9 @@ export class TicketEntity {
   @Column({ nullable: true })
   appVersion: string;
 
+  @Column({ nullable: true })
+  platform: string;
+
   @Column({ type: 'smallint', unsigned: true })
   status: number;
   // 0: open,   100: closed
