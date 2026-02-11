@@ -2369,6 +2369,7 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
       .createQueryBuilder('wo')
       .leftJoinAndSelect('wo.customer', 'customer')
       .leftJoinAndSelect('wo.customerLocation', 'customerLocation')
+      .leftJoinAndSelect('wo.serviceType', 'serviceType')
       .andWhere('LENGTH(TRIM(wo.recommendations)) > 0')
       .andWhere('wo.company = :company', { company: company })
       .andWhere('customer.id = :customerId', { customerId });
