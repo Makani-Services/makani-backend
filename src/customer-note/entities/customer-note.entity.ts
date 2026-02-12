@@ -20,8 +20,8 @@ export class CustomerNoteEntity {
 
   @Column({ nullable: true })
   senderType: number;
-  // 0: sender is technician
-  // 1: sender is customer
+  // 0: sender is technician/admin/clerical (UserEntity)
+  // 1: sender is customer (CustomerUserEntity)
 
   @ManyToOne(() => WoEntity, (wo) => wo.customerNotes)
   wo: WoEntity;
