@@ -145,7 +145,8 @@ export class WoController {
     const userId = query.userId;
     const branchId = query.branchId;
     const keyword = query.keyword;
-    return this.woService.findAssignedOrders(userId, branchId, keyword);
+    const sort = query.sort;
+    return this.woService.findAssignedOrders(userId, branchId, keyword, sort);
   }
 
   // @Permissions(['WO:READ'])
@@ -162,8 +163,8 @@ export class WoController {
     const userId = query.userId;
     const branchId = query.branchId;
     const keyword = query.keyword;
-    return this.woService.findPastOrders(userId, branchId, keyword);
-    // return this.woService.findPastOrders(userId, branchId);
+    const sort = query.sort;
+    return this.woService.findPastOrders(userId, branchId, keyword, sort);
   }
 
   @Get('/getById')

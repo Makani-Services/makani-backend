@@ -635,18 +635,14 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
       .getMany();
   }
 
-  async findAssignedOrders(userId, branchId, keyword) {
-    // async findAssignedOrders(userId, branchId) {
-    let orders = await this.repo
+  async findAssignedOrders(userId, branchId, keyword, sort) {
+    let query = this.repo
       .createQueryBuilder('order')
       .leftJoinAndSelect('order.branch', 'branch')
       .leftJoinAndSelect('order.customer', 'customer')
       .leftJoinAndSelect('order.serviceType', 'serviceType')
       .where('order.status < :status', { status: 5 })
       .andWhere('branch.id = :branchId', { branchId })
-      // .andWhere('assignedTechs.techStatus = :techStatus', {
-      //   techStatus: 0,
-      // })
       .andWhere('assignedTechs.user.id = :userId', { userId })
       .andWhere('assignedTechs.status = :assignedTechsStatus', {
         assignedTechsStatus: 1,
@@ -684,9 +680,19 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
       .leftJoinAndSelect('order.pos', 'pos')
       .leftJoinAndSelect('pos.issuedUser', 'issuedUser')
       .leftJoinAndSelect('pos.poItems', 'poItems')
-      // .orderBy('customer.companyName', 'ASC')
-      .orderBy('assignedTechs.acceptedDate', 'DESC')
-      .getMany();
+
+
+    if (sort === "Most Recent") {
+      query = query.orderBy('assignedTechs.acceptedDate', 'DESC');
+    } else if (sort === "A to Z") {
+      query = query.orderBy('customer.companyName', 'ASC');
+      query = query.addOrderBy('order.number', 'ASC');
+    } else if (sort === "Z to A") {
+      query = query.orderBy('customer.companyName', 'DESC');
+      query = query.addOrderBy('order.number', 'ASC');
+    }
+
+    let orders = await query.getMany();
 
     orders = orders.map((order) => {
       return {
@@ -700,18 +706,14 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
     return orders;
   }
 
-  async findPastOrders(userId, branchId, keyword) {
-    // async findPastOrders(userId, branchId) {
-    return await this.repo
+  async findPastOrders(userId, branchId, keyword, sort) {
+    let query = this.repo
       .createQueryBuilder('order')
       .leftJoinAndSelect('order.branch', 'branch')
       .leftJoinAndSelect('order.customer', 'customer')
       .leftJoinAndSelect('order.serviceType', 'serviceType')
       .where('order.status >= :status', { status: 5 })
       .andWhere('branch.id = :branchId', { branchId })
-      // .orWhere('assignedTechs.techStatus = :techStatus', {
-      //   techStatus: 1,
-      // })
       .andWhere('assignedTechs.user.id = :userId', { userId })
       .andWhere('assignedTechs.status = :assignedTechsStatus', {
         assignedTechsStatus: 1,
@@ -749,10 +751,29 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
       .leftJoinAndSelect('order.pos', 'pos')
       .leftJoinAndSelect('pos.issuedUser', 'issuedUser')
       .leftJoinAndSelect('pos.poItems', 'poItems')
-      // .orderBy('customer.companyName', 'ASC')
-      // .orderBy('order.createdAt', 'DESC')
-      .orderBy('assignedTechs.acceptedDate', 'DESC')
-      .getMany();
+
+    if (sort === "Most Recent") {
+      query = query.orderBy('assignedTechs.acceptedDate', 'DESC');
+    } else if (sort === "A to Z") {
+      query = query.orderBy('customer.companyName', 'ASC');
+      query = query.addOrderBy('order.number', 'ASC');
+    } else if (sort === "Z to A") {
+      query = query.orderBy('customer.companyName', 'DESC');
+      query = query.addOrderBy('order.number', 'ASC');
+    }
+
+    let orders = await query.getMany();
+
+    orders = orders.map((order) => {
+      return {
+        ...order,
+        startDateString: order.startDate
+          ? formatDate(order.startDate, 'MM/DD/YYYY')
+          : '',
+      };
+    });
+
+    return orders;
   }
 
   async update(id: number, data, company) {
