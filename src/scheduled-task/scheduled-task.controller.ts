@@ -21,7 +21,7 @@ export class ScheduledTaskController {
     // }
     return {
       platform: 'ios',
-      latest_version: '2.1.2',
+      latest_version: '2.1.3',
       force_update: false,
     };
   }
@@ -38,7 +38,7 @@ export class ScheduledTaskController {
     // }
     return {
       platform: 'android',
-      latest_version: '2.1.2',
+      latest_version: '2.1.3',
       force_update: false,
     };
   }
@@ -89,6 +89,3 @@ export class ScheduledTaskController {
 //   https://makani.services/api/scheduled-task/get_version_info_for_customer/android
 //   https://makani.services/api/scheduled-task/get_version_info_for_customer
 
-//   https://test.makani.services/api/scheduled-task/get_version_info/ios
-//   https://test.makani.services/api/scheduled-task/get_version_info/android
-//   https://test.makani.services/api/scheduled-task/get_version_info
