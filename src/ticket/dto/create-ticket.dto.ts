@@ -72,4 +72,14 @@ export class CreateTicketDto {
   @IsOptional()
   @IsString()
   readonly platform?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  readonly deviceModel?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  readonly deviceOS?: string;
 }

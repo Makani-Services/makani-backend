@@ -117,6 +117,8 @@ export class TicketService extends TypeOrmCrudService<TicketEntity> {
       company: company,
       appVersion: data.appVersion,
       platform: data.platform,
+      deviceModel: data.deviceModel,
+      deviceOS: data.deviceOS,
       createdByUser: ({ id: data.createdByUserId } as UserEntity),
       createdByCustomer: ({ id: data.createdByCustomerId } as CustomerEntity),
       requesterUser: ({ id: data.requesterUserId } as UserEntity),
@@ -142,6 +144,9 @@ export class TicketService extends TypeOrmCrudService<TicketEntity> {
       poNumber: data.poNumber,
       company: data.company,
       appVersion: data.appVersion,
+      platform: data.platform,
+      deviceModel: data.deviceModel,
+      deviceOS: data.deviceOS,
       createdByUser: ({ id: data.createdByUserId } as UserEntity),
       createdByCustomer: ({ id: data.createdByCustomerId } as CustomerEntity),
       requesterUser: ({ id: data.requesterUserId } as UserEntity),
@@ -207,15 +212,26 @@ export class TicketService extends TypeOrmCrudService<TicketEntity> {
         ticket.createdByCustomer?.companyName ||
         '';
 
-      const emailHtml = [
+      const emailLines = [
         `Subject: ${ticket.subject ?? ''}`,
         `Ticket Number: ${ticket.number ?? ''}`,
         `Description: ${ticket.description ?? ''}`,
         `WO Number: ${ticket.woNumber ?? ''}`,
         `PO Number: ${ticket.poNumber ?? ''}`,
-        `App Version: ${ticket.appVersion ?? ''}`,
-        `Created By: ${createdByName ?? ''}`,
-      ].join('<br/>');
+        `Platform: ${ticket.platform ?? ''}`,
+      ];
+
+      if (ticket.platform === 'Tech app') {
+        emailLines.push(
+          `App Version: ${ticket.appVersion ?? ''}`,
+          `Device Model: ${ticket.deviceModel ?? ''}`,
+          `Device OS: ${ticket.deviceOS ?? ''}`,
+        );
+      }
+
+      emailLines.push(`Created By: ${createdByName ?? ''}`);
+
+      const emailHtml = emailLines.join('<br/>');
 
       const toEmailArray = superUsers.map((user) => user.email);
       const mailOptions: any = {
