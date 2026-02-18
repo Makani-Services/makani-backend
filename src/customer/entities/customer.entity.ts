@@ -35,6 +35,12 @@ export class CustomerEntity {
   @Column({ nullable: true })
   address: string;
 
+  @Column({ nullable: true })
+  contact: string;
+
+  @Column({ nullable: true })
+  email: string;
+
   @OneToMany(() => WoEntity, (wo) => wo.customer)
   wos: WoEntity[];
 
