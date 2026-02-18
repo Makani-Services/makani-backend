@@ -25,6 +25,9 @@ export class WoAttachmentEntity {
     @Column()
     fileName: string;
 
+    @Column({ nullable: true })
+    description: string;
+
     /**
      * Who uploaded the attachment
      * Nullable for legacy data
