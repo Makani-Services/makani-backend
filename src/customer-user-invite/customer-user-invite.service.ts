@@ -37,7 +37,7 @@ export class CustomerUserInviteService {
     private customerLocationRepository: Repository<CustomerLocationEntity>,
     private readonly emailService: EmailService,
     private readonly customerUserService: CustomerUserService,
-  ) {}
+  ) { }
 
   async create(
     createCustomerUserInviteDto: CreateCustomerUserInviteDto,
@@ -201,7 +201,11 @@ export class CustomerUserInviteService {
       throw new NotFoundException('Invalid invite token');
     }
 
-    return invite;
+    const existingAccount = await this.customerUserRepository.findOne({
+      where: { email: invite.email },
+    });
+
+    return { invite, accountExists: !!existingAccount };
   }
 
   async update(
@@ -258,7 +262,9 @@ export class CustomerUserInviteService {
     email: string,
     password: string,
   ) {
-    const invite = await this.findByToken(token);
+    const invite = await this.customerUserInviteRepository.findOne({
+      where: { token },
+    });
 
     if (invite.accepted) {
       throw new ConflictException('Invite has already been accepted');
