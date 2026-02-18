@@ -20,6 +20,7 @@ import {
   Index,
 } from 'typeorm';
 import { WoAttachmentEntity } from './woattachment.entity';
+import { WoTagEntity } from './wotag.entity';
 
 @Entity('wo')
 export class WoEntity {
@@ -215,6 +216,9 @@ export class WoEntity {
 
   @ManyToOne(() => BranchEntity, (branch) => branch.wo)
   branch: BranchEntity;
+
+  @ManyToOne(() => WoTagEntity, (tag) => tag.wos)
+  tag: WoTagEntity;
 
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
