@@ -34,8 +34,15 @@ export class CustomerService extends TypeOrmCrudService<CustomerEntity> {
     data: CreateCustomerDto,
     company: string,
   ): Promise<CustomerEntity> {
-    var newCustomer = new CustomerEntity(data);
-    newCustomer.company = company;
+    const newCustomer = new CustomerEntity({
+      companyName: data.companyName,
+      phone: data.phone,
+      address: data.address,
+      contact: data.contact,
+      email: data.email,
+      branch: data.branch ? ({ id: data.branch.id } as any) : undefined,
+      company: company,
+    });
     return await this.repo.save(newCustomer);
   }
 
