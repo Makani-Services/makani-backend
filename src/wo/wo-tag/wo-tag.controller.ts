@@ -47,4 +47,20 @@ export class WoTagController {
 	remove(@Param('id') id: string) {
 		return this.woTagService.remove(+id);
 	}
+
+	@Post(':id/attachments/:attachmentId')
+	addAttachment(
+		@Param('id') id: string,
+		@Param('attachmentId') attachmentId: string,
+	) {
+		return this.woTagService.addAttachment(+id, +attachmentId);
+	}
+
+	@Delete(':id/attachments/:attachmentId')
+	removeAttachment(
+		@Param('id') id: string,
+		@Param('attachmentId') attachmentId: string,
+	) {
+		return this.woTagService.removeAttachment(+id, +attachmentId);
+	}
 }

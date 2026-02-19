@@ -1214,7 +1214,8 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
     id: number,
     type: number,
     userId: number,
-    customerUserId: number
+    customerUserId: number,
+    metadataArray: any[]
   ): Promise<any> {
     const wo = await this.repo.findOne({ where: { id: id } });
 
@@ -1230,11 +1231,18 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
     }
 
     if (type === 1) {
-      const newAttachments = fileNames.map((fileName) => {
+      //attachments to the work order
+      const newAttachments = fileNames.map((fileName, index) => {
         const attachmentData: Partial<WoAttachmentEntity> = {
           wo,
           fileName: fileName,
         };
+        if (metadataArray && metadataArray[index]?.description?.length > 0) {
+          attachmentData.description = metadataArray[index]?.description;
+        }
+        if (metadataArray && metadataArray[index]?.tags?.length > 0) {
+          attachmentData.tags = metadataArray[index]?.tags;
+        }
 
         if (uploadedBy) {
           attachmentData.uploadedBy = uploadedBy;
@@ -1252,6 +1260,7 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
       });
       return attachments;
     } else if (type === 2) {
+      //proposals to the work order
       if (wo.proposals) {
         for (let fileName of fileNames) {
           wo.proposals.push(fileName);
@@ -2013,6 +2022,7 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
       .leftJoinAndSelect('history.user', 'historyUser')
       .leftJoinAndSelect('wo.quotedBy', 'quotedBy')
       .leftJoinAndSelect('wo.attachments', 'attachments')
+      .leftJoinAndSelect('attachments.tags', 'tags')
       .leftJoinAndSelect('attachments.uploadedBy', 'uploadedBy')
       .leftJoinAndSelect('attachments.uploadedByCustomerUser', 'uploadedByCustomerUser')
       .leftJoinAndSelect('uploadedByCustomerUser.customer', 'uploadedByCustomerUserCustomer')
