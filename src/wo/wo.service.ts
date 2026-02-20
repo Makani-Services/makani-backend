@@ -2002,6 +2002,7 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
     orders['customerNotes'] = await this.customerNoteService.getAllByWoId(id);
     orders['attachments'] = await this.woAttachmentRepo.find({
       where: { wo: { id: id } },
+      relations: ['tags'],
     });
 
     return orders;
