@@ -105,18 +105,18 @@ export class UserController {
   @Post('update_user')
   async updateOne(@Body() body: any) {
     const result = await this.service.updateUser(body.user);
-    if (result) {
-      try {
-        this.pusherService.sendPushNotification(
-          [result.email],
-          ' ',
-          ' ',
-          { type: 'USER_UPDATED' },
-        );
-      } catch (error) {
-        console.log('Error sending push notification for user update:', error);
-      }
-    }
+    // if (result) {
+    //   try {
+    //     this.pusherService.sendPushNotification(
+    //       [result.email],
+    //       ' ',
+    //       ' ',
+    //       { type: 'USER_UPDATED' },
+    //     );
+    //   } catch (error) {
+    //     console.log('Error sending push notification for user update:', error);
+    //   }
+    // }
     return result;
   }
 

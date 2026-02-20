@@ -55,7 +55,8 @@ export class UserService extends TypeOrmCrudService<UserEntity> {
         .where('roles.name != :roleName', { roleName: 'Administrator' })
         .andWhere('user.company = :company', { company })
         .orderBy('user.name', 'ASC')
-        .addOrderBy('branches.id', 'ASC');
+        .addOrderBy('user.createdAt', 'ASC');
+      // .addOrderBy('branches.id', 'ASC');
       result = await query.getMany();
     } else if (role === 'Manager') {
       let query = this.repo
@@ -67,7 +68,8 @@ export class UserService extends TypeOrmCrudService<UserEntity> {
         })
         .andWhere('user.company = :company', { company })
         .orderBy('user.name', 'ASC')
-        .addOrderBy('branches.id', 'ASC');
+        .addOrderBy('user.createdAt', 'ASC');
+      // .addOrderBy('branches.id', 'ASC');
 
       result = await query.getMany();
     } else {
@@ -77,9 +79,16 @@ export class UserService extends TypeOrmCrudService<UserEntity> {
         .leftJoinAndSelect('user.branches', 'branches')
         .where('user.company = :company', { company })
         .orderBy('user.name', 'ASC')
-        .addOrderBy('branches.id', 'ASC');
+        .addOrderBy('user.createdAt', 'ASC');
+      // .addOrderBy('branches.id', 'ASC');
       result = await query.getMany();
     }
+
+    result.forEach((user) => {
+      if (user.branches?.length) {
+        user.branches.sort((a, b) => a.id - b.id);
+      }
+    });
 
     if (branch > 0) {
       result = result.filter((user) => {
@@ -99,8 +108,15 @@ export class UserService extends TypeOrmCrudService<UserEntity> {
       .where('roles.name = :role', { role })
       .andWhere('user.company = :company', { company })
       .orderBy('user.name', 'ASC')
-      .addOrderBy('branches.id', 'ASC');
+      .addOrderBy('user.createdAt', 'ASC');
     let result = await query.getMany();
+
+    result.forEach((user) => {
+      if (user.branches?.length) {
+        user.branches.sort((a, b) => a.id - b.id);
+      }
+    });
+
     if (branch > 0) {
       result = result.filter((user) => {
         let branchIds = user.branches.map((branch) => branch.id);
@@ -244,10 +260,13 @@ export class UserService extends TypeOrmCrudService<UserEntity> {
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.roles', 'roles')
       .leftJoinAndSelect('user.branches', 'branches')
-      .where('user.id = :userId', { userId })
-      .addOrderBy('branches.id', 'ASC');
+      .where('user.id = :userId', { userId });
 
-    return await query.getOne();
+    const user = await query.getOne();
+    if (user?.branches?.length) {
+      user.branches.sort((a, b) => a.id - b.id);
+    }
+    return user;
   };
 
   async getManagersAndClericals() {
