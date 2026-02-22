@@ -389,14 +389,20 @@ export class WoController {
     )
     files: Array<Express.Multer.File>,
   ) {
-    console.log('🚀 ~ WoController ~ uploadMultipleFiles ~ body:', body);
+
+    let metadataArray = null;
+    if (body.metadata) {
+      metadataArray = JSON.parse(body.metadata);
+    }
+    console.log('🚀 ~ WoController ~ uploadMultipleFiles ~ body:', metadataArray);
 
     return this.woService.uploadFile(
       files.map((file) => file.filename),
       Number(body.orderId),
       Number(body.type),
       Number(body.userId),
-      Number(body.customerUserId)
+      Number(body.customerUserId),
+      metadataArray
     );
   }
 }

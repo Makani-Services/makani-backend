@@ -20,6 +20,7 @@ import {
   Index,
 } from 'typeorm';
 import { WoAttachmentEntity } from './woattachment.entity';
+import { WoTagEntity } from './wotag.entity';
 
 @Entity('wo')
 export class WoEntity {

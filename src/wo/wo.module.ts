@@ -5,6 +5,8 @@ import { WoService } from './wo.service';
 import { WoController } from './wo.controller';
 import { WoCustomerService } from './wo-customer/wo-customer.service';
 import { WoCustomerController } from './wo-customer/wo-customer.controller';
+import { WoTagService } from './wo-tag/wo-tag.service';
+import { WoTagController } from './wo-tag/wo-tag.controller';
 import { WoEntity } from './entities/wo.entity';
 import { RoleEntity } from 'src/role/entities/role.entity';
 import { JwtService } from '@nestjs/jwt';
@@ -40,12 +42,14 @@ import { CustomerUserModule } from 'src/customer-user/customer-user.module';
 import { CustomerUserEntity } from 'src/customer-user/entities/customer-user.entity';
 import { MaterialModule } from 'src/material/material.module';
 import { WoAttachmentEntity } from './entities/woattachment.entity';
+import { WoTagEntity } from './entities/wotag.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       WoEntity,
       WoAttachmentEntity,
+      WoTagEntity,
       RoleEntity,
       PermissionEntity,
       UserEntity,
@@ -64,10 +68,11 @@ import { WoAttachmentEntity } from './entities/woattachment.entity';
     CustomerUserModule,
     MaterialModule,
   ],
-  controllers: [WoController, WoCustomerController],
+  controllers: [WoController, WoCustomerController, WoTagController],
   providers: [
     WoService,
     WoCustomerService,
+    WoTagService,
     JwtService,
     UserService,
     RoleService,
