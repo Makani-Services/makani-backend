@@ -23,9 +23,12 @@ import {
   getAssignedTechsNameArray,
   getFormattedTechName,
   timeToDecimal,
+  timezoneMap,
 } from 'src/core/common/common';
 import { HistoryService } from 'src/history/history.service';
 import * as moment from 'moment';
+import { BranchService } from 'src/branch/branch.service';
+import { BranchEntity } from 'src/branch/entities/branch.entity';
 
 @Injectable()
 export class TechnicianService extends TypeOrmCrudService<TechnicianEntity> {
@@ -33,6 +36,7 @@ export class TechnicianService extends TypeOrmCrudService<TechnicianEntity> {
     @InjectRepository(TechnicianEntity) repo: Repository<TechnicianEntity>,
     @InjectRepository(UserEntity) private userRepo: Repository<UserEntity>,
     @InjectRepository(WoEntity) private woRepo: Repository<WoEntity>,
+    @InjectRepository(BranchEntity) private branchRepo: Repository<BranchEntity>,
     private readonly woService: WoService,
     private readonly pusherService: PusherService,
     private readonly emailService: EmailService,
@@ -550,6 +554,164 @@ export class TechnicianService extends TypeOrmCrudService<TechnicianEntity> {
       });
     }
 
+    return timeCardData;
+  }
+
+  async getAvailableOptionsForTimeCardOptions(userId, company) {
+    const user: UserEntity = await this.userService.getUserById(userId);
+    const timeZone = timezoneMap[user.currentBranch?.timezone];
+    const currentDate = moment().tz(timeZone)
+
+    let thisWeekStartDate, thisWeekEndDate, lastWeekStartDate, lastWeekEndDate;
+
+    thisWeekStartDate = currentDate.clone().startOf('isoWeek');
+    thisWeekEndDate = currentDate.clone().endOf('isoWeek');
+
+    lastWeekStartDate = currentDate.clone().startOf('isoWeek').subtract(1, 'week');
+    lastWeekEndDate = currentDate.clone().endOf('isoWeek').subtract(1, 'week');
+
+    let branches = await this.branchRepo.find({
+      where: { timecardCycle: 1 },
+    });
+
+    let isThisWeek = false, isLastWeek = false;
+
+    for (let branch of branches) {
+      let query = this.repo
+        .createQueryBuilder('technician')
+        .leftJoinAndSelect('technician.user', 'user')
+        .leftJoinAndSelect('technician.wo', 'wo')
+        .leftJoinAndSelect('wo.customer', 'customer')
+        .leftJoinAndSelect('wo.branch', 'branch')
+        .where('user.id = :userId', { userId })
+        .andWhere('branch.id = :branchId', { branchId: branch.id });
+
+      let timesheetArray = await query.getMany();
+
+      for (let i = 0; i < timesheetArray.length; i++) {
+        if (timesheetArray[i].timesheet && timesheetArray[i].wo.startDate) {
+          for (let timesheet of JSON.parse(timesheetArray[i].timesheet)) {
+            let workDate = moment(timesheetArray[i].wo.startDate)
+              .add(timesheet.dayDiff, 'days')
+              .format('YYYY-MM-DD');
+            if (
+              moment(workDate).isSameOrAfter(moment(thisWeekStartDate), 'day') &&
+              moment(workDate).isSameOrBefore(moment(thisWeekEndDate), 'day') &&
+              (timesheet.regularTime || timesheet.overTime || timesheet.travelTime)
+            ) {
+              isThisWeek = true;
+              break;
+            }
+            if (
+              moment(workDate).isSameOrAfter(moment(lastWeekStartDate), 'day') &&
+              moment(workDate).isSameOrBefore(moment(lastWeekEndDate), 'day') &&
+              (timesheet.regularTime || timesheet.overTime || timesheet.travelTime)
+            ) {
+              isLastWeek = true;
+              break;
+            }
+          }
+
+        }
+      }
+    }
+
+    return { isThisWeek, isLastWeek };
+  }
+
+
+  async getTimeCardsForTechnician(userId, type, company) {
+
+    const user: UserEntity = await this.userService.getUserById(userId);
+    const timeZone = timezoneMap[user.currentBranch?.timezone];
+    const currentDate = moment().tz(timeZone)
+
+    let startDate, endDate;
+
+    if (type === 1) {
+      //Today
+      startDate = currentDate;
+      endDate = currentDate;
+    }
+    else if (type === 2) {
+      // Yesterday
+      startDate = currentDate.clone().subtract(1, 'day');
+      endDate = currentDate.clone().subtract(1, 'day');
+    }
+    else if (type === 3) {
+      // This Week (Sunday - Saturday)
+      startDate = currentDate.clone().startOf('week');
+      endDate = currentDate.clone().endOf('week');
+    } else if (type === 4) {
+      // This Week (Monday - Sunday)
+      startDate = currentDate.clone().startOf('isoWeek');
+      endDate = currentDate.clone().endOf('isoWeek');
+    } else if (type === 5) {
+      // Last Week (Sunday - Saturday)
+      startDate = currentDate.clone().startOf('week').subtract(1, 'week');
+      endDate = currentDate.clone().endOf('week').subtract(1, 'week');
+    } else if (type === 6) {
+      // Last Week (Monday - Sunday)
+      startDate = currentDate.clone().startOf('isoWeek').subtract(1, 'week');
+      endDate = currentDate.clone().endOf('isoWeek').subtract(1, 'week');
+    } else if (type === 7) {
+      // This Month
+      startDate = currentDate.clone().startOf('month');
+      endDate = currentDate.clone().endOf('month');
+    } else if (type === 8) {
+      // Last Month
+      startDate = currentDate.clone().startOf('month').subtract(1, 'month');
+      endDate = currentDate.clone().endOf('month').subtract(1, 'month');
+    }
+
+    console.log('🚀🚀:', type, startDate.format('YYYY-MM-DD'), endDate.format('YYYY-MM-DD'));
+
+
+    let query = this.repo
+      .createQueryBuilder('technician')
+      .leftJoinAndSelect('technician.user', 'user')
+      .leftJoinAndSelect('technician.wo', 'wo')
+      .leftJoinAndSelect('wo.customer', 'customer')
+      .leftJoinAndSelect('wo.branch', 'branch')
+      .where('user.id = :userId', { userId });
+
+    // if (branchId > 0) {
+    //   query = query.andWhere('branch.id = :branchId', { branchId });
+    // }
+    let timesheetArray = await query.getMany();
+
+
+    let timeCardData = [];
+    for (let i = 0; i < timesheetArray.length; i++) {
+      if (timesheetArray[i].timesheet && timesheetArray[i].wo.startDate) {
+        for (let timesheet of JSON.parse(timesheetArray[i].timesheet)) {
+          //check the timesheet with startDate and endDate
+          let workDate = moment(timesheetArray[i].wo.startDate)
+            .add(timesheet.dayDiff, 'days')
+            .format('YYYY-MM-DD');
+          if (
+            moment(workDate).isSameOrAfter(moment(startDate), 'day') &&
+            moment(workDate).isSameOrBefore(moment(endDate), 'day') &&
+            (timesheet.regularTime || timesheet.overTime || timesheet.travelTime)
+          ) {
+            let item = {
+              id: timesheetArray[i].id,
+              customer: timesheetArray[i].wo.customer.companyName,
+              woNumber: timesheetArray[i].wo.number,
+              date: workDate,
+              regularTime: timesheet.regularTime,
+              overTime: timesheet.overTime,
+              travelTime: timesheet.travelTime,
+              branch: timesheetArray[i].wo.branch.name,
+            };
+            timeCardData.push(item);
+          }
+        }
+      }
+    }
+    timeCardData.sort((a, b) => {
+      return new Date(b.date).getTime() - new Date(a.date).getTime();
+    });
     return timeCardData;
   }
 }

@@ -260,6 +260,7 @@ export class UserService extends TypeOrmCrudService<UserEntity> {
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.roles', 'roles')
       .leftJoinAndSelect('user.branches', 'branches')
+      .leftJoinAndSelect('user.currentBranch', 'currentBranch')
       .where('user.id = :userId', { userId });
 
     const user = await query.getOne();
