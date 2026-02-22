@@ -1,4 +1,4 @@
-export class Branch {}
+export class Branch { }
 import { CustomerEntity } from 'src/customer/entities/customer.entity';
 import { InviteEntity } from 'src/invite/entities/invite.entity';
 import { NotificationEntity } from 'src/notification/entities/notification.entity';
@@ -38,6 +38,11 @@ export class BranchEntity {
 
   @Column({ nullable: true })
   poStartNumber: string;
+
+  @Column({ nullable: true })
+  timecardCycle: number;
+  // 0: Sunday - Saturday
+  // 1: Monday - Sunday
 
   @ManyToMany(() => UserEntity, (user) => user.branches)
   users: UserEntity[];

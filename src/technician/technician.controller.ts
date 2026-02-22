@@ -5,6 +5,7 @@ import {
   Query,
   UseGuards,
   Headers,
+  Get,
 } from '@nestjs/common';
 import { TechnicianService } from './technician.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
@@ -16,7 +17,7 @@ import { PusherService } from 'src/pusher/pusher.service';
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller('api/technician')
 export class TechnicianController {
-  constructor(private readonly technicianService: TechnicianService) {}
+  constructor(private readonly technicianService: TechnicianService) { }
 
   @Post('/create')
   create(@Body() body: any, @Headers() headers: any) {
@@ -75,5 +76,19 @@ export class TechnicianController {
       body.endDate,
       0, //branchId:  0 is a temporary value for all branches. Tech app should be updated to work correctly
     );
+  }
+
+
+
+  @Get('/get_available_options_for_time_card_options')
+  getAvailableOptionsForTimeCardOptions(@Query() query: any, @Headers() headers: any) {
+    return this.technicianService.getAvailableOptionsForTimeCardOptions(query.userId, headers.company);
+  }
+
+  @Post('/get_time_cards_for_technician')
+  getTimeCardsForTechnician(@Body() body: any, @Headers() headers: any) {
+    const userId = body.userId;
+    const type = body.type;
+    return this.technicianService.getTimeCardsForTechnician(userId, type, headers.company);
   }
 }
