@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository, getEntityManagerToken } from '@nestjs/typeorm';
-import { Brackets, EntityManager, Repository } from 'typeorm';
+import { Brackets, EntityManager, In, Repository } from 'typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { fileURLToPath, pathToFileURL } from 'url';
 const libre = require('libreoffice-convert');
@@ -74,6 +74,7 @@ import { CustomerUserService } from 'src/customer-user/customer-user.service';
 import { CustomerUserEntity } from 'src/customer-user/entities/customer-user.entity';
 import { MaterialService } from 'src/material/material.service';
 import { WoAttachmentEntity } from './entities/woattachment.entity';
+import { WoTagEntity } from './entities/wotag.entity';
 // import { ModuleRef } from '@nestjs/core';
 
 libre.convertAsync = require('util').promisify(libre.convert);
@@ -84,6 +85,8 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
     @InjectRepository(WoEntity) repo: Repository<WoEntity>,
     @InjectRepository(WoAttachmentEntity)
     private woAttachmentRepo: Repository<WoAttachmentEntity>,
+    @InjectRepository(WoTagEntity)
+    private woTagRepo: Repository<WoTagEntity>,
     @InjectRepository(RoleEntity) private roleRepo: Repository<RoleEntity>,
     @InjectRepository(UserEntity) private userRepo: Repository<UserEntity>,
     @InjectRepository(TechnicianEntity)
@@ -2981,5 +2984,39 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
       where: { number: number, company: company },
     });
     return existingWO ? true : false;
+  }
+
+  async updateAttachment(id, data) {
+    console.log("🚀 ~ WoService ~ updateAttachment ~ data:", data)
+    const attachment = await this.woAttachmentRepo.findOne({
+      where: { id: id },
+      relations: ['tags'],
+    });
+    if (!attachment) return false;
+
+    let payload: Partial<WoAttachmentEntity> = {};
+    if (data.description) {
+      payload.description = data.description;
+    }
+    await this.woAttachmentRepo.update(id, payload);
+
+    if (data.tags) {
+      const existingTagIds = (attachment.tags || []).map((tag) => tag.id);
+      const tagsRelation = this.woAttachmentRepo
+        .createQueryBuilder()
+        .relation(WoAttachmentEntity, 'tags')
+        .of(id);
+
+      if (existingTagIds.length > 0) {
+        await tagsRelation.remove(existingTagIds);
+      }
+
+      if (data.tags.length > 0) {
+        await tagsRelation.add(data.tags);
+      }
+    }
+
+
+    return attachment;
   }
 }

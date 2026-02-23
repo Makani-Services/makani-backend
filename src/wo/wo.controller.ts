@@ -326,6 +326,11 @@ export class WoController {
     );
   }
 
+  @Post('/update_attachment')
+  updateAttachment(@Body() body: any, @Headers() headers: any) {
+    return this.woService.updateAttachment(body.id, body.data);
+  }
+
   // @Permissions(['WO:CREATE'])
   @Post('attach')
   @UseInterceptors(
