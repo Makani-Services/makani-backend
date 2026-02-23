@@ -547,11 +547,11 @@ export class TechnicianService extends TypeOrmCrudService<TechnicianEntity> {
 
       //check if the technician has logged hours in another branch
       let tech = await this.userService.getUserById(userId);
-      let branches = tech.branches.filter(branch => branch.id !== reportBranch?.id);
+      let anotherBranches = tech.branches.filter(branch => branch.id !== reportBranch?.id);
       let isLoggedHoursInAnotherBranch = false;
-      for (let branch of branches) {
+      for (let anotherBranch of anotherBranches) {
         let timesheetForBranch = await this.repo.find({
-          where: { user: { id: userId }, wo: { branch: { id: branch?.id } } },
+          where: { user: { id: userId }, wo: { branch: { id: anotherBranch?.id } } },
           relations: ['user', 'wo', 'wo.customer'],
         });
 
