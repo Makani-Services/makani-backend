@@ -494,9 +494,9 @@ export class TechnicianService extends TypeOrmCrudService<TechnicianEntity> {
     return timeCardData;
   }
 
-  async getDailyTimeCards(userId, today) {
+  async getDailyTimeCards(userId, today, reportBranch) {
     let timesheetArray = await this.repo.find({
-      where: { user: { id: userId } },
+      where: { user: { id: userId }, wo: { branch: { id: reportBranch?.id } } },
       relations: ['user', 'wo', 'wo.customer'],
     });
 
@@ -544,17 +544,52 @@ export class TechnicianService extends TypeOrmCrudService<TechnicianEntity> {
     }
 
     if (timeCardData.length === 0) {
-      let tech = await this.userService.getUserById(userId);
-      timeCardData.push({
-        name: getFormattedTechName(tech.name),
-        hours: 'N/R',
-        woNumber: 'N/R',
-        customer: '',
-        woDescription: '',
-      });
-    }
 
-    return timeCardData;
+      //check if the technician has logged hours in another branch
+      let tech = await this.userService.getUserById(userId);
+      let branches = tech.branches.filter(branch => branch.id !== reportBranch?.id);
+      let isLoggedHoursInAnotherBranch = false;
+      for (let branch of branches) {
+        let timesheetForBranch = await this.repo.find({
+          where: { user: { id: userId }, wo: { branch: { id: branch?.id } } },
+          relations: ['user', 'wo', 'wo.customer'],
+        });
+
+        for (let i = 0; i < timesheetForBranch.length; i++) {
+          if (timesheetForBranch[i].timesheet && timesheetForBranch[i].wo.startDate) {
+            for (let timesheet of JSON.parse(timesheetForBranch[i].timesheet)) {
+              let workDate = moment(timesheetForBranch[i].wo.startDate)
+                .add(timesheet.dayDiff, 'days')
+                .format('MM/DD/YYYY');
+              if (
+                moment(workDate, 'MM/DD/YYYY').isSame(
+                  moment(today, 'MM/DD/YYYY'),
+                  'day',
+                ) &&
+                (timesheet.regularTime ||
+                  timesheet.overTime ||
+                  timesheet.travelTime)
+              ) {
+                isLoggedHoursInAnotherBranch = true;
+                break;
+              }
+            }
+          }
+        }
+      }
+      //if the technician has not logged hours in another branch and the report branch is the same as the technician's current branch, then add the 'N/R' note to the time card data
+      if (!isLoggedHoursInAnotherBranch && reportBranch.id === tech.currentBranch.id) {
+        timeCardData.push({
+          name: getFormattedTechName(tech.name),
+          hours: 'N/R',
+          woNumber: 'N/R',
+          customer: '',
+          woDescription: '',
+        });
+      }
+
+      return timeCardData;
+    }
   }
 
   async getAvailableOptionsForTimeCardOptions(userId, company) {
