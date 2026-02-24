@@ -52,7 +52,7 @@ export class TicketController {
 
   @Post('attach')
   @UseInterceptors(
-    FilesInterceptor('files', 10, {
+    FilesInterceptor('files', undefined, {
       storage: diskStorage({
         destination: (req, file, cb) => {
           const company = req.headers['company'];
@@ -123,7 +123,7 @@ export class TicketController {
 
   @Post('message/attach')
   @UseInterceptors(
-    FilesInterceptor('files', 10, {
+    FilesInterceptor('files', undefined, {
       storage: diskStorage({
         destination: (req, file, cb) => {
           const company = req.headers['company'];

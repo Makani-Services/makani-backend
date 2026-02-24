@@ -334,7 +334,7 @@ export class WoController {
   // @Permissions(['WO:CREATE'])
   @Post('attach')
   @UseInterceptors(
-    FilesInterceptor('files', 10, {
+    FilesInterceptor('files', undefined, {
       storage: diskStorage({
         // destination: 'public/uploads',
         destination: (req, file, cb) => {

@@ -30,7 +30,7 @@ import { PermissionsGuard } from 'src/auth/guards/permissions.guard';
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller('api/poitem')
 export class PoItemController {
-  constructor(private readonly poItemService: PoItemService) {}
+  constructor(private readonly poItemService: PoItemService) { }
 
   @Post('/create_poitem')
   create(@Body() createPOItemDto: CreatePoItemDto) {
@@ -50,7 +50,7 @@ export class PoItemController {
 
   @Post('attach')
   @UseInterceptors(
-    FilesInterceptor('files', 10, {
+    FilesInterceptor('files', undefined, {
       storage: diskStorage({
         // destination: 'public/uploads',
         destination: (req, file, cb) => {

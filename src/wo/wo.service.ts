@@ -2354,6 +2354,7 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
       // .leftJoinAndSelect('wo.openUser', 'openUser')
       .leftJoinAndSelect('wo.customer', 'customer')
       .leftJoinAndSelect('wo.branch', 'branch')
+      .leftJoinAndSelect('wo.serviceType', 'serviceType')
       // .leftJoinAndSelect('wo.serviceTicketProvider', 'serviceTicketProvider')
       // .leftJoinAndSelect('wo.pos', 'pos')
       // .leftJoinAndSelect('pos.poItems', 'items')
