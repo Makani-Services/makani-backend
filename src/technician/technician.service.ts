@@ -578,7 +578,7 @@ export class TechnicianService extends TypeOrmCrudService<TechnicianEntity> {
         }
       }
       //if the technician has not logged hours in another branch and the report branch is the same as the technician's current branch, then add the 'N/R' note to the time card data
-      if (!isLoggedHoursInAnotherBranch && reportBranch.id === tech.currentBranch.id) {
+      if (!isLoggedHoursInAnotherBranch && reportBranch.id === tech.currentBranch?.id) {
         timeCardData.push({
           name: getFormattedTechName(tech.name),
           hours: 'N/R',

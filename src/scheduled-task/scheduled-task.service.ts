@@ -532,8 +532,10 @@ export class ScheduledTaskService implements OnModuleInit {
         /[\\/]/g,
         '_',
       )} Daily Report_${today.format('YYYY_MM_DD')}.pdf`;
-      const filePath = `./public/${company}/dailytimecardreport/${fileName}`;
+      const dirPath = `./public/${company}/dailytimecardreport`;
+      const filePath = `${dirPath}/${fileName}`;
 
+      await fs.promises.mkdir(dirPath, { recursive: true });
       await fs.promises.writeFile(filePath, pdfBuffer);
 
       const attachment = fs.readFileSync(filePath).toString('base64');
