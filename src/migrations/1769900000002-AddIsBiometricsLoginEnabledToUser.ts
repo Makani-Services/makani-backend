@@ -1,13 +1,12 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class AddIsBiometricsLoginEnabledToUser1769900000002
-  implements MigrationInterface
-{
+  implements MigrationInterface {
   name = 'AddIsBiometricsLoginEnabledToUser1769900000002';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      `ALTER TABLE "user_entity" ADD COLUMN "isBiometricsLoginEnabled" boolean NOT NULL DEFAULT false`,
+      `ALTER TABLE "user_entity" ADD COLUMN "isBiometricsLoginEnabled" boolean`,
     );
   }
 
