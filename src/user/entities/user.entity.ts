@@ -61,6 +61,9 @@ export class UserEntity {
   @Column({ nullable: true })
   hasLoggedHoursToday: boolean;
 
+  @Column({ default: false })
+  isBiometricsLoginEnabled: boolean;
+
   @OneToMany(() => RefreshSessionEntity, (session) => session.user)
   @JoinTable()
   sessions: RefreshSessionEntity;
