@@ -36,6 +36,7 @@ export class PusherService {
     title: string,
     content: string,
     additionalData = null,
+    url = null,
   ) {
     const notification = new OneSignal.Notification();
 
@@ -51,6 +52,9 @@ export class PusherService {
     notification.data = additionalData;
     notification.ios_badge_type = 'Increase';
     notification.ios_badge_count = 1;
+    if (url) {
+      notification.url = url;
+    }
 
     try {
       const result = await this.client.createNotification(notification);

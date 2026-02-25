@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
-import { getUploadUrl } from 'src/core/common/common';
+import { API_URL, FRONTEND_URL, getUploadUrl } from 'src/core/common/common';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { Brackets, Repository } from 'typeorm';
 import { CreateTicketDto } from './dto/create-ticket.dto';
@@ -16,6 +16,7 @@ import { UserService } from 'src/user/user.service';
 import { EmailService } from 'src/email/email.service';
 import { default as config } from '../config';
 import axios from 'axios';
+import { PusherService } from 'src/pusher/pusher.service';
 
 
 @Injectable()
@@ -30,6 +31,7 @@ export class TicketService extends TypeOrmCrudService<TicketEntity> {
     private readonly messageAttachmentRepo: Repository<TicketMessageAttachmentEntity>,
     private readonly userService: UserService,
     private readonly emailService: EmailService,
+    private readonly pusherService: PusherService,
   ) {
     super(repo);
   }
@@ -321,7 +323,8 @@ export class TicketService extends TypeOrmCrudService<TicketEntity> {
         senderName = message.senderCustomer.companyName;
       } else if (message.senderUser) {
         if (message.senderUser.roles[0].name === 'Super Admin') {
-          toEmailArray = message.ticket.requesterUser ? message.ticket.requesterUser.email : message.ticket.requesterCustomer ? message.ticket.requesterCustomer.companyName : null;
+          const toEmail = message.ticket.requesterUser ? message.ticket.requesterUser.email : message.ticket.requesterCustomer ? message.ticket.requesterCustomer.companyName : null;
+          toEmailArray = [toEmail];
         } else {
           toEmailArray = superUsersEmailArray;
         }
@@ -348,6 +351,16 @@ export class TicketService extends TypeOrmCrudService<TicketEntity> {
         html: emailHtml,
       };
       this.emailService.sendEmail(mailOptions);
+
+      console.log("🚀 ~ TicketService ~ createMessage ~ toEmailArray:", toEmailArray, message.ticket.number, message.message)
+      //send push notification to the assigned agent/user/customer
+      await this.pusherService.sendPushNotification(
+        toEmailArray,
+        'New ticket message - ticket number: ' + message.ticket.number,
+        message.message,
+        { type: 'TICKET_MESSAGE', ticketId: message.ticket.id },
+        FRONTEND_URL + '/ticket/detail/' + message.ticket.id,
+      );
 
       return message
     } catch (error) {

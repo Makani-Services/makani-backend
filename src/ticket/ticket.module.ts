@@ -5,6 +5,7 @@ import { RoleEntity } from 'src/role/entities/role.entity';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { UserModule } from 'src/user/user.module';
 import { EmailModule } from 'src/email/email.module';
+import { PusherModule } from 'src/pusher/pusher.module';
 import { TicketController } from './ticket.controller';
 import { TicketService } from './ticket.service';
 import { TicketEntity } from './entities/ticket.entity';
@@ -24,6 +25,7 @@ import { TicketMessageAttachmentEntity } from './entities/ticketmessageattachmen
     ]),
     UserModule,
     EmailModule,
+    PusherModule,
   ],
   controllers: [TicketController],
   providers: [TicketService, JwtService],
