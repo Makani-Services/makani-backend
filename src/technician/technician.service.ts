@@ -494,9 +494,9 @@ export class TechnicianService extends TypeOrmCrudService<TechnicianEntity> {
     return timeCardData;
   }
 
-  async getDailyTimeCards(userId, today) {
+  async getDailyTimeCards(userId, today, reportBranch) {
     let timesheetArray = await this.repo.find({
-      where: { user: { id: userId } },
+      where: { user: { id: userId }, wo: { branch: { id: reportBranch?.id } } },
       relations: ['user', 'wo', 'wo.customer'],
     });
 
@@ -504,14 +504,17 @@ export class TechnicianService extends TypeOrmCrudService<TechnicianEntity> {
     for (let i = 0; i < timesheetArray.length; i++) {
       if (timesheetArray[i].timesheet && timesheetArray[i].wo.startDate) {
         for (let timesheet of JSON.parse(timesheetArray[i].timesheet)) {
-          let workDate = moment(timesheetArray[i].wo.startDate)
+          let workDateString = moment(timesheetArray[i].wo.startDate)
             .add(timesheet.dayDiff, 'days')
             .format('MM/DD/YYYY');
+
+          const todayString = today.format('MM/DD/YYYY');
+          const isSameDay = moment(workDateString, 'MM/DD/YYYY').isSame(
+            moment(todayString, 'MM/DD/YYYY'),
+            'day',
+          );
           if (
-            moment(workDate, 'MM/DD/YYYY').isSame(
-              moment(today, 'MM/DD/YYYY'),
-              'day',
-            ) &&
+            isSameDay &&
             (timesheet.regularTime ||
               timesheet.overTime ||
               timesheet.travelTime)

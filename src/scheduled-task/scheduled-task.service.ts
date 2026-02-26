@@ -492,6 +492,7 @@ export class ScheduledTaskService implements OnModuleInit {
         let timeCard = await this.technicianService.getDailyTimeCards(
           tech.id,
           today,
+          branch
         );
         if (timeCard.length > 0) {
           timeCardArray.push(timeCard);
