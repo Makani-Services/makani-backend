@@ -354,12 +354,16 @@ export class TicketService extends TypeOrmCrudService<TicketEntity> {
 
       console.log("🚀 ~ TicketService ~ createMessage ~ toEmailArray:", toEmailArray, message.ticket.number, message.message)
       //send push notification to the assigned agent/user/customer
+      let url = null;
+      if (message.senderUser.roles[0].name !== 'Super Admin') {
+        url = FRONTEND_URL + '/ticket/detail/' + message.ticket.id;
+      }
       await this.pusherService.sendPushNotification(
         toEmailArray,
         'New ticket message - ticket number: ' + message.ticket.number,
         message.message,
         { type: 'TICKET_MESSAGE', ticketId: message.ticket.id },
-        FRONTEND_URL + '/ticket/detail/' + message.ticket.id,
+        url,
       );
 
       return message
