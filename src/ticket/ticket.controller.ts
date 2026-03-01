@@ -18,6 +18,7 @@ import { isValidUUID } from 'src/core/common/common';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { CreateTicketMessageDto } from 'src/ticket/dto/create-ticket-message.dto';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
+import { ChangeTicketStatusDto } from './dto/change-ticket-status.dto';
 import { TicketService } from './ticket.service';
 
 @UseGuards(JwtAuthGuard, PermissionsGuard)
@@ -48,6 +49,11 @@ export class TicketController {
   @Post('delete')
   async delete(@Body() body: { ticketId: number }) {
     return await this.service.delete(body.ticketId);
+  }
+
+  @Post('change_status')
+  async changeTicketStatus(@Body() body: ChangeTicketStatusDto, @Headers() headers: any) {
+    return await this.service.changeTicketStatus(body, headers.company);
   }
 
   @Post('attach')

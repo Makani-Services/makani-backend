@@ -12,11 +12,14 @@ import { TicketMessageAttachmentEntity } from './entities/ticketmessageattachmen
 import { TicketMessageEntity } from './entities/ticketmessage.entity';
 import { CreateTicketMessageDto } from 'src/ticket/dto/create-ticket-message.dto';
 import { CustomerEntity } from 'src/customer/entities/customer.entity';
+import { CustomerUserEntity } from 'src/customer-user/entities/customer-user.entity';
 import { UserService } from 'src/user/user.service';
 import { EmailService } from 'src/email/email.service';
 import { default as config } from '../config';
 import axios from 'axios';
 import { PusherService } from 'src/pusher/pusher.service';
+import { TicketStatusHistoryEntity } from './entities/ticketstatushistory.entity';
+import { ChangeTicketStatusDto } from './dto/change-ticket-status.dto';
 
 
 @Injectable()
@@ -29,6 +32,8 @@ export class TicketService extends TypeOrmCrudService<TicketEntity> {
     private readonly messageRepo: Repository<TicketMessageEntity>,
     @InjectRepository(TicketMessageAttachmentEntity)
     private readonly messageAttachmentRepo: Repository<TicketMessageAttachmentEntity>,
+    @InjectRepository(TicketStatusHistoryEntity)
+    private readonly statusHistoryRepo: Repository<TicketStatusHistoryEntity>,
     private readonly userService: UserService,
     private readonly emailService: EmailService,
     private readonly pusherService: PusherService,
@@ -122,9 +127,9 @@ export class TicketService extends TypeOrmCrudService<TicketEntity> {
       deviceModel: data.deviceModel,
       deviceOS: data.deviceOS,
       createdByUser: ({ id: data.createdByUserId } as UserEntity),
-      createdByCustomer: ({ id: data.createdByCustomerId } as CustomerEntity),
+      createdByCustomer: ({ id: data.createdByCustomerId } as CustomerUserEntity),
       requesterUser: ({ id: data.requesterUserId } as UserEntity),
-      requesterCustomer: ({ id: data.requesterCustomerId } as CustomerEntity),
+      requesterCustomer: ({ id: data.requesterCustomerId } as CustomerUserEntity),
       assignedAgent: ({ id: data.assignedAgentId } as UserEntity),
     });
 
@@ -132,6 +137,14 @@ export class TicketService extends TypeOrmCrudService<TicketEntity> {
     result = await this.getById(result.id, company);
 
     await this.sendTicketCreatedEmail(result.id, company);
+
+    //save the status history
+    await this.statusHistoryRepo.save(new TicketStatusHistoryEntity({
+      ticket: result,
+      toStatus: result.status,
+      changedByUser: result.createdByUser,
+      changedByCustomerUser: result.createdByCustomer,
+    }));
 
     return result;
   }
@@ -150,13 +163,130 @@ export class TicketService extends TypeOrmCrudService<TicketEntity> {
       deviceModel: data.deviceModel,
       deviceOS: data.deviceOS,
       createdByUser: ({ id: data.createdByUserId } as UserEntity),
-      createdByCustomer: ({ id: data.createdByCustomerId } as CustomerEntity),
+      createdByCustomer: ({ id: data.createdByCustomerId } as CustomerUserEntity),
       requesterUser: ({ id: data.requesterUserId } as UserEntity),
-      requesterCustomer: ({ id: data.requesterCustomerId } as CustomerEntity),
+      requesterCustomer: ({ id: data.requesterCustomerId } as CustomerUserEntity),
       assignedAgent: ({ id: data.assignedAgentId } as UserEntity),
     });
 
     return await this.repo.save(updated);
+  }
+
+  async changeTicketStatus(data: ChangeTicketStatusDto, company?: string): Promise<TicketEntity> {
+    const where: any = { id: data.ticketId };
+    if (company) where.company = company;
+
+    const ticket = await this.repo.findOne({ where });
+    if (!ticket) throw new NotFoundException('Ticket not found');
+
+    const fromStatus = ticket.status;
+    ticket.status = data.status;
+    const updatedTicket = await this.repo.save(ticket);
+
+    //save the status history
+    let statusHistory = null;
+    if (fromStatus !== data.status) {
+      statusHistory = await this.statusHistoryRepo.save(
+        new TicketStatusHistoryEntity({
+          ticket: updatedTicket,
+          fromStatus: fromStatus,
+          toStatus: data.status,
+          changedByUser: data.changedByUserId ? ({ id: data.changedByUserId } as UserEntity) : undefined,
+          changedByCustomerUser: data.changedByCustomerUserId ? ({ id: data.changedByCustomerUserId } as CustomerUserEntity) : undefined,
+        }),
+      );
+    }
+
+    //send email notification to the assigned agent/user/customer
+    await this.sendTicketStatusChangedEmail(updatedTicket.id, statusHistory, company);
+    //send push notification to the assigned agent/user/customer
+    await this.sendTicketStatusChangedPushNotification(updatedTicket.id, statusHistory, company);
+
+    return updatedTicket;
+  }
+
+  private async sendTicketStatusChangedEmail(ticketId: number, statusHistory: TicketStatusHistoryEntity, company?: string): Promise<void> {
+    try {
+      const ticket = await this.getById(ticketId, company);
+
+      const superUsers = await this.userService.getUsersWithRole('Super Admin', 0, company);
+      const superUsersEmailArray = superUsers.map(user => user.email);
+
+      let toEmailArray = [];
+      if (statusHistory.changedByUser.roles[0].name === 'Super Admin') {
+        toEmailArray = [ticket.requesterUser ? ticket.requesterUser?.email :
+          ticket.requesterCustomer ? ticket.requesterCustomer?.email : null];
+      } else {
+        toEmailArray = superUsersEmailArray;
+      }
+
+      if (toEmailArray.length === 0) return;
+
+      const statusLabel = ticket.status === 100 ? 'Closed' : ticket.status === 0 ? 'Open' : String(ticket.status);
+      const emailHtml = [
+        `Subject: ${ticket.subject ?? ''}`,
+        `Ticket Number: ${ticket.number ?? ''}`,
+        `Description: ${ticket.description ?? ''}`,
+        `WO Number: ${ticket.woNumber ?? ''}`,
+        `PO Number: ${ticket.poNumber ?? ''}`,
+        `Status: ${statusLabel}`,
+        `Changed By: ${statusHistory.changedByUser ? statusHistory.changedByUser?.name :
+          statusHistory.changedByCustomerUser ? statusHistory.changedByCustomerUser?.name : null}`,
+      ].join('<br/>');
+
+      const mailOptions = {
+        from: config.mail.supportEmail,
+        to: toEmailArray,
+        subject: 'Ticket status changed',
+        text: `Ticket status changed - ticket number: ${ticket.number}, status: ${statusLabel}`,
+        html: emailHtml,
+      };
+
+      await this.emailService.sendEmail(mailOptions);
+    } catch (error) {
+      console.log('Error sending ticket status changed email notification:', error);
+    }
+  }
+
+  private async sendTicketStatusChangedPushNotification(ticketId: number, statusHistory: TicketStatusHistoryEntity, company?: string): Promise<void> {
+    try {
+      const ticket = await this.getById(ticketId, company);
+
+      const statusLabel = ticket.status === 100 ? 'Closed' : ticket.status === 0 ? 'Open' : String(ticket.status);
+      const title = `Ticket status changed - ticket number: ${ticket.number ?? ''}`;
+      const content = `Status changed to ${statusLabel}`;
+
+      let userRecipients = [], customerRecipients = [];
+      if (statusHistory.changedByUser.roles[0].name === 'Super Admin') {
+        userRecipients = ticket.requesterUser ? [ticket.requesterUser?.email] : [];
+        customerRecipients = ticket.requesterCustomer ? [ticket.requesterCustomer?.email] : [];
+      } else {
+        const superUsers = await this.userService.getUsersWithRole('Super Admin', 0, company);
+        userRecipients = superUsers.map(user => user.email);
+      }
+
+      const url = FRONTEND_URL + '/ticket/detail/' + ticket.id;
+      if (userRecipients.length > 0) {
+        await this.pusherService.sendPushNotification(
+          userRecipients,
+          title,
+          content,
+          { type: 'TICKET_STATUS_CHANGED', ticketId: ticket.id, status: ticket.status },
+          url,
+        );
+      }
+
+      if (customerRecipients.length > 0) {
+        await this.pusherService.sendPushNotificationToCustomer(
+          customerRecipients,
+          title,
+          content,
+          { type: 'TICKET_STATUS_CHANGED', ticketId: ticket.id, status: ticket.status },
+        );
+      }
+    } catch (error) {
+      console.log('Error sending ticket status changed push notification:', error);
+    }
   }
 
   private async buildImageAttachments(attachments: TicketAttachmentEntity[]) {
@@ -211,7 +341,7 @@ export class TicketService extends TypeOrmCrudService<TicketEntity> {
 
       const createdByName =
         ticket.createdByUser?.name ||
-        ticket.createdByCustomer?.companyName ||
+        ticket.createdByCustomer?.name ||
         '';
 
       const emailLines = [
@@ -323,7 +453,7 @@ export class TicketService extends TypeOrmCrudService<TicketEntity> {
         senderName = message.senderCustomer.companyName;
       } else if (message.senderUser) {
         if (message.senderUser.roles[0].name === 'Super Admin') {
-          const toEmail = message.ticket.requesterUser ? message.ticket.requesterUser.email : message.ticket.requesterCustomer ? message.ticket.requesterCustomer.companyName : null;
+          const toEmail = message.ticket.requesterUser ? message.ticket.requesterUser.email : message.ticket.requesterCustomer ? message.ticket.requesterCustomer.email : null;
           toEmailArray = [toEmail];
         } else {
           toEmailArray = superUsersEmailArray;

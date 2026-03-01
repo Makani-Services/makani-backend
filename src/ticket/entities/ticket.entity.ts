@@ -1,5 +1,5 @@
 import { BranchEntity } from 'src/branch/entities/branch.entity';
-import { CustomerEntity } from 'src/customer/entities/customer.entity';
+import { CustomerUserEntity } from 'src/customer-user/entities/customer-user.entity';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { TicketAttachmentEntity } from './ticketattachment.entity';
 import { TicketMessageEntity } from './ticketmessage.entity';
@@ -13,6 +13,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { TicketStatusHistoryEntity } from './ticketstatushistory.entity';
 
 @Entity('ticket')
 export class TicketEntity {
@@ -55,20 +56,20 @@ export class TicketEntity {
   })
   createdByUser?: UserEntity;
 
-  @ManyToOne(() => CustomerEntity, (customer) => customer.createdTickets, {
+  @ManyToOne(() => CustomerUserEntity, (customerUser) => customerUser.createdTickets, {
     nullable: true,
   })
-  createdByCustomer?: CustomerEntity;
+  createdByCustomer?: CustomerUserEntity;
 
   @ManyToOne(() => UserEntity, (user) => user.requestedTickets, {
     nullable: true,
   })
   requesterUser?: UserEntity;
 
-  @ManyToOne(() => CustomerEntity, (customer) => customer.requestedTickets, {
+  @ManyToOne(() => CustomerUserEntity, (customerUser) => customerUser.requestedTickets, {
     nullable: true,
   })
-  requesterCustomer?: CustomerEntity;
+  requesterCustomer?: CustomerUserEntity;
 
   @ManyToOne(() => UserEntity, (user) => user.assignedTickets, {
     nullable: true,
@@ -84,6 +85,11 @@ export class TicketEntity {
     cascade: true,
   })
   attachments: TicketAttachmentEntity[];
+
+  @OneToMany(() => TicketStatusHistoryEntity, (statusHistory) => statusHistory.ticket, {
+    cascade: true,
+  })
+  statusHistories: TicketStatusHistoryEntity[];
 
   @Column({ nullable: true })
   @Index()
