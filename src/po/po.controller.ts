@@ -94,6 +94,13 @@ export class PoController {
     return this.poService.findByWoId(woId);
   }
 
+  @Get('/get_all_paginated')
+  getAllByWoPaginated(@Query() query: any) {
+    const woId = query.woId;
+    const pageNumber = query.pageNumber;
+    return this.poService.findByWoIdPaginated(woId, pageNumber);
+  }
+
   @Get('/get_one')
   getOneById(@Query() query: any) {
     const poId = query.poId;

@@ -2000,8 +2000,8 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
 
   async findOrderById(id) {
     let orders = await this.findBasicWorkOrdersById(id);
-    orders['pos'] = await this.findAllPosByWoId(id);
-    orders['history'] = await this.historyService.getAllByWoId(id);
+    // orders['pos'] = await this.findAllPosByWoId(id);
+    // orders['history'] = await this.historyService.getAllByWoId(id);
     orders['customerNotes'] = await this.customerNoteService.getAllByWoId(id);
     orders['attachments'] = await this.woAttachmentRepo.find({
       where: { wo: { id: id } },
@@ -2022,8 +2022,8 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
       .leftJoinAndSelect('assignedTechs.user', 'techUser')
       .leftJoinAndSelect('wo.branch', 'branch')
       .leftJoinAndSelect('wo.requestedCustomerUser', 'requestedCustomerUser')
-      .leftJoinAndSelect('wo.history', 'history')
-      .leftJoinAndSelect('history.user', 'historyUser')
+      // .leftJoinAndSelect('wo.history', 'history')
+      // .leftJoinAndSelect('history.user', 'historyUser')
       .leftJoinAndSelect('wo.quotedBy', 'quotedBy')
       .leftJoinAndSelect('wo.attachments', 'attachments')
       .leftJoinAndSelect('attachments.tags', 'tags')
