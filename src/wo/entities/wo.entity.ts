@@ -21,6 +21,7 @@ import {
 } from 'typeorm';
 import { WoAttachmentEntity } from './woattachment.entity';
 import { WoTagEntity } from './wotag.entity';
+import { WoAdminNoteEntity } from './woadminnote.entity';
 
 @Entity('wo')
 export class WoEntity {
@@ -216,6 +217,9 @@ export class WoEntity {
 
   @ManyToOne(() => BranchEntity, (branch) => branch.wo)
   branch: BranchEntity;
+
+  @OneToMany(() => WoAdminNoteEntity, (adminNote) => adminNote.wo)
+  adminNotes: WoAdminNoteEntity[];
 
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;

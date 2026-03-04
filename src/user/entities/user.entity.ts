@@ -29,6 +29,7 @@ import { CustomerUserInviteEntity } from 'src/customer-user-invite/entities/cust
 import { CompanyEntity } from 'src/company/entities/company.entity';
 import { CustomerNoteEntity } from 'src/customer-note/entities/customer-note.entity';
 import { TicketEntity } from 'src/ticket/entities/ticket.entity';
+import { WoAdminNoteEntity } from 'src/wo/entities/woadminnote.entity';
 
 @Entity('user_entity')
 export class UserEntity {
@@ -147,6 +148,9 @@ export class UserEntity {
 
   @OneToMany(() => TicketEntity, (ticket) => ticket.assignedAgent)
   assignedTickets: TicketEntity[];
+
+  @OneToMany(() => WoAdminNoteEntity, (adminNote) => adminNote.createdBy)
+  adminNotes: WoAdminNoteEntity[];
 
   constructor(data: Partial<UserEntity> = {}) {
     Object.assign(this, data);
