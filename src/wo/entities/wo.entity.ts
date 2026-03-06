@@ -22,6 +22,7 @@ import {
 import { WoAttachmentEntity } from './woattachment.entity';
 import { WoTagEntity } from './wotag.entity';
 import { WoAdminNoteEntity } from './woadminnote.entity';
+import { WoTechNoteEntity } from './wotechnote.entity';
 
 @Entity('wo')
 export class WoEntity {
@@ -220,6 +221,9 @@ export class WoEntity {
 
   @OneToMany(() => WoAdminNoteEntity, (adminNote) => adminNote.wo)
   adminNotes: WoAdminNoteEntity[];
+
+  @OneToMany(() => WoTechNoteEntity, (techNote) => techNote.wo)
+  techNotes: WoTechNoteEntity[];
 
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;

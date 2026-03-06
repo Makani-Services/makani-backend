@@ -9,6 +9,8 @@ import { WoTagService } from './wo-tag/wo-tag.service';
 import { WoTagController } from './wo-tag/wo-tag.controller';
 import { WoAdminNoteService } from './wo-adminnote/wo-adminnote.service';
 import { WoAdminNoteController } from './wo-adminnote/wo-adminnote.controller';
+import { WoTechNoteService } from './wo-technote/wo-technote.service';
+import { WoTechNoteController } from './wo-technote/wo-technote.controller';
 import { WoEntity } from './entities/wo.entity';
 import { RoleEntity } from 'src/role/entities/role.entity';
 import { JwtService } from '@nestjs/jwt';
@@ -46,6 +48,7 @@ import { MaterialModule } from 'src/material/material.module';
 import { WoAttachmentEntity } from './entities/woattachment.entity';
 import { WoTagEntity } from './entities/wotag.entity';
 import { WoAdminNoteEntity } from './entities/woadminnote.entity';
+import { WoTechNoteEntity } from './entities/wotechnote.entity';
 
 @Module({
   imports: [
@@ -54,6 +57,7 @@ import { WoAdminNoteEntity } from './entities/woadminnote.entity';
       WoAttachmentEntity,
       WoTagEntity,
       WoAdminNoteEntity,
+      WoTechNoteEntity,
       RoleEntity,
       PermissionEntity,
       UserEntity,
@@ -77,12 +81,14 @@ import { WoAdminNoteEntity } from './entities/woadminnote.entity';
     WoCustomerController,
     WoTagController,
     WoAdminNoteController,
+    WoTechNoteController,
   ],
   providers: [
     WoService,
     WoCustomerService,
     WoTagService,
     WoAdminNoteService,
+    WoTechNoteService,
     JwtService,
     UserService,
     RoleService,
