@@ -6,6 +6,8 @@ import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
+const ITEMS_PER_PAGE = 13;
+
 @Injectable()
 export class HistoryService extends TypeOrmCrudService<HistoryEntity> {
   constructor(
@@ -26,5 +28,25 @@ export class HistoryService extends TypeOrmCrudService<HistoryEntity> {
         createdAt: 'DESC',
       },
     });
+  }
+
+  async getAllByWoIdPaginated(woID: number, pageNumber = 0) {
+    const page = Number(pageNumber);
+    const safePage = Number.isNaN(page) || page < 0 ? 0 : page;
+
+    const baseQuery = this.repo
+      .createQueryBuilder('history')
+      .leftJoinAndSelect('history.user', 'user')
+      .leftJoin('history.wo', 'wo')
+      .where('wo.id = :woID', { woID })
+      .orderBy('history.createdAt', 'DESC');
+
+    const totalCount = await baseQuery.getCount();
+    const history = await baseQuery
+      .skip(ITEMS_PER_PAGE * safePage)
+      .take(ITEMS_PER_PAGE)
+      .getMany();
+
+    return { history, totalCount };
   }
 }

@@ -473,6 +473,29 @@ export class PoService extends TypeOrmCrudService<PoEntity> {
     return result;
   }
 
+  async findByWoIdPaginated(woId, pageNumber = 0) {
+    const ITEMS_PER_PAGE_BY_WO = 3;
+    const page = Number(pageNumber);
+    const safePage = Number.isNaN(page) || page < 0 ? 0 : page;
+
+    const baseQuery = this.repo
+      .createQueryBuilder('po')
+      .leftJoinAndSelect('po.wo', 'wo')
+      .leftJoinAndSelect('po.poItems', 'poItems')
+      .leftJoinAndSelect('po.issuedUser', 'issuedUser')
+      .leftJoinAndSelect('po.issuedBy', 'issuedBy')
+      .where('wo.id = :woId', { woId })
+      .orderBy('po.createdAt', 'DESC');
+
+    const totalCount = await baseQuery.getCount();
+    const orders = await baseQuery
+      .skip(ITEMS_PER_PAGE_BY_WO * safePage)
+      .take(ITEMS_PER_PAGE_BY_WO)
+      .getMany();
+
+    return { orders, totalCount };
+  }
+
   async findOneById(poId) {
     const result = await this.repo.findOne({
       where: {
