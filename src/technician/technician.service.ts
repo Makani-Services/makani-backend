@@ -561,20 +561,24 @@ export class TechnicianService extends TypeOrmCrudService<TechnicianEntity> {
         for (let i = 0; i < timesheetForBranch.length; i++) {
           if (timesheetForBranch[i].timesheet && timesheetForBranch[i].wo.startDate) {
             for (let timesheet of JSON.parse(timesheetForBranch[i].timesheet)) {
-              let workDate = moment(timesheetForBranch[i].wo.startDate)
+              let workDateString = moment(timesheetForBranch[i].wo.startDate)
                 .add(timesheet.dayDiff, 'days')
                 .format('MM/DD/YYYY');
+
+              const todayString = today.format('MM/DD/YYYY');
+              const isSameDay = moment(workDateString, 'MM/DD/YYYY').isSame(
+                moment(todayString, 'MM/DD/YYYY'),
+                'day',
+              );
+
               if (
-                moment(workDate, 'MM/DD/YYYY').isSame(
-                  moment(today, 'MM/DD/YYYY'),
-                  'day',
-                ) &&
+                isSameDay &&
                 (timesheet.regularTime ||
                   timesheet.overTime ||
                   timesheet.travelTime)
               ) {
                 isLoggedHoursInAnotherBranch = true;
-                break;
+                // break;
               }
             }
           }
