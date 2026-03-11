@@ -7,6 +7,10 @@ import { WoCustomerService } from './wo-customer/wo-customer.service';
 import { WoCustomerController } from './wo-customer/wo-customer.controller';
 import { WoTagService } from './wo-tag/wo-tag.service';
 import { WoTagController } from './wo-tag/wo-tag.controller';
+import { WoAdminNoteService } from './wo-adminnote/wo-adminnote.service';
+import { WoAdminNoteController } from './wo-adminnote/wo-adminnote.controller';
+import { WoTechNoteService } from './wo-technote/wo-technote.service';
+import { WoTechNoteController } from './wo-technote/wo-technote.controller';
 import { WoEntity } from './entities/wo.entity';
 import { RoleEntity } from 'src/role/entities/role.entity';
 import { JwtService } from '@nestjs/jwt';
@@ -43,6 +47,8 @@ import { CustomerUserEntity } from 'src/customer-user/entities/customer-user.ent
 import { MaterialModule } from 'src/material/material.module';
 import { WoAttachmentEntity } from './entities/woattachment.entity';
 import { WoTagEntity } from './entities/wotag.entity';
+import { WoAdminNoteEntity } from './entities/woadminnote.entity';
+import { WoTechNoteEntity } from './entities/wotechnote.entity';
 
 @Module({
   imports: [
@@ -50,6 +56,8 @@ import { WoTagEntity } from './entities/wotag.entity';
       WoEntity,
       WoAttachmentEntity,
       WoTagEntity,
+      WoAdminNoteEntity,
+      WoTechNoteEntity,
       RoleEntity,
       PermissionEntity,
       UserEntity,
@@ -68,11 +76,19 @@ import { WoTagEntity } from './entities/wotag.entity';
     CustomerUserModule,
     MaterialModule,
   ],
-  controllers: [WoController, WoCustomerController, WoTagController],
+  controllers: [
+    WoController,
+    WoCustomerController,
+    WoTagController,
+    WoAdminNoteController,
+    WoTechNoteController,
+  ],
   providers: [
     WoService,
     WoCustomerService,
     WoTagService,
+    WoAdminNoteService,
+    WoTechNoteService,
     JwtService,
     UserService,
     RoleService,

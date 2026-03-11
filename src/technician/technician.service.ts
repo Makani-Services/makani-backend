@@ -753,4 +753,15 @@ export class TechnicianService extends TypeOrmCrudService<TechnicianEntity> {
     });
     return timeCardData;
   }
+
+  async getTimesheetByWoId(woId) {
+    let timesheetArray = await this.repo.find({
+      where: { wo: { id: woId } },
+      relations: ['user'],
+      order: {
+        createdAt: 'DESC',
+      },
+    });
+    return timesheetArray;
+  }
 }

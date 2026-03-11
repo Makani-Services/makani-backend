@@ -91,4 +91,9 @@ export class TechnicianController {
     const type = body.type;
     return this.technicianService.getTimeCardsForTechnician(userId, type, headers.company);
   }
+
+  @Get('/get_timesheet_by_wo_id')
+  getTimesheetByWoId(@Query() query: any) {
+    return this.technicianService.getTimesheetByWoId(query.woId);
+  }
 }
