@@ -1565,8 +1565,11 @@ export class WoService extends TypeOrmCrudService<WoEntity> {
           const totalRegularTravelTime = getTotalRegularTravelTime(
             item
           );
+          console.log("🚀 ~ WoService ~ Technician Name:", technician.user.name)
+          console.log("🚀 ~ WoService ~ totalRegularTravelTime:", totalRegularTravelTime)
+          console.log("🚀 ~ WoService ~ item.overTime:", item.overTime)
           if (
-            totalRegularTravelTime ||
+            totalRegularTravelTime !== '__:__' ||
             (item.overTime && item.overTime !== '00:00')
           ) {
             timesheetData.push({
